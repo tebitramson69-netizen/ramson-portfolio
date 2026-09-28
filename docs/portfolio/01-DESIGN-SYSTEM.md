@@ -197,6 +197,44 @@ and immediately reads as amateur.*
 
 ## 5. Components
 
+### Hero composition
+
+The hero is the one place where the hierarchy is stated explicitly, because it
+is the composition most easily weakened by drift.
+
+**Order of visual weight — largest to smallest:**
+
+| Rank | Element | Treatment |
+|---|---|---|
+| 1 | **Value proposition** | Instrument Serif, `clamp(2.125rem, 4.6vw, 3.875rem)`, leading `1.06`, tracking `-0.025em`, measure capped at `25ch` so it breaks into four confident lines. One phrase set in the serif italic carries the emphasis — no colour change, no weight change. |
+| 2 | **Portrait plate** | 4:5, `radius-sm`, `clamp(280px, 32vw, 460px)` wide, with an offset hairline behind and a caption beneath. |
+| 3 | **Name masthead** | JetBrains Mono, `0.875rem`, tracking `0.24em`, uppercase, `--fg-primary`, with a hairline running out of it to the right. Small cap-height but wide and high-contrast, so it reads as a *mark*, not as small text. |
+| 4 | **Role** | Mono micro, tracking `0.12em`, `--fg-tertiary`, sitting directly beneath the masthead so name and role form one tight identity unit. |
+| 5 | Technology line, CTAs, micro-facts | Supporting. |
+
+**Semantics vs. weight.** The `<h1>` is the **name** — it is what people search
+for, and visual dominance is a styling decision, not a semantic one. The value
+proposition is an ordinary paragraph that happens to carry the largest type on
+the page.
+
+**What makes it read as one composition** rather than two adjacent boxes:
+
+1. The plate's top border lands on the masthead's top edge — a shared upper edge across the two columns.
+2. The plate caption repeats the name, tying the identity to the image.
+3. The grid is asymmetric (`1.55fr / 1fr`) with a `clamp(3rem, 7vw, 12rem)` gutter, so the whitespace between them is deliberate rather than residual.
+
+**One framing device, not two.** The plate carries the offset hairline behind
+it and nothing else. Registration-style corner ticks were built and then
+removed: two framing devices on one small plate read as busy, and at 1440 the
+ticks sat 11px from the offset frame's edge. Restraint is the point.
+
+**Mobile.** Portrait first, at `min(58vw, 240px)` — sized so the entire value
+proposition still clears the fold on a 390×844 phone. A statement cannot
+dominate from below the fold. The plate caption drops the name (the nav brand
+and masthead already carry it within one screen) and keeps the location, and
+the fallback's explanatory note is hidden because it wraps to four cramped
+lines in the narrower plate.
+
 ### Buttons
 Four variants — `primary` (solid accent), `secondary` (bordered ghost), `ghost` (text only),
 `danger` (CMS only). Three sizes — sm 36px, md 44px, lg 52px. Six states — default, hover,

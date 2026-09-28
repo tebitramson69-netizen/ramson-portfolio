@@ -615,19 +615,28 @@ h1, h2, h3, h4 {
 
 
 /* --- 6.5 Portrait -------------------------------------------------------
-   Rectangular editorial frame, 4:5, radius 4px. NEVER a circle.
-   A hairline border offset down-right sits behind it, giving quiet depth
-   with no shadow and no glow. */
+   A rectangular editorial PLATE, 4:5, radius 4px. NEVER a circle.
+   Circular avatars read as social-media profile pictures; this reads as a
+   magazine feature. Corner ticks and a caption give it the weight of a
+   deliberate plate rather than a decorative image.
+
+   The image itself is always resolved from the CMS `media` table — no
+   filename appears anywhere in source. The monogram below is the FALLBACK
+   state, shown only while no photograph has been uploaded. */
 
 .portrait {
   position: relative;
   width: 100%;
-  max-width: 420px;
+  max-width: clamp(280px, 32vw, 460px);
 }
-.portrait::before {
+/* The plate is the image area only. The offset hairline and the corner ticks
+   anchor HERE rather than to the figure, so the caption below is never
+   enclosed by them. */
+.portrait__plate { position: relative; }
+.portrait__plate::before {
   content: "";
   position: absolute;
-  inset: 16px -16px -16px 16px;
+  inset: 20px -20px -20px 20px;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
   pointer-events: none;
@@ -658,14 +667,31 @@ h1, h2, h3, h4 {
   pointer-events: none;
 }
 
-/* Fallback state — a designed monogram tile, not a broken image.
-   This renders whenever the CMS holds no profile photo. */
+/* Plate caption — repeats the name beside the portrait, which is what ties
+   the identity and the image into one composition. */
+.portrait__caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-disabled);
+}
+.portrait__caption b { font-weight: 500; color: var(--fg-tertiary); }
+
+/* Fallback state — a designed monogram plate, not a broken image.
+   Flex column rather than absolute positioning for the caption, so the
+   monogram and the note can never overlap whatever the frame's height. */
 .portrait__fallback {
   position: absolute;
   inset: 0;
-  /* Flex column rather than absolute positioning for the caption: the
-     monogram and the note can then never overlap, whatever the frame's
-     height or the caption's wrapped line count. */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -675,28 +701,27 @@ h1, h2, h3, h4 {
   text-align: center;
   background:
     radial-gradient(120% 90% at 50% 0%,
-      rgba(255, 255, 255, 0.035) 0%, transparent 60%),
+      rgba(255, 255, 255, 0.04) 0%, transparent 62%),
     var(--surface-raised);
 }
 .portrait__monogram {
   font-family: var(--font-display);
-  font-size: clamp(3.25rem, 10vw, 6rem);
+  font-size: clamp(3.5rem, 11vw, 6.5rem);
   line-height: 1;
   letter-spacing: -0.04em;
   color: var(--fg-primary);
-  opacity: 0.22;
+  opacity: 0.2;
 }
 .portrait__note {
   max-width: 22ch;
   font-family: var(--font-mono);
   font-size: var(--fs-micro);
-  line-height: 1.6;
+  line-height: 1.7;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-disabled);
   text-wrap: balance;
 }
-
 
 /* --- 6.6 Pending state --------------------------------------------------
    A DESIGNED empty state for content that has not been supplied yet.
@@ -907,72 +932,135 @@ h1, h2, h3, h4 {
    ========================================================================== */
 
 /* --- 7.1 Hero -----------------------------------------------------------
-   Deliberately ~88vh, not 100vh: showing a sliver of the next section
-   signals depth and invites scrolling. On mobile the height is
-   content-driven, because 100vh is a known bug source with browser chrome. */
+   Editorial composition. The value proposition is the dominant statement;
+   the name sits above it as a letterspaced masthead, and the portrait is a
+   full plate with its own caption rather than a secondary avatar. The three
+   read as ONE composition because they share a common top edge and the
+   portrait caption repeats the name.
+
+   Deliberately ~90vh, not 100vh: a sliver of the next section signals depth
+   and invites scrolling. On mobile the height is content-driven, because
+   100vh is a known bug source with browser chrome. */
 
 .hero {
   display: flex;
   align-items: center;
-  min-height: 88vh;
+  min-height: 90vh;
   padding-top: calc(var(--header-h) + var(--space-8));
   padding-bottom: var(--space-9);
 }
 
 .hero__grid {
   display: grid;
-  grid-template-columns: 7fr 5fr;
-  align-items: center;
-  gap: clamp(var(--space-7), 6vw, var(--space-10));
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(var(--space-7), 7vw, var(--space-11));
 }
 
-.hero__content > * + * { margin-top: var(--space-5); }
-.hero__eyebrow { margin-top: var(--space-6); }
+/* --- Masthead + statement ---------------------------------------------- */
 
+/* Name — an editorial masthead. Small cap-height, wide tracking and a rule
+   running out of it, which reads as a mark rather than as small text. */
 .hero__name {
-  /* The confidence of the whole page lives in this one setting. */
-  margin-top: var(--space-3);
+  margin-top: var(--space-7);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--fg-primary);
+}
+/* A hairline running out of the masthead — the editorial device that makes
+   the name read as a mark rather than as small text. */
+.hero__name::after {
+  content: "";
+  flex: 1 1 auto;
+  max-width: 220px;
+  height: 1px;
+  background: linear-gradient(to right,
+    var(--border-strong), var(--border-subtle));
 }
 
-.hero__value {
-  max-width: 34ch;
-  font-size: clamp(1.0625rem, 2vw, 1.25rem);
-  line-height: 1.5;
-  color: var(--fg-secondary);
+/* Role — sits directly under the masthead so name and role form one tight
+   identity unit, clearly subordinate to the statement below. */
+.hero__role {
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-tertiary);
 }
+
+/* The dominant statement — the largest type on the page. */
+.hero__statement {
+  display: block;
+  margin-top: var(--space-6);
+  max-width: 25ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.125rem, 4.6vw, 3.875rem);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  color: var(--fg-primary);
+}
+/* One italic phrase carries the emphasis — no colour, no weight change.
+   Restraint is the point: the serif italic does the work. */
+.hero__statement em {
+  font-style: italic;
+  color: var(--fg-primary);
+}
+
+/* --- Supporting lines --------------------------------------------------- */
 
 .hero__tech {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  max-width: 34rem;
   font-family: var(--font-mono);
   font-size: var(--fs-caption);
+  line-height: 1.7;
   color: var(--fg-tertiary);
-  letter-spacing: 0.01em;
 }
 
 .hero__actions { margin-top: var(--space-6); }
-
-.hero__facts { margin-top: var(--space-6); }
-
-.hero__media { display: flex; justify-content: flex-end; }
+.hero__facts { margin-top: var(--space-7); }
 
 /* Scroll cue — quiet, and hidden from assistive technology. */
 .hero__cue {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin-top: var(--space-9);
+  margin-top: var(--space-7);
   font-family: var(--font-mono);
   font-size: var(--fs-micro);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--fg-disabled);
 }
 .hero__cue::after {
   content: "";
-  width: 48px;
+  width: 56px;
   height: 1px;
   background: var(--border-default);
 }
 
+/* --- Portrait plate ------------------------------------------------------
+   Aligned to the top of the masthead so the text and the portrait share a
+   common upper edge — this is what makes the two columns read as a single
+   composition rather than as two adjacent boxes. */
+.hero__media {
+  display: flex;
+  justify-content: flex-end;
+  /* Tuned so the plate's top border lands on the masthead's top edge — the
+     shared upper edge is what makes the two columns read as one composition
+     rather than as two adjacent boxes. */
+  margin-top: calc(var(--space-8) + var(--space-5));
+}
 
 /* --- 7.2 Technology strip ----------------------------------------------- */
 
@@ -1297,7 +1385,19 @@ h1, h2, h3, h4 {
    ========================================================================== */
 
 @media (max-width: 1023px) {
-  .hero__grid { grid-template-columns: 5fr 3fr; }
+  /* When the hero facts wrap, the hairline divider is left dangling at the
+     end of the first line. Below the desktop breakpoint they stack instead,
+     which needs no divider at all. */
+  .hero__facts { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+  .hero__facts > li::after { display: none; }
+
+  /* Tablet keeps the two-column composition but gives the statement more
+     room, since the portrait reads well smaller and the statement does not. */
+  .hero { min-height: 0; padding-top: calc(var(--header-h) + var(--space-8)); }
+  .hero__grid { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+                gap: var(--space-7); }
+  .hero__statement { max-width: 18ch; }
+  .portrait { max-width: 100%; }
   .work__grid,
   .about__grid { grid-template-columns: 1fr; }
   .work__item:nth-child(even) .work__media { order: 0; }
@@ -1347,19 +1447,46 @@ h1, h2, h3, h4 {
   .hero {
     min-height: 0;
     padding-top: calc(var(--header-h) + var(--space-6));
+    padding-bottom: var(--space-8);
   }
   .hero__grid {
     grid-template-columns: 1fr;
     gap: var(--space-7);
   }
-  /* Portrait first on mobile — identity before words. */
-  .hero__media { order: -1; justify-content: center; }
-  .portrait { max-width: 62vw; }
-  .portrait__inner { aspect-ratio: 3 / 4; }
-  .portrait::before { inset: 12px -12px -12px 12px; }
 
+  /* Portrait first on mobile — identity before words. Sized so the whole
+     value proposition still clears the fold on a 390x844 phone: the
+     statement is the dominant element, and it cannot dominate from below
+     the fold. */
+  .hero__media { order: -1; justify-content: flex-start; margin-top: 0; }
+  .portrait { max-width: min(58vw, 240px); }
+  .portrait__plate::before { inset: 14px -14px -14px 14px; }
+
+  /* The plate caption repeats the name, which is redundant on mobile: the
+     nav brand and the masthead below already carry it within one screen.
+     The location is kept, since it is not stated anywhere else above the
+     fold. */
+  .portrait__caption { margin-top: var(--space-4); }
+  .portrait__caption b { display: none; }
+
+  /* In the narrower mobile plate the explanatory note wraps to four cramped
+     lines. The monogram alone reads cleanly, and the note is a temporary
+     state that disappears once a photograph is uploaded. */
+  .portrait__note { display: none; }
+  .portrait__fallback { padding: var(--space-4); }
+
+  /* The masthead rule would stretch the full column width on a phone, which
+     reads as a stray line rather than a mark, so it is capped tighter. */
+  .hero__name { font-size: 0.8125rem; letter-spacing: 0.2em; }
+  .hero__name::after { max-width: 64px; }
+
+  .hero__name { margin-top: var(--space-7); }
+  .hero__statement { max-width: none; margin-top: var(--space-5); }
+
+  .hero__tech { margin-top: var(--space-6); }
   .hero__actions { flex-direction: column; align-items: stretch; }
   .hero__actions .btn { width: 100%; min-height: 48px; }
+  .hero__facts { margin-top: var(--space-6); }
 
   .hero__cue { display: none; }
 
@@ -1384,6 +1511,7 @@ h1, h2, h3, h4 {
 @media (max-width: 479px) {
   .about__fact { grid-template-columns: 1fr; gap: var(--space-1); }
   .btn-group { width: 100%; }
+  .portrait { max-width: min(66vw, 200px); }
 }
 
 

@@ -73,6 +73,17 @@ content fully visible with JavaScript disabled · content fully visible under
 Phase 9 self-hosts them as subsetted WOFF2, which removes the third-party connection
 and satisfies the CSP in PRD §Q.5.
 
+**Refinement pass (post-review).** The hero was rebuilt to a stronger editorial
+composition: the value proposition became the dominant statement, the name
+became a letterspaced masthead, and the portrait became a full plate with an
+offset hairline and its own caption, aligned to share a top edge with the
+masthead. Four further defects were found and fixed while rendering it —
+the offset frame and corner ticks were anchored to the figure rather than the
+image, so they enclosed the caption; two framing devices on one plate read as
+busy, so the ticks were removed; the value proposition sat below the fold on a
+390px phone; and the wrapped hero micro-facts left a hairline divider dangling
+at the end of a line.
+
 **Deliverable:** a static site that already looks like the finished product. **Done.**
 
 ---

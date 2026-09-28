@@ -319,8 +319,8 @@ Left column, top to bottom:
 
 1. **Availability pill** — small caps, hairline border, 8px dot with a very slow ambient pulse (2.4s, 0.6→1 opacity). The one piece of motion earned in the hero. Disabled under `prefers-reduced-motion`.
 2. **Eyebrow** — `Software Engineer · Full-Stack Developer`, letter-spaced small caps, muted.
-3. **Name** — `Ramson Titih`, the largest type on the site: `clamp(2.75rem, 7vw, 5.25rem)`, tracking `-0.03em`, leading `0.95–1.0`. **The confidence of the whole page lives in this one setting.**
-4. **Value proposition** — *"I build practical web systems that turn manual workflows into simple digital experiences."* At `~1.125–1.25rem`, capped near 34ch so it breaks into two or three confident lines.
+3. **Name masthead** — `Ramson Titih` in letterspaced mono caps with a hairline running out of it. *(Revised in the Phase 1 refinement pass: the name was originally the largest type on the site. The value proposition now carries that weight, and the name reads as an editorial mark. The `<h1>` remains the name, since that is what people search for.)*
+4. **Value proposition** — *"I build practical web systems that turn manual workflows into simple digital experiences."* **The largest type on the page**, in Instrument Serif at `clamp(2.125rem, 4.6vw, 3.875rem)`, capped at 25ch so it breaks into four confident lines, with one phrase in the serif italic. Full specification in `01-DESIGN-SYSTEM.md` → *Hero composition*.
 5. **Technology line** — `Full-stack development · PHP · JavaScript · MySQL · AI & Automation`, muted, hairline-separated.
 6. **CTAs** — Primary `View Selected Work` (solid accent; evidence converts better than a premature contact ask). Secondary `Get in Touch` (bordered ghost). Optional tertiary `Download CV` text link.
 7. **Micro-facts** — `Cameroon` · `HND Software Engineering` — small, muted, hairline-separated.

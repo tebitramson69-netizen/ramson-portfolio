@@ -82,13 +82,17 @@
           Open to select projects &amp; opportunities
         </p>
 
-        <p class="t-eyebrow hero__eyebrow">Software Engineer · Full-Stack Developer</p>
+        <!-- The h1 is the name: it is what people search for, and visual
+             dominance is a styling decision, not a semantic one. The value
+             proposition below it is an ordinary paragraph carrying the
+             largest type on the page. -->
+        <h1 class="hero__name">Ramson Titih</h1>
 
-        <h1 class="t-display-1 hero__name">Ramson Titih</h1>
+        <p class="hero__role">Software Engineer · Full-Stack Developer</p>
 
-        <p class="hero__value">
-          I build practical web systems that turn manual workflows
-          into simple digital experiences.
+        <p class="hero__statement">
+          I build practical web systems that turn manual workflows into
+          <em>simple digital experiences</em>.
         </p>
 
         <p class="hero__tech">
@@ -104,7 +108,6 @@
         </div>
 
         <ul class="meta-list hero__facts">
-          <li>Cameroon</li>
           <li>HND Software Engineering</li>
           <li>Saint Louis University Institute Douala</li>
         </ul>
@@ -114,24 +117,31 @@
       </div>
 
       <div class="hero__media">
-        <!-- Profile portrait.
-             In the finished product this image is resolved from the `media`
+        <!-- Portrait plate.
+             In the finished product the image is resolved from the `media`
              table via profile.photo_media_id — no filename ever appears in
-             source. Until a photograph is uploaded through the CMS, the
-             designed monogram fallback below renders instead. It is a real
-             state, not a placeholder. -->
+             source, and the photo is replaceable from the admin dashboard at
+             any time. Until one is uploaded, the monogram fallback below
+             renders instead. It is a designed state, not a placeholder. -->
         <figure class="portrait">
-          <div class="portrait__inner">
+          <div class="portrait__plate">
+            <div class="portrait__inner">
 
-            <div class="portrait__fallback">
-              <span class="portrait__monogram" aria-hidden="true">RT</span>
-              <span class="portrait__note">
-                Photo managed from<br>the admin dashboard
-              </span>
+              <div class="portrait__fallback">
+                <span class="portrait__monogram" aria-hidden="true">RT</span>
+                <span class="portrait__note">
+                  Photo managed from<br>the admin dashboard
+                </span>
+              </div>
+
+              <span class="portrait__tint" aria-hidden="true"></span>
             </div>
-
-            <span class="portrait__tint" aria-hidden="true"></span>
           </div>
+
+          <figcaption class="portrait__caption">
+            <b>Ramson Titih</b>
+            <span>Cameroon</span>
+          </figcaption>
         </figure>
       </div>
 
