@@ -51,6 +51,54 @@ function Find-First([string[]] $Candidates) {
     return $null
 }
 
+function Assert-PageContent {
+    <#
+        Runs every content assertion against ONE fetched page.
+
+        The guard matters more than the assertions: if the body is empty, the
+        checks are reported as FAIL rather than run. Running a "-notmatch"
+        assertion against an empty string returns true, so without this guard
+        a failed fetch silently reports "CareerForge absent: PASS" — a check
+        that passed without ever seeing a page. A verification script that can
+        pass vacuously is worse than no script.
+    #>
+    param(
+        [Parameter(Mandatory)] [string] $Label,
+        $Page
+    )
+
+    $code = if ($Page) { [int] $Page.Code } else { 0 }
+    $body = if ($Page -and $Page.Body) { [string] $Page.Body } else { '' }
+
+    if ([string]::IsNullOrWhiteSpace($body)) {
+        Report "$Label content" 'FAIL' "empty body (HTTP $code) - assertions NOT run, not passed"
+        return
+    }
+
+    Report "$Label body fetched" 'PASS' "HTTP $code, $($body.Length) bytes"
+
+    $must = [ordered]@{
+        'full name'            = 'Tebit Ramson Titih'
+        'value proposition'    = 'practical web systems'
+        'Rendo'                = 'Rendo'
+        'School Mgmt System'   = 'School Management System'
+        'RT monogram fallback' = 'portrait__monogram[^>]*>RT<'
+    }
+    foreach ($k in $must.Keys) {
+        Report "$Label : $k" $(if ($body -match $must[$k]) { 'PASS' } else { 'FAIL' }) ''
+    }
+
+    $mustNot = [ordered]@{
+        'CareerForge absent'       = '(?i)careerforge'
+        'bare "Ramson Titih" absent' = '(?<!Tebit )Ramson Titih'
+        'no inline style attrs'    = 'style="'
+        'no PHP warnings/notices'  = '(?i)(<b>Warning</b>|<b>Notice</b>|<b>Fatal error</b>|Deprecated:)'
+    }
+    foreach ($k in $mustNot.Keys) {
+        Report "$Label : $k" $(if ($body -notmatch $mustNot[$k]) { 'PASS' } else { 'FAIL' }) ''
+    }
+}
+
 function Get-Status([string] $Url) {
     try {
         $r = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 15 -MaximumRedirection 0 -ErrorAction Stop
@@ -239,9 +287,9 @@ if ($php -and $mysqlProc) {
     $pending   = if ($pendingOk) { [int] $Matches[1] } else { -1 }
     Report 'Migration status' $(if ($applied -eq $fileCount -and $pending -eq 0) { 'PASS' } else { 'FAIL' }) "applied=$applied of $fileCount files, pending=$pending"
 
-    $profile = Invoke-MySql "SELECT CONCAT_WS('|', full_name, monogram, availability_note) FROM profile;" $dbName
-    Write-Host "    profile: $profile"
-    $seedOk = ($profile -like '*Tebit Ramson Titih*') -and ($profile -like '*RT*') -and ($profile -like '*Open to select projects*')
+    $profileRow = Invoke-MySql "SELECT CONCAT_WS('|', full_name, monogram, availability_note) FROM profile;" $dbName
+    Write-Host "    profile: $profileRow"
+    $seedOk = ($profileRow -like '*Tebit Ramson Titih*') -and ($profileRow -like '*RT*') -and ($profileRow -like '*Open to select projects*')
     Report 'Seeded profile' $(if ($seedOk) { 'PASS' } else { 'FAIL' }) $(if ($seedOk) { 'name, monogram and availability correct' } else { 'unexpected values' })
 
     $settings = Invoke-MySql "SELECT COUNT(*) FROM settings;" $dbName
@@ -273,18 +321,14 @@ if ($php) {
         Report "dev $($c.Path)" $(if ($r.Code -eq $c.Want) { 'PASS' } else { 'FAIL' }) "got $($r.Code), want $($c.Want)"
     }
 
-    $home = Get-Status 'http://127.0.0.1:8123/'
-    Report 'Full name rendered' $(if ($home.Body -match 'Tebit Ramson Titih') { 'PASS' } else { 'FAIL' }) 'hero + nav + footer'
-    Report 'Bare "Ramson Titih" absent' $(if ($home.Body -notmatch '(?<!Tebit )Ramson Titih') { 'PASS' } else { 'WARN' }) 'displayed name rule'
-    Report 'Value proposition'  $(if ($home.Body -match 'practical web systems') { 'PASS' } else { 'FAIL' }) ''
-    Report 'Rendo present'      $(if ($home.Body -match 'Rendo') { 'PASS' } else { 'FAIL' }) ''
-    Report 'School Mgmt present'$(if ($home.Body -match 'School Management System') { 'PASS' } else { 'FAIL' }) ''
-    Report 'RT monogram'        $(if ($home.Body -match 'portrait__monogram[^>]*>RT<') { 'PASS' } else { 'FAIL' }) 'fallback state'
-    Report 'CareerForge absent' $(if ($home.Body -notmatch '(?i)careerforge') { 'PASS' } else { 'FAIL' }) 'exclusion rule'
-    Report 'No inline styles'   $(if ($home.Body -notmatch 'style="') { 'PASS' } else { 'WARN' }) 'CSP compatibility'
-
-    $phpErrors = ($home.Body -match '(?i)(<b>Warning</b>|<b>Notice</b>|<b>Fatal error</b>|Deprecated:)')
-    Report 'No PHP warnings/notices' $(if (-not $phpErrors) { 'PASS' } else { 'FAIL' }) ''
+    # NOTE: the variable below must NOT be called $home. $HOME is a read-only
+    # PowerShell automatic variable; assigning to it fails, leaves a path
+    # string in place, and every ".Body" then evaluates to $null. That made
+    # each -match report FAIL and — far worse — each -notmatch report PASS
+    # vacuously, so the "CareerForge absent" and "no inline styles" checks
+    # were passing without ever looking at a page. Guarded properly below.
+    $homePage = Get-Status 'http://127.0.0.1:8123/'
+    Assert-PageContent -Label 'dev server' -Page $homePage
 }
 
 # =====================================================================
@@ -313,8 +357,10 @@ if ($apacheBase) {
         Report "apache $($c.P)" $(if ($r.Code -eq $c.W) { 'PASS' } else { 'FAIL' }) "got $($r.Code), want $($c.W)"
     }
 
-    # The root guard: these must NOT be served.
     $projectBase = $apacheBase -replace '/public$', ''
+    Assert-PageContent -Label 'apache' -Page (Get-Status "$apacheBase/")
+
+    # The root guard: these must NOT be served.
     foreach ($secret in @('/.git/config', '/config/config.php', '/config/config.example.php', '/src/Core/Database.php', '/composer.json')) {
         $r = Get-Status "$projectBase$secret"
         Report "apache blocks $secret" $(if ($r.Code -eq 403 -or $r.Code -eq 404) { 'PASS' } else { 'FAIL' }) "got $($r.Code) - must be 403/404"
