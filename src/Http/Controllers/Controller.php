@@ -8,7 +8,9 @@ use App\Core\Response;
 use App\Core\Seo;
 use App\Core\View;
 use App\Domain\Profile\ProfileRepository;
+use App\Domain\Project\ProjectRepository;
 use App\Domain\Settings\SettingsRepository;
+use App\Domain\Skill\SkillRepository;
 
 /**
  * Shared controller plumbing.
@@ -24,6 +26,8 @@ abstract class Controller
         protected readonly View $view,
         protected readonly ProfileRepository $profiles,
         protected readonly SettingsRepository $settings,
+        protected readonly ProjectRepository $projects,
+        protected readonly SkillRepository $skills,
     ) {
     }
 

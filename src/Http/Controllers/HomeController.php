@@ -23,7 +23,11 @@ final class HomeController extends Controller
             jsonLd:      $profile === null ? [] : [$this->personSchema($profile)],
         );
 
-        return $this->page('pages/home', $meta, [], isHome: true);
+        return $this->page('pages/home', $meta, [
+            'featured'    => $this->projects->findPublishedForHome(limit: 4),
+            'skillGroups' => $this->skills->visibleGroupedByCategory(),
+            'techStrip'   => $this->skills->stripNames(limit: 8),
+        ], isHome: true);
     }
 
     /**
@@ -57,6 +61,18 @@ final class HomeController extends Controller
                 '@type' => 'EducationalOrganization',
                 'name'  => $profile->institution,
             ];
+        }
+
+        // knowsAbout comes from the skills table, so the structured data and
+        // the visible skills section can never drift apart.
+        $knowsAbout = [];
+        foreach ($this->skills->visibleGroupedByCategory() as $group) {
+            foreach ($group as $skill) {
+                $knowsAbout[] = $skill->name;
+            }
+        }
+        if ($knowsAbout !== []) {
+            $schema['knowsAbout'] = $knowsAbout;
         }
 
         $sameAs = array_values(array_filter([$profile->githubUrl, $profile->linkedinUrl]));

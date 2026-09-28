@@ -102,7 +102,7 @@ $pending = static function (array $data): void {
   <div class="container techstrip__inner">
     <p class="techstrip__label">Working with</p>
     <ul class="techstrip__list">
-      <?php foreach (['HTML', 'CSS', 'JavaScript', 'PHP', 'MySQL', 'Git', 'GitHub', 'XAMPP'] as $technology): ?>
+      <?php foreach ($techStrip as $technology): ?>
         <li class="techstrip__item"><?= e($technology) ?></li>
       <?php endforeach; ?>
     </ul>
@@ -118,139 +118,25 @@ $pending = static function (array $data): void {
       <p class="section-index">01 — Selected work</p>
       <h2 class="t-display-2" id="work-title">Systems I have built</h2>
       <p class="t-lead">
-        Two projects that solve real operational problems — client bookings
-        handled through the channel people already use, and school
-        administration that ends in a printed report card.
+        Projects that solve real operational problems — client bookings handled
+        through the channel people already use, and school administration that
+        ends in a printed report card.
       </p>
     </header>
 
     <div class="work">
-
-      <!-- PROJECT 1 — RENDO -->
-      <article class="work__item" data-reveal>
-        <div class="work__grid">
-
-          <div class="work__media">
-            <div class="frame">
-              <div class="frame__bar" aria-hidden="true">
-                <span class="frame__dot"></span><span class="frame__dot"></span><span class="frame__dot"></span>
-              </div>
-              <div class="frame__body">
-                <?php $pending([
-                  'label' => 'Awaiting asset',
-                  'title' => 'Rendo screenshot',
-                  'body'  => 'The landing page at minimum. Uploaded through the CMS in Phase 6.',
-                  'ref'   => '03-OPEN-QUESTIONS · Q5',
-                ]); ?>
-              </div>
-            </div>
-          </div>
-
-          <div class="work__content">
-            <p class="t-eyebrow">Business automation · SaaS</p>
-            <h3 class="t-display-3 work__title">Rendo</h3>
-
-            <p class="work__problem">
-              Clinics, dental practices and beauty studios lose bookings to
-              missed messages and no-shows, because client conversations happen
-              on WhatsApp while their calendar lives somewhere else.
-            </p>
-
-            <p>
-              Rendo is a business and booking automation platform that handles
-              client messaging, bookings and appointment reminders through
-              WhatsApp — the channel these businesses and their customers
-              already use every day.
-            </p>
-
-            <ul class="work__features">
-              <li>Customer messaging through WhatsApp</li>
-              <li>Booking and appointment reminders</li>
-              <li>Business onboarding and waitlist</li>
-              <li>Automated workflow</li>
-            </ul>
-
-            <p class="work__role">Role — to be confirmed (Q5)</p>
-
-            <?php $pending([
-              'label' => 'Awaiting detail',
-              'body'  => 'Technology stack, current state, live and GitHub URLs, your personal role, and the hardest technical problem you solved.',
-              'ref'   => '03-OPEN-QUESTIONS · Q5',
-              'class' => 'u-mt-5',
-            ]); ?>
-
-            <div class="btn-group work__actions">
-              <a class="btn btn--secondary" href="<?= e(route_url('/work/rendo')) ?>">
-                View case study
-                <span class="btn__arrow" aria-hidden="true">&rarr;</span>
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </article>
-
-      <!-- PROJECT 2 — SCHOOL MANAGEMENT SYSTEM -->
-      <article class="work__item" data-reveal>
-        <div class="work__grid">
-
-          <div class="work__media">
-            <div class="frame">
-              <div class="frame__bar" aria-hidden="true">
-                <span class="frame__dot"></span><span class="frame__dot"></span><span class="frame__dot"></span>
-              </div>
-              <div class="frame__body">
-                <?php $pending([
-                  'label' => 'Awaiting asset',
-                  'title' => 'School Management System screenshot',
-                  'body'  => 'The report card output especially — it is the most technically impressive part of the system.',
-                  'ref'   => '03-OPEN-QUESTIONS · Q6',
-                ]); ?>
-              </div>
-            </div>
-          </div>
-
-          <div class="work__content">
-            <p class="t-eyebrow">Education · Full-stack web application</p>
-            <h3 class="t-display-3 work__title">School Management System</h3>
-
-            <p class="work__problem">
-              Secondary schools assemble termly results by hand — collecting
-              scores per subject, averaging them, ranking the class, and
-              transcribing everything onto report cards.
-            </p>
-
-            <p>
-              A full-stack platform built around secondary-school workflows,
-              covering students, teachers, classes, subjects, attendance,
-              scores and results — ending in automated report card generation
-              with class ranking.
-            </p>
-
-            <ul class="work__features">
-              <li>Attendance, scores, results and ranking</li>
-              <li>Automated report card generation</li>
-              <li>Role-based dashboards</li>
-              <li>Administrator, teacher, student and parent access</li>
-            </ul>
-
-            <div class="tag-list u-mt-5">
-              <?php foreach (['PHP', 'MySQL', 'JavaScript', 'HTML', 'CSS'] as $technology): ?>
-                <span class="tag"><?= e($technology) ?></span>
-              <?php endforeach; ?>
-            </div>
-
-            <?php $pending([
-              'label' => 'Awaiting detail',
-              'body'  => 'GitHub repository confirmation, live URL, screenshots, whether a real school uses it, and the ranking logic in your own words.',
-              'ref'   => '03-OPEN-QUESTIONS · Q6',
-              'class' => 'u-mt-5',
-            ]); ?>
-          </div>
-
-        </div>
-      </article>
-
+      <?php if ($featured === []): ?>
+        <?php $pending([
+          'label' => 'No published projects',
+          'title' => 'Projects are being added',
+          'body'  => 'Published projects appear here automatically. Nothing is hard-coded in this template.',
+          'ref'   => 'ProjectRepository::findPublishedForHome()',
+        ]); ?>
+      <?php else: ?>
+        <?php foreach ($featured as $index => $project): ?>
+          <?php require dirname(__DIR__) . '/components/project-featured.php'; ?>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </div>
   </div>
 </section>
@@ -319,21 +205,12 @@ $pending = static function (array $data): void {
     </header>
 
     <div class="skills__grid" data-reveal>
-      <?php
-      $skillGroups = [
-          'Frontend'  => ['HTML', 'CSS', 'JavaScript'],
-          'Backend'   => ['PHP'],
-          'Database'  => ['MySQL'],
-          'Tools'     => ['Git', 'GitHub', 'XAMPP'],
-          'Practices' => ['AI-assisted development', 'AI & automation exploration'],
-      ];
-      ?>
       <?php foreach ($skillGroups as $group => $skills): ?>
         <div class="skills__group">
           <h3 class="skills__group-title"><?= e($group) ?></h3>
           <ul class="skills__list">
             <?php foreach ($skills as $skill): ?>
-              <li><?= e($skill) ?></li>
+              <li><?= e($skill->name) ?></li>
             <?php endforeach; ?>
           </ul>
         </div>

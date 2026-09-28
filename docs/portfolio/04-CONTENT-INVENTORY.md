@@ -56,7 +56,7 @@ supplied, and none is verifiable.
 | Channel: WhatsApp | ✅ Verified |
 | Scope: customer messaging, booking, appointment reminders, business onboarding, waitlist, automated workflow | ✅ Verified |
 | Has a polished SaaS-style landing page | ✅ Verified |
-| Technology stack | ⬜ Outstanding (Q5) |
+| Technology stack | ⬜ Outstanding (Q5) — **Rendo has zero technology rows in the database as a result.** Nothing was assumed |
 | Current state (concept / landing live / functional) | ⬜ Outstanding (Q5) |
 | Live URL · GitHub URL | ⬜ Outstanding (Q5) |
 | Screenshots | ⬜ Outstanding (Q5) |

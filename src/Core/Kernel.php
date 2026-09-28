@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Domain\Media\MediaRepository;
+use App\Domain\Project\ProjectRepository;
 use App\Domain\Profile\ProfileRepository;
 use App\Domain\Settings\SettingsRepository;
+use App\Domain\Skill\SkillRepository;
 
 /**
  * Application bootstrap and request lifecycle.
@@ -50,6 +52,8 @@ final class Kernel
             MediaRepository::class    => $media,
             ProfileRepository::class  => new ProfileRepository($media),
             SettingsRepository::class => new SettingsRepository(),
+            ProjectRepository::class  => new ProjectRepository($media),
+            SkillRepository::class    => new SkillRepository(),
             View::class               => $this->view,
         ];
 
@@ -74,6 +78,8 @@ final class Kernel
                 $this->view,
                 $this->services[ProfileRepository::class],
                 $this->services[SettingsRepository::class],
+                $this->services[ProjectRepository::class],
+                $this->services[SkillRepository::class],
             );
 
             /** @var Response $response */

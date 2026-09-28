@@ -183,6 +183,64 @@ boolean comes back as a bool rather than `"1"`.
 The singleton is enforced by `CHECK (id = 1)` — verified to reject a second
 row — so it is a database guarantee rather than a convention.
 
+### 2.6b Project ordering: dense integers, not LexoRank
+
+**Decision.** `sort_order` is a dense integer; a reorder rewrites the affected
+rows in one transaction.
+
+**Alternatives.** Sparse integers with periodic compaction; fractional
+indexing; LexoRank (what Jira uses).
+
+**Why.** LexoRank makes a reorder O(1) instead of O(n) and never needs
+compaction. That matters for a backlog of thousands of issues reordered
+concurrently by many people. This is a portfolio: fewer than twenty rows,
+reordered occasionally by one person. Rewriting twenty integers in a single
+UPDATE is correct, obvious, and cannot drift or exhaust its gaps — and sparse
+integers only postpone exhaustion rather than removing it.
+
+**Trade-off.** A reorder touches every row between the old and new position
+instead of one. At this scale that is a single small UPDATE. Choosing
+LexoRank here would be sophistication for its own sake.
+
+### 2.6c Unique slugs alongside soft delete
+
+**Decision.** A generated column, `alive`, that is `1` while the row is live
+and `NULL` once soft-deleted, with `UNIQUE (slug, alive)`.
+
+**The problem.** A plain `UNIQUE (slug)` makes a slug unusable forever once a
+project is soft-deleted, because the deleted row still occupies it. PostgreSQL
+solves this with a partial index; MySQL and MariaDB have none.
+
+**Why this works.** A unique index permits many NULLs, so uniqueness applies
+only to live rows. **Verified on MariaDB 10.11:** a duplicate live slug is
+rejected, a slug is reusable after soft deletion, and several soft-deleted
+rows may share one slug.
+
+**Trade-off.** A column that exists only to serve an index, and the trick
+needs a comment to be readable — which the migration carries.
+
+### 2.6d Publication enforced in the repository, not in templates
+
+Public read methods are named `findPublished*`; the admin methods arriving in
+Phase 6 will be `findAll*`. **Two distinct names rather than an
+`$includeDrafts` flag**, because a flag has a default and a default is exactly
+how a draft leaks. A template cannot leak a draft it was never handed, and a
+reviewer can grep the public controllers for `findAll` to prove none is there.
+
+**Verified:** setting a project to `draft`, to `archived`, or soft-deleting it
+each returns a genuine 404 on its URL and removes it from the home page.
+Restoring it returns 200.
+
+### 2.6e Batched child queries
+
+Every list method fetches its children — technologies, sections, features,
+media variants — in one query per child type, using `WHERE parent_id IN (…)`.
+
+**Measured** with the MariaDB general log: the home page costs **5 queries**
+with two projects and **5 queries** with six. Constant, not linear. The
+obvious per-project loop would have been an N+1 the first time two projects
+rendered with technologies.
+
 ### 2.7 Forward-only SQL migrations
 
 **Decision.** Numbered `.sql` files, applied in order, recorded in
@@ -366,4 +424,5 @@ development server and Apache, and performs the security checks. Writes
 | Google Fonts widens the CSP | Two hosts allowed explicitly; Phase 9 self-hosts and removes them | Tracked |
 | Migration runner's SQL splitter | Quote- and comment-aware; no stored programs in the schema. Extend `splitStatements()` if that changes | Bounded |
 | `root` used as the database user | `config.example.php` documents a least-privilege user | Documented, not enforced |
-| No automated tests | Phase 2 verification was manual and browser-based. A test suite belongs with the first business logic worth testing — the upload validator in Phase 5 | Open |
+| No automated tests | Verification is manual and browser-based. A test suite belongs with the first business logic worth testing — the upload validator in Phase 5 | Open |
+| Case-study prose is seeded, not authored | The overview/problem/solution text is Phase 1 wording built from supplied scope. Editable from the CMS in Phase 6 | Tracked |

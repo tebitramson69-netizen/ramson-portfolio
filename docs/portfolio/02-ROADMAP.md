@@ -3,14 +3,14 @@
 Ten phases. Each is independently valuable and ends with something demonstrably working — no
 phase leaves the project in a broken state.
 
-**Current phase: 2 — complete. Awaiting confirmation to begin Phase 3.**
+**Current phase: 3 — complete. Awaiting confirmation to begin Phase 4.**
 
 | Phase | Name | Status |
 |---|---|---|
 | 0 | Documentation & Foundation | ✅ Complete |
 | 1 | Design Foundation | ✅ Complete |
 | 2 | Application Skeleton | ✅ Complete |
-| 3 | Database & Read Path | ⬜ Not started |
+| 3 | Database & Read Path | ✅ Complete |
 | 4 | Authentication & Admin Shell | ⬜ Not started |
 | 5 | Profile Management & Media ⭐ | ⬜ Not started |
 | 6 | Projects & Case Studies ⭐ | ⬜ Not started |
@@ -111,12 +111,27 @@ their own, so the site does not ship two URLs for the same text.
 
 ---
 
-## Phase 3 — Database & Read Path ⬜
+## Phase 3 — Database & Read Path ✅
 
-Migrations for all entities in PRD §R · seeds · the repository layer · the public site reads
-**everything** from the database.
+**Delivered.** Seven new tables — `skill_categories`, `skills`, `projects`,
+`project_sections`, `project_features`, `project_technologies`, `project_images` — plus the
+repository layer and the public read path. The home page's selected work, technology strip and
+skills section, and the entire case-study page, all render from the database. The hard-coded
+Rendo template is gone.
 
-**Deliverable:** a fully database-driven public site (edited via SQL for now).
+**Key decisions** (full reasoning in `05-ARCHITECTURE.md` §2.6b–2.6e): dense integer ordering
+rather than LexoRank; a generated `alive` column so soft-deleted slugs are reusable; sections
+stored one row per section; publication filtering in the repository via `findPublished*`
+rather than a flag.
+
+**Measured:** home page 5 queries, case study 7, 404 two — all inside the ≤8 budget. Query
+count is constant as projects are added, so there is no N+1.
+
+**Content integrity.** Rendo carries **no technology tags**, because its stack has never been
+supplied. Both projects have no role, status, GitHub or live URL for the same reason — each
+renders its designed pending state naming exactly what is missing.
+
+**Deliverable:** a fully database-driven public site (edited via SQL for now). **Done.**
 
 ---
 
