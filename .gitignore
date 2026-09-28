@@ -1,0 +1,167 @@
+# ============================================================
+#  Ramson Titih — Portfolio
+#  .gitignore
+# ============================================================
+#  Rule of thumb: never commit credentials, uploads, build
+#  output, logs, or anything a teammate could regenerate.
+# ============================================================
+
+# ------------------------------------------------------------
+# Local environment & configuration  (NEVER COMMIT)
+# ------------------------------------------------------------
+# config/local.example.php IS committed as the template.
+# config/local.php holds real credentials and is not.
+config/local.php
+config/*.local.php
+.env
+.env.*
+!.env.example
+*.local
+secrets.php
+credentials.php
+
+# ------------------------------------------------------------
+# PHP / Composer
+# ------------------------------------------------------------
+/vendor/
+composer.phar
+# composer.lock IS committed — it pins exact dependency versions.
+.php-cs-fixer.cache
+.php_cs.cache
+.phpunit.result.cache
+/.phpunit.cache/
+phpstan.neon.local
+/build/
+/coverage/
+
+# ------------------------------------------------------------
+# Runtime storage  (generated at runtime, never source)
+# ------------------------------------------------------------
+/storage/cache/*
+!/storage/cache/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
+/storage/sessions/*
+!/storage/sessions/.gitkeep
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+
+# ------------------------------------------------------------
+# User-uploaded & generated public files
+# ------------------------------------------------------------
+# Profile photos, project screenshots and CV files are managed
+# through the CMS and live in the database + filesystem.
+# They are DATA, not source, and must never be committed.
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/.htaccess
+/public/sitemap.xml
+/public/assets/css/*.min.css
+/public/assets/js/*.min.js
+/public/assets/build/
+
+# ------------------------------------------------------------
+# Database
+# ------------------------------------------------------------
+# database/migrations/ and database/schema.sql ARE committed.
+# Dumps, backups and local data are not.
+*.sql.gz
+*.sql.zip
+*.sqlite
+*.sqlite3
+*.db
+/database/backups/
+/database/dumps/
+*-backup-*.sql
+dump.sql
+backup.sql
+
+# ------------------------------------------------------------
+# XAMPP / Apache / local server artefacts
+# ------------------------------------------------------------
+.htaccess.local
+.htpasswd
+error_log
+access_log
+php_error_log
+php_errors.log
+/logs/
+*.pid
+
+# ------------------------------------------------------------
+# Windows
+# ------------------------------------------------------------
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.stackdump
+[Dd]esktop.ini
+
+# ------------------------------------------------------------
+# macOS / Linux  (in case of a future machine)
+# ------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+*~
+.fuse_hidden*
+.directory
+.nfs*
+
+# ------------------------------------------------------------
+# VS Code
+# ------------------------------------------------------------
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+*.code-workspace
+.history/
+
+# ------------------------------------------------------------
+# Other editors & IDEs
+# ------------------------------------------------------------
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+nbproject/
+.buildpath
+.project
+.settings/
+
+# ------------------------------------------------------------
+# Node  (only if a build step is added later)
+# ------------------------------------------------------------
+/node_modules/
+npm-debug.log*
+yarn-error.log*
+.npm
+.cache/
+
+# ------------------------------------------------------------
+# Temporary & archive files
+# ------------------------------------------------------------
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.orig
+*.rej
+*.log
+/tmp/
+/temp/
+*.zip
+*.rar
+*.7z
+*.tar
+*.tar.gz
