@@ -1685,3 +1685,34 @@ h1, h2, h3, h4 {
 @media (max-width: 767px) {
   .cs-hero { padding-top: calc(var(--header-h) + var(--space-7)); }
 }
+
+
+/* ==========================================================================
+   12. SPACING UTILITIES
+
+   Added in Phase 2. The Phase 1 static pages used `style="margin-top: …"`
+   attributes in a handful of places. Inline style attributes are blocked by
+   a Content-Security-Policy without 'unsafe-inline', and weakening the policy
+   to keep six attributes would be the wrong trade. These classes replace them
+   exactly — no visual change, a materially stronger CSP.
+   ========================================================================== */
+
+.u-mt-2 { margin-top: var(--space-2); }
+.u-mt-3 { margin-top: var(--space-3); }
+.u-mt-4 { margin-top: var(--space-4); }
+.u-mt-5 { margin-top: var(--space-5); }
+.u-mt-6 { margin-top: var(--space-6); }
+.u-mt-7 { margin-top: var(--space-7); }
+.u-text-left { text-align: left; }
+
+/* Footer strip on the case-study page: the bottom row without the divider it
+   carries on the home page, where it follows a full footer grid. */
+.footer__bottom--bare {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Error pages — centred within the standard section rhythm. */
+.error-page { padding-top: calc(var(--header-h) + var(--section-y)); }
+.error-page .btn-group { flex-wrap: wrap; }

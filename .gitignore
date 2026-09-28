@@ -11,6 +11,7 @@
 # ------------------------------------------------------------
 # config/local.example.php IS committed as the template.
 # config/local.php holds real credentials and is not.
+config/config.php
 config/local.php
 config/*.local.php
 .env

@@ -1,0 +1,4 @@
+# Defence in depth. storage/ sits OUTSIDE the document root, so this file
+# should never be consulted. It exists in case the project is ever deployed
+# with the repository root as the document root by mistake.
+Require all denied

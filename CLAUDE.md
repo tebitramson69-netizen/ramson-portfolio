@@ -1,25 +1,27 @@
-# Project rules — Ramson Titih Portfolio
+# Project rules — Tebit Ramson Titih Portfolio
 
 Read `docs/portfolio/00-PRD-AND-PLAN.md` before changing anything structural.
 
 ## Hard rules
 
-1. **No invented content.** No achievements, clients, testimonials, statistics,
+1. **The full name is "Tebit Ramson Titih".** Never display "Ramson Titih" as the full name.
+   "RT" remains the approved fallback monogram and is stored on the profile row.
+2. **No invented content.** No achievements, clients, testimonials, statistics,
    certifications, user counts, revenue or business results. Every public claim must appear as
    ✅ Verified in `docs/portfolio/04-CONTENT-INVENTORY.md`. If it is not there, ask — do not
    write it.
-2. **CareerForge AI is excluded** from the portfolio: not in templates, seeds, screenshots,
+3. **CareerForge AI is excluded** from the portfolio: not in templates, seeds, screenshots,
    copy or commit messages. (It is named in the docs only to record the exclusion.)
-3. **No image filename in source.** Every image resolves through the `media` table.
+4. **No image filename in source.** Every image resolves through the `media` table.
    `grep` for an image filename in `public/` or `src/` must return nothing.
-4. **PDO prepared statements for 100% of queries.** No string interpolation of user input into
+5. **PDO prepared statements for 100% of queries.** No string interpolation of user input into
    SQL, ever — not even integers.
-5. **Every output escaped** through the `e()` helper, in the correct context (HTML, attribute,
+6. **Every output escaped** through the `e()` helper, in the correct context (HTML, attribute,
    URL, JS).
-6. **Every mutation is POST + CSRF token.** No GET ever changes state.
-7. **No framework.** No Laravel, React, Bootstrap or Tailwind. Vanilla PHP, JS and hand-written
+7. **Every mutation is POST + CSRF token.** No GET ever changes state.
+8. **No framework.** No Laravel, React, Bootstrap or Tailwind. Vanilla PHP, JS and hand-written
    CSS, as decided in PRD §S.1.
-8. **Only `public/` is web-accessible.** Never place anything servable outside it.
+9. **Only `public/` is web-accessible.** Never place anything servable outside it.
 
 ## Design invariants
 
@@ -34,6 +36,15 @@ Read `docs/portfolio/00-PRD-AND-PLAN.md` before changing anything structural.
 
 Full token values: `docs/portfolio/01-DESIGN-SYSTEM.md`.
 Things that would make this look like a student template: PRD §U.
+
+## Architecture
+
+- Only `public/` is web-accessible. Apache's document root is `public/`, never the repo root.
+- Every image is a foreign key to `media`; `templates/components/portrait.php` is the only
+  place that turns a photo into markup.
+- Controllers contain no SQL. Reads go through a repository.
+- `config/config.php` is git-ignored and holds the only credentials.
+- Decisions, alternatives and trade-offs: `docs/portfolio/05-ARCHITECTURE.md`.
 
 ## Workflow
 

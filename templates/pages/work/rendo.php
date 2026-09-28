@@ -1,73 +1,27 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>Rendo — Case Study | Ramson Titih</title>
-<meta name="description" content="Rendo: a business and booking automation platform helping clinics, dental practices and beauty studios handle client messaging, bookings and appointment reminders through WhatsApp.">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-
-<link rel="stylesheet" href="assets/css/main.css">
-<script src="assets/js/app.js" defer></script>
-</head>
-
-<body>
-
-<a class="skip-link" href="#main">Skip to content</a>
-
+<?php
+/**
+ * Case study — Rendo.
+ *
+ * PHASE 2 SCOPE: the approved Phase 1 markup, unchanged in appearance, moved
+ * into the view layer. The routing and the 404 path around it are real; the
+ * content becomes database-driven in Phase 6 when the projects and
+ * project_sections tables exist. Nothing here is invented — the sections
+ * awaiting input still render the designed pending state.
+ *
+ * @var \App\Domain\Profile\Profile|null $profile
+ */
+?>
 <div class="progress" aria-hidden="true"></div>
 
-<header class="header" data-header>
-  <div class="container header__inner">
-    <a class="brand" href="index.html">
-      Ramson Titih<span class="brand__mark" aria-hidden="true">.</span>
-    </a>
-    <nav class="nav" aria-label="Primary">
-      <ul class="nav__list">
-        <li><a class="nav__link" href="index.html#work">Work</a></li>
-        <li><a class="nav__link" href="index.html#about">About</a></li>
-        <li><a class="nav__link" href="index.html#services">Services</a></li>
-        <li><a class="nav__link" href="index.html#contact">Contact</a></li>
-      </ul>
-      <a class="btn btn--secondary btn--sm" href="index.html#contact">Get in touch</a>
-      <button class="nav-toggle" type="button"
-              aria-expanded="false" aria-controls="nav-panel" data-nav-toggle>
-        <span class="u-visually-hidden">Menu</span>
-        <span class="nav-toggle__bars" aria-hidden="true"></span>
-      </button>
-    </nav>
-  </div>
-</header>
-
-<div class="nav__panel" id="nav-panel" data-nav-panel>
-  <ul class="nav__list">
-    <li><a class="nav__link" href="index.html#work">Work</a></li>
-    <li><a class="nav__link" href="index.html#about">About</a></li>
-    <li><a class="nav__link" href="index.html#services">Services</a></li>
-    <li><a class="nav__link" href="index.html#contact">Contact</a></li>
-  </ul>
-  <a class="btn btn--primary" href="index.html#contact">Get in touch</a>
-</div>
-
-
-<main id="main">
-
-<!-- ======================================================================
-     CASE STUDY HERO
-     ====================================================================== -->
 <article>
 <header class="cs-hero">
   <div class="container">
 
-    <a class="cs-hero__back" href="index.html#work">
+    <a class="cs-hero__back" href="<?= e(route_url('/')) ?>#work">
       <span aria-hidden="true">&larr;</span> All work
     </a>
 
-    <p class="t-eyebrow" style="margin-top: var(--space-6);">
+    <p class="t-eyebrow u-mt-6">
       Business automation · SaaS
     </p>
 
@@ -199,7 +153,7 @@
               bookings and reminders run through WhatsApp as a single workflow,
               with onboarding and a waitlist handling the business side.
             </p>
-            <div class="pending" style="margin-top: var(--space-6);">
+            <div class="pending u-mt-6">
               <p class="pending__label">Awaiting detail</p>
               <p class="pending__body">
                 How the automation is actually implemented — this is where the
@@ -313,18 +267,18 @@
           <div class="card card--link cs-nav__item">
             <p class="cs-nav__dir">Next project</p>
             <h2 class="t-heading-1 cs-nav__title">
-              <a href="case-study.html">School Management System</a>
+              <a href="<?= e(route_url('/work/rendo')) ?>">School Management System</a>
             </h2>
-            <p class="t-caption" style="margin-top: var(--space-2);">
+            <p class="t-caption u-mt-2">
               Education · Full-stack web application
             </p>
           </div>
           <div class="card cs-nav__item">
             <p class="cs-nav__dir">Get in touch</p>
             <h2 class="t-heading-1 cs-nav__title">
-              <a href="index.html#contact">Start a conversation</a>
+              <a href="<?= e(route_url('/')) ?>#contact">Start a conversation</a>
             </h2>
-            <p class="t-caption" style="margin-top: var(--space-2);">
+            <p class="t-caption u-mt-2">
               Open to select projects &amp; opportunities
             </p>
           </div>
@@ -336,17 +290,11 @@
 </div>
 </article>
 
-</main>
-
-
 <footer class="footer">
   <div class="container">
-    <div class="footer__bottom" style="margin-top:0; border-top:0; padding-top:0;">
-      <p>&copy; <span data-year>2026</span> Ramson Titih. All rights reserved.</p>
-      <p><a class="t-link" href="index.html">Back to portfolio</a></p>
+    <div class="footer__bottom footer__bottom--bare">
+      <p>&copy; <span data-year><?= e(date('Y')) ?></span> <?= e($profile?->fullName ?? '') ?>. All rights reserved.</p>
+      <p><a class="t-link" href="<?= e(route_url('/')) ?>">Back to portfolio</a></p>
     </div>
   </div>
 </footer>
-
-</body>
-</html>

@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use App\Core\Response;
+use App\Core\Seo;
+use App\Core\View;
+use App\Domain\Profile\ProfileRepository;
+use App\Domain\Settings\SettingsRepository;
+
+/**
+ * Shared controller plumbing.
+ *
+ * Controllers assemble a view model and hand it to a template. They contain
+ * no SQL: every read goes through a repository, which is what keeps the
+ * published/unpublished distinction enforceable in one place once projects
+ * arrive in Phase 3.
+ */
+abstract class Controller
+{
+    public function __construct(
+        protected readonly View $view,
+        protected readonly ProfileRepository $profiles,
+        protected readonly SettingsRepository $settings,
+    ) {
+    }
+
+    /** @param array<string, mixed> $data */
+    protected function page(string $template, Seo $meta, array $data = [], bool $isHome = false): Response
+    {
+        $html = $this->view->render($template, $data + [
+            'meta'     => $meta,
+            'profile'  => $this->profiles->current(),
+            'siteName' => $this->settings->string(
+                'site_title',
+                'Tebit Ramson Titih — Software Engineer & Full-Stack Developer'
+            ),
+            'isHome'   => $isHome,
+        ]);
+
+        return Response::html($html);
+    }
+}

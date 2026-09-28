@@ -15,7 +15,8 @@ claim may only be published once it is marked ✅ **Verified** — supplied by R
 
 | Claim | Status | Source |
 |---|---|---|
-| Name: Ramson Titih | ✅ Verified | Supplied |
+| Full name: **Tebit Ramson Titih** | ✅ Verified | Supplied. Corrected in Phase 2 — "Ramson Titih" must NOT be used as the displayed full name |
+| Fallback monogram: RT | ✅ Verified | Explicitly approved. Stored on the profile row, because derived initials would give "TT" |
 | Title: Software Engineer / Full-Stack Developer | ✅ Verified | Supplied |
 | HND Software Engineering **student** | ✅ Verified | Supplied — note "student", not graduate |
 | Saint Louis University Institute Douala | ✅ Verified | Supplied |

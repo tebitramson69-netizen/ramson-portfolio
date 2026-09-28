@@ -3,13 +3,13 @@
 Ten phases. Each is independently valuable and ends with something demonstrably working — no
 phase leaves the project in a broken state.
 
-**Current phase: 1 — complete. Awaiting confirmation to begin Phase 2.**
+**Current phase: 2 — complete. Awaiting confirmation to begin Phase 3.**
 
 | Phase | Name | Status |
 |---|---|---|
 | 0 | Documentation & Foundation | ✅ Complete |
 | 1 | Design Foundation | ✅ Complete |
-| 2 | Application Skeleton | ⬜ Not started |
+| 2 | Application Skeleton | ✅ Complete |
 | 3 | Database & Read Path | ⬜ Not started |
 | 4 | Authentication & Admin Shell | ⬜ Not started |
 | 5 | Profile Management & Media ⭐ | ⬜ Not started |
@@ -88,14 +88,26 @@ at the end of a line.
 
 ---
 
-## Phase 2 — Application Skeleton ⬜
+## Phase 2 — Application Skeleton ✅
 
-Folder structure · front controller · router · config layer · PDO wrapper · view renderer with
-the `e()` helper · error handler · security-headers middleware · `public/.htaccess` ·
-`composer.json` · `config/local.example.php` · 404/500 pages · Phase 1 HTML converted into
-templates and partials.
+Delivered: front controller · pattern router · config layer · lazy PDO · plain-PHP view
+layer with explicit escaping · error handler · security headers with a strict CSP ·
+`public/.htaccess` · `composer.json` · `config/config.example.php` · styled 404/405/500 ·
+Phase 1 HTML converted into layouts, partials, components and pages.
 
-**Deliverable:** the static site running through the real application architecture.
+Also in Phase 2, beyond the skeleton: the database foundation (`media`, `media_variants`,
+`profile`, `settings`, `schema_migrations`), a forward-only migration runner with seeds, and
+the profile read path wired end to end so the hero, about section, footer, metadata and
+JSON-LD all come from the database.
+
+**Full reasoning, with alternatives and trade-offs:** `05-ARCHITECTURE.md`.
+
+**Deferred deliberately.** Projects and their case-study tables are Phase 3, not Phase 2:
+creating five tables before their read path exists would be scaffolding rather than
+architecture. `/about` and `/contact` stay as home-page sections until they have content of
+their own, so the site does not ship two URLs for the same text.
+
+**Deliverable:** the static site running through the real application architecture. **Done.**
 
 ---
 

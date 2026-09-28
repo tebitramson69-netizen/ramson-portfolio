@@ -2,7 +2,7 @@
 
 Personal professional portfolio website with a secure, self-hosted CMS.
 
-**Software Engineer / Full-Stack Developer — Cameroon**
+**Tebit Ramson Titih · Software Engineer / Full-Stack Developer — Cameroon**
 
 > I build practical web systems that turn manual workflows into simple digital experiences.
 
@@ -12,10 +12,12 @@ Full-stack development · PHP · JavaScript · MySQL · AI & Automation
 
 ## Status
 
-**Phase 0 — Documentation & foundation.** No application code yet.
+**Phase 2 — Application architecture and database foundation.** Complete.
 
-This repository currently contains the product requirements, architecture plan
-and design-system specification. Implementation begins at Phase 1.
+The public site now runs as a server-rendered PHP application: front
+controller, router, repositories, view layer, security headers and a database
+foundation with migrations. Identity content comes from the database. The CMS,
+authentication and media uploads belong to Phases 4–6.
 
 See [`docs/portfolio/02-ROADMAP.md`](docs/portfolio/02-ROADMAP.md) for the
 current phase and what ships next.
@@ -71,6 +73,7 @@ honest counter-argument.
 | [`docs/portfolio/02-ROADMAP.md`](docs/portfolio/02-ROADMAP.md) | Ten phases with deliverables and status |
 | [`docs/portfolio/03-OPEN-QUESTIONS.md`](docs/portfolio/03-OPEN-QUESTIONS.md) | Information still needed, grouped by what it blocks |
 | [`docs/portfolio/04-CONTENT-INVENTORY.md`](docs/portfolio/04-CONTENT-INVENTORY.md) | Every content claim, marked verified or outstanding |
+| [`docs/portfolio/05-ARCHITECTURE.md`](docs/portfolio/05-ARCHITECTURE.md) | Phase 2 architecture: decisions, alternatives, trade-offs, setup |
 
 ---
 
@@ -95,33 +98,35 @@ ramson-portfolio/
 
 ---
 
-## Local development (from Phase 2 onward)
-
-Not yet applicable — there is no application code. When Phase 2 lands:
+## Local development
 
 ```bash
 # 1. Clone into the XAMPP web root
 cd C:\xampp1\htdocs
 git clone https://github.com/tebitramson69-netizen/ramson-portfolio.git
-
-# 2. Install dependencies
 cd ramson-portfolio
-composer install
 
-# 3. Create the local config (never committed)
-copy config\local.example.php config\local.php
-#    then edit config\local.php with your database credentials
+# 2. Create the local config — git-ignored, the only place credentials live
+copy config\config.example.php config\config.php
+#    then edit it with your database name, user and password
 
-# 4. Create the database and run migrations
-#    (see docs/portfolio/00-PRD-AND-PLAN.md §R)
+# 3. Create the database, then run migrations and seeds
+php bin/migrate.php --seed
+php bin/migrate.php --status
 
-# 5. Create the admin account
-php scripts/create-admin.php
+# 4. Serve it
+#    Either point an Apache virtual host at public/ …
+#    … or run without Apache:
+php -S localhost:8000 -t public bin/dev-server.php
 ```
 
-**Apache note:** the document root must point at `public/`, not the project
-root. On XAMPP this means a virtual host — serving the project root directly
-would expose `config/`, `src/` and `storage/` over HTTP.
+No `composer install` is needed: the project has no runtime dependencies yet
+and ships a small PSR-4 autoloader. Composer takes over automatically once
+`vendor/` exists.
+
+> **Apache note.** The document root must be `public/`, not the project root.
+> On XAMPP that means a virtual host. Serving the project root would expose
+> `config/`, `src/`, `storage/` and `.git` over HTTP.
 
 ---
 
