@@ -70,6 +70,16 @@ function Assert-PageContent {
     $code = if ($Page) { [int] $Page.Code } else { 0 }
     $body = if ($Page -and $Page.Body) { [string] $Page.Body } else { '' }
 
+    # Two independent gates, because ONE is not enough. An emptiness check
+    # alone still lets a transport failure through whenever the caller puts
+    # something in Body; a status check alone still lets a 200-with-empty-body
+    # through. Assertions run only when the response is genuinely usable.
+    if ($code -lt 200 -or $code -ge 400) {
+        $why = if ($Page -and $Page.Error) { $Page.Error } else { "HTTP $code" }
+        Report "$Label content" 'FAIL' "no usable response ($why) - assertions NOT run, not passed"
+        return
+    }
+
     if ([string]::IsNullOrWhiteSpace($body)) {
         Report "$Label content" 'FAIL' "empty body (HTTP $code) - assertions NOT run, not passed"
         return
@@ -102,7 +112,7 @@ function Assert-PageContent {
 function Get-Status([string] $Url) {
     try {
         $r = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 15 -MaximumRedirection 0 -ErrorAction Stop
-        return [pscustomobject]@{ Code = [int] $r.StatusCode; Body = $r.Content; Headers = $r.Headers }
+        return [pscustomobject]@{ Code = [int] $r.StatusCode; Body = $r.Content; Headers = $r.Headers; Error = '' }
     } catch {
         $resp = $_.Exception.Response
         if ($resp -and $resp.StatusCode) {
@@ -111,9 +121,13 @@ function Get-Status([string] $Url) {
                 $sr = New-Object System.IO.StreamReader($resp.GetResponseStream())
                 $body = $sr.ReadToEnd(); $sr.Close()
             } catch { }
-            return [pscustomobject]@{ Code = [int] $resp.StatusCode; Body = $body; Headers = $null }
+            return [pscustomobject]@{ Code = [int] $resp.StatusCode; Body = $body; Headers = $null; Error = '' }
         }
-        return [pscustomobject]@{ Code = 0; Body = $_.Exception.Message; Headers = $null }
+        # The failure message goes in its own field. Putting it in Body makes
+        # a connection failure look like page content: the body is then
+        # non-empty, so an emptiness guard does not trip, and every
+        # "-notmatch" assertion passes against an error string.
+        return [pscustomobject]@{ Code = 0; Body = ''; Headers = $null; Error = $_.Exception.Message }
     }
 }
 
