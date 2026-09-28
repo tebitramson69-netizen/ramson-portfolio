@@ -3,13 +3,29 @@
 #  Only this directory is exposed by the web server.
 # ---------------------------------------------------------------------------
 
+# The project root denies everything (see ../.htaccess). This is the one
+# directory that is meant to be reachable, so it grants access back.
+Require all granted
+
 DirectoryIndex index.php
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Respect a subdirectory install (e.g. http://localhost/ramson-portfolio/public)
-    RewriteBase /
+    # NO RewriteBase.
+    #
+    # In .htaccess (per-directory) context, mod_rewrite resolves a relative
+    # substitution against the directory the .htaccess sits in. Letting Apache
+    # work that out is what makes BOTH layouts work from one file:
+    #
+    #   vhost      DocumentRoot -> .../public        http://portfolio.test/work/rendo
+    #   XAMPP      DocumentRoot -> .../htdocs        http://localhost/ramson-portfolio/public/work/rendo
+    #
+    # Setting "RewriteBase /" pins the base to the SERVER root, so
+    # "RewriteRule ^ index.php" becomes /index.php — the document root's own
+    # index, not this project's. Verified on Apache 2.4.58: with RewriteBase /
+    # a request for /ramson-portfolio/public/work/rendo was served by
+    # htdocs/index.php.
 
     # Redirect trailing slashes on non-directories: /work/rendo/ -> /work/rendo
     RewriteCond %{REQUEST_FILENAME} !-d

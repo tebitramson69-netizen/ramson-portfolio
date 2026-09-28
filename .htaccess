@@ -1,0 +1,17 @@
+# ---------------------------------------------------------------------------
+#  PROJECT ROOT GUARD
+#
+#  The intended deployment points the document root at public/, in which case
+#  Apache never reads this file. It exists for the OTHER common layout — the
+#  project dropped into htdocs and reached at
+#  http://localhost/ramson-portfolio/public — where the document root sits
+#  ABOVE the project and every file here is otherwise served.
+#
+#  Verified on Apache 2.4.58: without this file, /ramson-portfolio/.git/config
+#  returned 200 and served the repository configuration. .git exposure leaks
+#  the entire source history, so this is denied at the root and re-granted
+#  only inside public/ (see public/.htaccess).
+# ---------------------------------------------------------------------------
+
+Require all denied
+Options -Indexes -MultiViews

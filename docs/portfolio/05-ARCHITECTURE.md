@@ -40,14 +40,39 @@ ramson-portfolio/
 └── docs/portfolio/
 ```
 
-Every non-public directory also carries a `Require all denied` `.htaccess`.
-That is defence in depth for the specific, likely mistake of pointing the
-document root at the repository root instead of `public/`.
+The project **root** carries `Require all denied`, and `public/.htaccess`
+grants access back for the one directory that is meant to be reachable. Every
+non-public directory carries its own deny-all as well.
 
-> **Apache setup.** The document root must be `public/`. On XAMPP that means a
-> virtual host. Serving the project root would expose `config/`, `src/`,
-> `storage/` and `.git` — the `.htaccess` guards would then be the only thing
-> standing between a visitor and the database password.
+### Two supported layouts, one set of files
+
+| Layout | DocumentRoot | URL |
+|---|---|---|
+| Virtual host *(preferred)* | `…/ramson-portfolio/public` | `http://portfolio.test/work/rendo` |
+| Subdirectory *(XAMPP default)* | `…/htdocs` | `http://localhost/ramson-portfolio/public/work/rendo` |
+
+Both are **verified on Apache 2.4.58** with `mod_rewrite` and `mod_headers`.
+
+**`public/.htaccess` must not set `RewriteBase`.** In per-directory context
+mod_rewrite resolves a relative substitution against the directory the
+`.htaccess` sits in; letting Apache determine that is what makes one file work
+for both layouts. An earlier version set `RewriteBase /`, which pins the base
+to the *server* root — so `RewriteRule ^ index.php` became `/index.php`, the
+document root's own index rather than the project's. Measured: a request for
+`/ramson-portfolio/public/work/rendo` was served by `htdocs/index.php`.
+
+**`public/uploads/.htaccess` must not rely on `php_flag`.** That directive
+only exists when mod_php is loaded. On a PHP-FPM or CGI host it is an invalid
+directive and Apache answers *every* request in the directory with 500 —
+measured on Apache 2.4.58 without mod_php. Execution is therefore denied by
+filename with `<FilesMatch> … Require all denied`, which holds under every PHP
+SAPI, with `php_flag` kept inside `<IfModule>` as belt and braces.
+
+> **Apache setup.** Pointing the document root at `public/` remains the
+> preferred deployment. The root guard exists because the subdirectory layout
+> is what XAMPP does by default, and without it `/<project>/.git/config` is
+> served — measured at 200 before the guard was added. `.git` exposure leaks
+> the entire source history.
 
 ---
 
@@ -317,6 +342,18 @@ php bin/migrate.php --status
 php -S localhost:8000 -t public bin/dev-server.php
 ```
 
+### Verifying a local Windows/XAMPP install
+
+```powershell
+powershell -ExecutionPolicy Bypass -File bin\verify-local.ps1
+```
+
+Discovers the toolchain, checks configuration without printing secrets,
+creates the database if it is missing (`IF NOT EXISTS` only — it never drops
+or resets one), runs migrations and seeds, exercises every route on both the
+development server and Apache, and performs the security checks. Writes
+`storage/logs/verify-local-report.txt`.
+
 ---
 
 ## 6. Residual risks
@@ -324,7 +361,8 @@ php -S localhost:8000 -t public bin/dev-server.php
 | Risk | Mitigation | Status |
 |---|---|---|
 | A forgotten `e()` becomes XSS | One-character helper; `e_url()`/`e_js()` for other contexts; strict CSP as a second layer | **Largest residual risk.** Accepted with mitigations |
-| Document root pointed at the repo root | `Require all denied` in every non-public directory; documented above | Mitigated |
+| Document root pointed at the repo root | Root `Require all denied` + per-directory guards; both layouts tested on Apache 2.4.58 | Mitigated, verified |
+| `.htaccess` behaviour on XAMPP's Apache (Windows) | Verified on Apache 2.4.58 (Linux). Same mod_rewrite semantics, but not the same build — run `bin/verify-local.ps1` | Verify locally |
 | Google Fonts widens the CSP | Two hosts allowed explicitly; Phase 9 self-hosts and removes them | Tracked |
 | Migration runner's SQL splitter | Quote- and comment-aware; no stored programs in the schema. Extend `splitStatements()` if that changes | Bounded |
 | `root` used as the database user | `config.example.php` documents a least-privilege user | Documented, not enforced |

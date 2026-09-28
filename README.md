@@ -120,6 +120,12 @@ php bin/migrate.php --status
 php -S localhost:8000 -t public bin/dev-server.php
 ```
 
+Verify the whole install in one command (Windows/XAMPP):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File bin\verify-local.ps1
+```
+
 No `composer install` is needed: the project has no runtime dependencies yet
 and ships a small PSR-4 autoloader. Composer takes over automatically once
 `vendor/` exists.

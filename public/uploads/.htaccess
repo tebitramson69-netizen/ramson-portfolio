@@ -1,9 +1,28 @@
 # Uploaded media is served from here as static files.
 # Nothing in this directory may ever be executed.
-php_flag engine off
+#
+# Access is DENIED by filename rather than by turning the PHP engine off,
+# because `php_flag` only exists when mod_php is loaded. On a PHP-FPM or CGI
+# host it is an invalid directive and Apache answers every request in this
+# directory with 500 — verified on Apache 2.4.58 without mod_php. Denying the
+# files outright works under every PHP SAPI.
+<FilesMatch "(?i)\.(php|phtml|phps|php[0-9]|pht|phar|inc|cgi|pl|py|sh|bat|exe|htaccess|htpasswd)$">
+    Require all denied
+</FilesMatch>
+
+# Belt and braces where mod_php IS present (XAMPP's default).
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule php_module>
+    php_flag engine off
+</IfModule>
+
 RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phps
 RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phps
+
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options "nosniff"
 </IfModule>
+
 Options -Indexes -ExecCGI
