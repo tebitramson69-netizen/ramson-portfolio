@@ -1,0 +1,106 @@
+/* ==========================================================================
+   styleguide.css
+   Styles for the design-system reference page ONLY.
+   Never shipped with the public site — this file exists so the style guide
+   can present specimens without polluting main.css.
+   ========================================================================== */
+
+.sg-header {
+  padding-top: var(--space-9);
+  padding-bottom: var(--space-7);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.sg-section { padding-block: var(--space-8); border-bottom: 1px solid var(--border-subtle); }
+.sg-section:last-child { border-bottom: 0; }
+
+.sg-section__head { margin-bottom: var(--space-6); }
+.sg-section__num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  color: var(--fg-disabled);
+}
+
+.sg-note {
+  margin-top: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-left: 2px solid var(--accent-border);
+  background: var(--accent-subtle);
+  font-size: var(--fs-body-sm);
+  color: var(--fg-secondary);
+  max-width: 68ch;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* --- Swatches ----------------------------------------------------------- */
+.sg-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+.sg-swatch {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.sg-swatch__chip { height: 72px; }
+.sg-swatch__meta { padding: var(--space-3) var(--space-4); }
+.sg-swatch__name {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  color: var(--fg-secondary);
+  word-break: break-all;
+}
+.sg-swatch__value {
+  margin-top: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  color: var(--fg-disabled);
+}
+
+/* --- Specimen rows ------------------------------------------------------ */
+.sg-specimen + .sg-specimen {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+}
+.sg-specimen__label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  color: var(--fg-disabled);
+  margin-bottom: var(--space-3);
+}
+
+/* --- Demo grid ---------------------------------------------------------- */
+.sg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
+}
+
+.sg-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* --- Spacing scale visualiser ------------------------------------------- */
+.sg-space { display: flex; align-items: center; gap: var(--space-4); }
+.sg-space + .sg-space { margin-top: var(--space-3); }
+.sg-space__bar { height: 12px; background: var(--accent-subtle); border: 1px solid var(--accent-border); border-radius: 2px; }
+.sg-space__name { font-family: var(--font-mono); font-size: var(--fs-micro); color: var(--fg-tertiary); min-width: 90px; }
+
+/* --- Radius demo -------------------------------------------------------- */
+.sg-radius {
+  display: grid;
+  place-items: center;
+  height: 88px;
+  border: 1px solid var(--border-default);
+  background: var(--surface-raised);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  color: var(--fg-tertiary);
+}

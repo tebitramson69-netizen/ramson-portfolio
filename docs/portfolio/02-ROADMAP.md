@@ -3,12 +3,12 @@
 Ten phases. Each is independently valuable and ends with something demonstrably working — no
 phase leaves the project in a broken state.
 
-**Current phase: 0 — complete. Awaiting confirmation to begin Phase 1.**
+**Current phase: 1 — complete. Awaiting confirmation to begin Phase 2.**
 
 | Phase | Name | Status |
 |---|---|---|
 | 0 | Documentation & Foundation | ✅ Complete |
-| 1 | Design Foundation | ⬜ Not started |
+| 1 | Design Foundation | ✅ Complete |
 | 2 | Application Skeleton | ⬜ Not started |
 | 3 | Database & Read Path | ⬜ Not started |
 | 4 | Authentication & Admin Shell | ⬜ Not started |
@@ -31,7 +31,7 @@ Repository created, README, `.gitignore`, `.editorconfig`, and the documentation
 
 ---
 
-## Phase 1 — Design Foundation ⬜
+## Phase 1 — Design Foundation ✅
 
 **No backend. Static HTML and CSS only.**
 
@@ -44,9 +44,36 @@ Repository created, README, `.gitignore`, `.editorconfig`, and the documentation
 the hero right in static HTML — where iteration is cheap — before any PHP exists is the
 difference between a premium result and a compromised one.
 
-**Blocked on:** questions 1–4 in `03-OPEN-QUESTIONS.md`.
+**Questions 1–4 answered** — Instrument Serif, monogram fallback until a photograph
+is supplied, "Open to select projects & opportunities", and `Work · About · Services · Contact`.
 
-**Deliverable:** a static site that already looks like the finished product.
+**Delivered:**
+
+| File | Lines | Contents |
+|---|---|---|
+| `public/assets/css/main.css` | ~1,500 | Every token, plus base, components, sections and case-study styles |
+| `public/assets/css/styleguide.css` | 88 | Style-guide specimens only — never shipped publicly |
+| `public/assets/js/app.js` | 216 | Header condense, mobile nav, scroll reveals, scroll-spy, footer year |
+| `public/index.html` | ~726 | Full homepage, all ten sections |
+| `public/case-study.html` | ~352 | Rendo case study, showing the section model |
+| `public/styleguide.html` | ~480 | Nine-section design-system reference |
+
+**Verified in a real browser** (Chromium, five viewports from 320px to 1440px):
+no horizontal overflow at any width · no JavaScript errors · single `<h1>` per page ·
+no skipped heading levels · every form field labelled · all touch targets ≥ 44px ·
+content fully visible with JavaScript disabled · content fully visible under
+`prefers-reduced-motion` · mobile nav opens, traps focus, locks scroll and closes on Escape.
+
+**Three defects found and fixed during verification:**
+1. The mobile nav panel had no base `display: none`, so above 767px it rendered as an ordinary block painting its links over the top of every page.
+2. Featured work blocks did not alternate — the even-item rule used `order: -1`, which kept the media first rather than moving it last.
+3. On narrow viewports the portrait fallback caption overlapped the monogram; the fallback is now a flex column, which makes the overlap structurally impossible at any frame size.
+
+**Known Phase 1 limitation:** fonts load from Google Fonts for the static prototype.
+Phase 9 self-hosts them as subsetted WOFF2, which removes the third-party connection
+and satisfies the CSP in PRD §Q.5.
+
+**Deliverable:** a static site that already looks like the finished product. **Done.**
 
 ---
 

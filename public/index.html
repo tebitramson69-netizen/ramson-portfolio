@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Ramson Titih — Software Engineer &amp; Full-Stack Developer</title>
+<meta name="description" content="Ramson Titih is a software engineer and full-stack developer in Cameroon, building practical web systems that turn manual workflows into simple digital experiences.">
+
+<!-- PHASE 1 NOTE — fonts are loaded from Google Fonts for the static design
+     prototype only. Phase 9 self-hosts them as subsetted WOFF2, which removes
+     the third-party connection, satisfies the Content-Security-Policy in
+     PRD §Q.5, and keeps the font budget under 120 KB. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<link rel="stylesheet" href="assets/css/main.css">
+<script src="assets/js/app.js" defer></script>
+</head>
+
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ======================================================================
+     HEADER
+     ====================================================================== -->
+<header class="header" data-header>
+  <div class="container header__inner">
+
+    <a class="brand" href="#top">
+      Ramson Titih<span class="brand__mark" aria-hidden="true">.</span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      <ul class="nav__list">
+        <li><a class="nav__link" href="#work"     data-spy-link>Work</a></li>
+        <li><a class="nav__link" href="#about"    data-spy-link>About</a></li>
+        <li><a class="nav__link" href="#services" data-spy-link>Services</a></li>
+        <li><a class="nav__link" href="#contact"  data-spy-link>Contact</a></li>
+      </ul>
+
+      <a class="btn btn--secondary btn--sm" href="#contact">Get in touch</a>
+
+      <button class="nav-toggle" type="button"
+              aria-expanded="false" aria-controls="nav-panel"
+              data-nav-toggle>
+        <span class="u-visually-hidden">Menu</span>
+        <span class="nav-toggle__bars" aria-hidden="true"></span>
+      </button>
+    </nav>
+
+  </div>
+</header>
+
+<!-- Mobile navigation panel -->
+<div class="nav__panel" id="nav-panel" data-nav-panel>
+  <ul class="nav__list">
+    <li><a class="nav__link" href="#work">Work</a></li>
+    <li><a class="nav__link" href="#about">About</a></li>
+    <li><a class="nav__link" href="#services">Services</a></li>
+    <li><a class="nav__link" href="#contact">Contact</a></li>
+  </ul>
+  <a class="btn btn--primary" href="#contact">Get in touch</a>
+</div>
+
+
+<main id="main">
+
+<!-- ======================================================================
+     HERO
+     ====================================================================== -->
+<section class="hero" id="top">
+  <div class="container">
+    <div class="hero__grid">
+
+      <div class="hero__content">
+
+        <p class="availability">
+          <span class="availability__dot" aria-hidden="true"></span>
+          Open to select projects &amp; opportunities
+        </p>
+
+        <p class="t-eyebrow hero__eyebrow">Software Engineer · Full-Stack Developer</p>
+
+        <h1 class="t-display-1 hero__name">Ramson Titih</h1>
+
+        <p class="hero__value">
+          I build practical web systems that turn manual workflows
+          into simple digital experiences.
+        </p>
+
+        <p class="hero__tech">
+          Full-stack development · PHP · JavaScript · MySQL · AI &amp; Automation
+        </p>
+
+        <div class="btn-group hero__actions">
+          <a class="btn btn--primary btn--lg" href="#work">
+            View selected work
+            <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+          </a>
+          <a class="btn btn--secondary btn--lg" href="#contact">Get in touch</a>
+        </div>
+
+        <ul class="meta-list hero__facts">
+          <li>Cameroon</li>
+          <li>HND Software Engineering</li>
+          <li>Saint Louis University Institute Douala</li>
+        </ul>
+
+        <p class="hero__cue" aria-hidden="true">Scroll</p>
+
+      </div>
+
+      <div class="hero__media">
+        <!-- Profile portrait.
+             In the finished product this image is resolved from the `media`
+             table via profile.photo_media_id — no filename ever appears in
+             source. Until a photograph is uploaded through the CMS, the
+             designed monogram fallback below renders instead. It is a real
+             state, not a placeholder. -->
+        <figure class="portrait">
+          <div class="portrait__inner">
+
+            <div class="portrait__fallback">
+              <span class="portrait__monogram" aria-hidden="true">RT</span>
+              <span class="portrait__note">
+                Photo managed from<br>the admin dashboard
+              </span>
+            </div>
+
+            <span class="portrait__tint" aria-hidden="true"></span>
+          </div>
+        </figure>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     TECHNOLOGY STRIP
+     ====================================================================== -->
+<section class="techstrip" aria-label="Core technologies">
+  <div class="container techstrip__inner">
+    <p class="techstrip__label">Working with</p>
+    <ul class="techstrip__list">
+      <li class="techstrip__item">HTML</li>
+      <li class="techstrip__item">CSS</li>
+      <li class="techstrip__item">JavaScript</li>
+      <li class="techstrip__item">PHP</li>
+      <li class="techstrip__item">MySQL</li>
+      <li class="techstrip__item">Git</li>
+      <li class="techstrip__item">GitHub</li>
+      <li class="techstrip__item">XAMPP</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     SELECTED WORK
+     ====================================================================== -->
+<section class="section" id="work" aria-labelledby="work-title">
+  <div class="container">
+
+    <header class="section-head" data-reveal>
+      <p class="section-index">01 — Selected work</p>
+      <h2 class="t-display-2" id="work-title">Systems I have built</h2>
+      <p class="t-lead">
+        Two projects that solve real operational problems — client bookings
+        handled through the channel people already use, and school
+        administration that ends in a printed report card.
+      </p>
+    </header>
+
+    <div class="work">
+
+      <!-- ---------------------------------------------------------------
+           PROJECT 1 — RENDO
+           --------------------------------------------------------------- -->
+      <article class="work__item" data-reveal>
+        <div class="work__grid">
+
+          <div class="work__media">
+            <div class="frame">
+              <div class="frame__bar" aria-hidden="true">
+                <span class="frame__dot"></span>
+                <span class="frame__dot"></span>
+                <span class="frame__dot"></span>
+              </div>
+              <div class="frame__body">
+                <div class="pending">
+                  <p class="pending__label">Awaiting asset</p>
+                  <p class="pending__title">Rendo screenshot</p>
+                  <p class="pending__body">
+                    The landing page at minimum. Uploaded through the CMS
+                    in Phase&nbsp;6.
+                  </p>
+                  <p class="pending__ref">03-OPEN-QUESTIONS · Q5</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="work__content">
+            <p class="t-eyebrow">Business automation · SaaS</p>
+            <h3 class="t-display-3 work__title">Rendo</h3>
+
+            <p class="work__problem">
+              Clinics, dental practices and beauty studios lose bookings to
+              missed messages and no-shows, because client conversations happen
+              on WhatsApp while their calendar lives somewhere else.
+            </p>
+
+            <p>
+              Rendo is a business and booking automation platform that handles
+              client messaging, bookings and appointment reminders through
+              WhatsApp — the channel these businesses and their customers
+              already use every day.
+            </p>
+
+            <ul class="work__features">
+              <li>Customer messaging through WhatsApp</li>
+              <li>Booking and appointment reminders</li>
+              <li>Business onboarding and waitlist</li>
+              <li>Automated workflow</li>
+            </ul>
+
+            <p class="work__role">Role — to be confirmed (Q5)</p>
+
+            <div class="pending" style="margin-top: var(--space-5);">
+              <p class="pending__label">Awaiting detail</p>
+              <p class="pending__body">
+                Technology stack, current state, live and GitHub URLs, your
+                personal role, and the hardest technical problem you solved.
+              </p>
+              <p class="pending__ref">03-OPEN-QUESTIONS · Q5</p>
+            </div>
+
+            <div class="btn-group work__actions">
+              <a class="btn btn--secondary" href="case-study.html">
+                View case study
+                <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ---------------------------------------------------------------
+           PROJECT 2 — SCHOOL MANAGEMENT SYSTEM
+           --------------------------------------------------------------- -->
+      <article class="work__item" data-reveal>
+        <div class="work__grid">
+
+          <div class="work__media">
+            <div class="frame">
+              <div class="frame__bar" aria-hidden="true">
+                <span class="frame__dot"></span>
+                <span class="frame__dot"></span>
+                <span class="frame__dot"></span>
+              </div>
+              <div class="frame__body">
+                <div class="pending">
+                  <p class="pending__label">Awaiting asset</p>
+                  <p class="pending__title">School Management System screenshot</p>
+                  <p class="pending__body">
+                    The report card output especially — it is the most
+                    technically impressive part of the system.
+                  </p>
+                  <p class="pending__ref">03-OPEN-QUESTIONS · Q6</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="work__content">
+            <p class="t-eyebrow">Education · Full-stack web application</p>
+            <h3 class="t-display-3 work__title">School Management System</h3>
+
+            <p class="work__problem">
+              Secondary schools assemble termly results by hand — collecting
+              scores per subject, averaging them, ranking the class, and
+              transcribing everything onto report cards.
+            </p>
+
+            <p>
+              A full-stack platform built around secondary-school workflows,
+              covering students, teachers, classes, subjects, attendance,
+              scores and results — ending in automated report card generation
+              with class ranking.
+            </p>
+
+            <ul class="work__features">
+              <li>Attendance, scores, results and ranking</li>
+              <li>Automated report card generation</li>
+              <li>Role-based dashboards</li>
+              <li>Administrator, teacher, student and parent access</li>
+            </ul>
+
+            <div class="tag-list" style="margin-top: var(--space-5);">
+              <span class="tag">PHP</span>
+              <span class="tag">MySQL</span>
+              <span class="tag">JavaScript</span>
+              <span class="tag">HTML</span>
+              <span class="tag">CSS</span>
+            </div>
+
+            <div class="pending" style="margin-top: var(--space-5);">
+              <p class="pending__label">Awaiting detail</p>
+              <p class="pending__body">
+                GitHub repository confirmation, live URL, screenshots, whether
+                a real school uses it, and the ranking logic in your own words.
+              </p>
+              <p class="pending__ref">03-OPEN-QUESTIONS · Q6</p>
+            </div>
+
+            <div class="btn-group work__actions">
+              <a class="btn btn--secondary" href="case-study.html">
+                View case study
+                <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     ABOUT
+     ====================================================================== -->
+<section class="section section--raised" id="about" aria-labelledby="about-title">
+  <div class="container">
+
+    <header class="section-head" data-reveal>
+      <p class="section-index">02 — About</p>
+      <h2 class="t-display-2" id="about-title">Background</h2>
+    </header>
+
+    <div class="about__grid" data-reveal>
+
+      <div class="t-prose">
+        <p>
+          I am a software engineer and full-stack developer based in Cameroon,
+          currently studying for an HND in Software Engineering at Saint Louis
+          University Institute Douala.
+        </p>
+        <p>
+          My work centres on the same problem in different settings: an
+          organisation runs on paper, spreadsheets and scattered messages, and
+          the people inside it spend their time on administration instead of
+          the work itself. I build the web systems that close that gap.
+        </p>
+
+        <div class="pending" style="margin-top: var(--space-6);">
+          <p class="pending__label">Awaiting copy</p>
+          <p class="pending__title">Your own words</p>
+          <p class="pending__body">
+            The two paragraphs above are drafted strictly from what you have
+            told me — nothing is invented. Replace or edit them so the voice
+            is genuinely yours.
+          </p>
+          <p class="pending__ref">03-OPEN-QUESTIONS · Q12</p>
+        </div>
+      </div>
+
+      <dl class="about__facts">
+        <div class="about__fact">
+          <dt>Location</dt>
+          <dd>Cameroon</dd>
+        </div>
+        <div class="about__fact">
+          <dt>Education</dt>
+          <dd>HND Software Engineering <span class="t-muted">(in progress)</span></dd>
+        </div>
+        <div class="about__fact">
+          <dt>Institution</dt>
+          <dd>Saint Louis University Institute Douala</dd>
+        </div>
+        <div class="about__fact">
+          <dt>Focus</dt>
+          <dd>Full-stack web systems, business automation</dd>
+        </div>
+        <div class="about__fact">
+          <dt>Availability</dt>
+          <dd>Open to select projects &amp; opportunities</dd>
+        </div>
+      </dl>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     SKILLS
+     Names and groupings only. No proficiency bars, no percentages,
+     no star ratings — they are unverifiable and read as junior.
+     ====================================================================== -->
+<section class="section" id="skills" aria-labelledby="skills-title">
+  <div class="container">
+
+    <header class="section-head" data-reveal>
+      <p class="section-index">03 — Technology</p>
+      <h2 class="t-display-2" id="skills-title">What I work with</h2>
+    </header>
+
+    <div class="skills__grid" data-reveal>
+
+      <div class="skills__group">
+        <h3 class="skills__group-title">Frontend</h3>
+        <ul class="skills__list">
+          <li>HTML</li>
+          <li>CSS</li>
+          <li>JavaScript</li>
+        </ul>
+      </div>
+
+      <div class="skills__group">
+        <h3 class="skills__group-title">Backend</h3>
+        <ul class="skills__list">
+          <li>PHP</li>
+        </ul>
+      </div>
+
+      <div class="skills__group">
+        <h3 class="skills__group-title">Database</h3>
+        <ul class="skills__list">
+          <li>MySQL</li>
+        </ul>
+      </div>
+
+      <div class="skills__group">
+        <h3 class="skills__group-title">Tools</h3>
+        <ul class="skills__list">
+          <li>Git</li>
+          <li>GitHub</li>
+          <li>XAMPP</li>
+        </ul>
+      </div>
+
+      <div class="skills__group">
+        <h3 class="skills__group-title">Practices</h3>
+        <ul class="skills__list">
+          <li>AI-assisted development</li>
+          <li>AI &amp; automation exploration</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     HOW I WORK
+     ====================================================================== -->
+<section class="section section--raised" id="process" aria-labelledby="process-title">
+  <div class="container container--md">
+
+    <header class="section-head" data-reveal>
+      <p class="section-index">04 — How I work</p>
+      <h2 class="t-display-2" id="process-title">Process</h2>
+      <p class="t-lead">
+        For a client, this is the section that answers the real question:
+        what is working with me actually like?
+      </p>
+    </header>
+
+    <div data-reveal>
+      <!-- This content cannot be drafted for you. A process section written
+           by someone else reads false immediately, and it is the highest-trust
+           part of the page for client conversion. The layout below shows the
+           designed structure the four steps will occupy. -->
+      <div class="pending">
+        <p class="pending__label">Awaiting content</p>
+        <p class="pending__title">Your process, in your own words — roughly four steps</p>
+        <p class="pending__body">
+          This is the highest-trust, lowest-cost section on the site for
+          turning a visitor into a client, and it is the one thing here I will
+          not draft for you: a process written by someone else reads false
+          immediately. Describe how you actually take a project from first
+          conversation to delivered system.
+        </p>
+        <p class="pending__ref">03-OPEN-QUESTIONS · Q11</p>
+      </div>
+
+      <ol class="process__list" style="margin-top: var(--space-7);" aria-hidden="true">
+        <li class="process__step">
+          <span class="process__num" aria-hidden="true"></span>
+          <h3 class="t-heading-2 t-muted">Step one</h3>
+          <p class="t-body-sm t-muted">Structure reserved — awaiting your content.</p>
+        </li>
+        <li class="process__step">
+          <span class="process__num" aria-hidden="true"></span>
+          <h3 class="t-heading-2 t-muted">Step two</h3>
+          <p class="t-body-sm t-muted">Structure reserved — awaiting your content.</p>
+        </li>
+        <li class="process__step">
+          <span class="process__num" aria-hidden="true"></span>
+          <h3 class="t-heading-2 t-muted">Step three</h3>
+          <p class="t-body-sm t-muted">Structure reserved — awaiting your content.</p>
+        </li>
+        <li class="process__step">
+          <span class="process__num" aria-hidden="true"></span>
+          <h3 class="t-heading-2 t-muted">Step four</h3>
+          <p class="t-body-sm t-muted">Structure reserved — awaiting your content.</p>
+        </li>
+      </ol>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     SERVICES
+     ====================================================================== -->
+<section class="section" id="services" aria-labelledby="services-title">
+  <div class="container">
+
+    <header class="section-head" data-reveal>
+      <p class="section-index">05 — Services</p>
+      <h2 class="t-display-2" id="services-title">What I can build for you</h2>
+      <p class="t-lead">
+        Written in business outcomes rather than technology names — this
+        section is read by people who do not care what the stack is.
+      </p>
+    </header>
+
+    <div data-reveal>
+      <div class="pending">
+        <p class="pending__label">Awaiting content</p>
+        <p class="pending__title">Which three or four services do you actually want to offer?</p>
+        <p class="pending__body">
+          Your real projects already suggest two strong candidates — business
+          and booking automation, and custom management systems — but I will
+          not commit you to offering something you have not chosen. Tell me
+          the list and I will write each one in client language.
+        </p>
+        <p class="pending__ref">03-OPEN-QUESTIONS · Q10</p>
+      </div>
+
+      <div class="services__grid" style="margin-top: var(--space-6);" aria-hidden="true">
+        <div class="card">
+          <h3 class="t-heading-2 t-muted">Service</h3>
+          <p class="t-body-sm t-muted" style="margin-top: var(--space-3);">
+            Card structure reserved — awaiting your content.
+          </p>
+        </div>
+        <div class="card">
+          <h3 class="t-heading-2 t-muted">Service</h3>
+          <p class="t-body-sm t-muted" style="margin-top: var(--space-3);">
+            Card structure reserved — awaiting your content.
+          </p>
+        </div>
+        <div class="card">
+          <h3 class="t-heading-2 t-muted">Service</h3>
+          <p class="t-body-sm t-muted" style="margin-top: var(--space-3);">
+            Card structure reserved — awaiting your content.
+          </p>
+        </div>
+        <div class="card">
+          <h3 class="t-heading-2 t-muted">Service</h3>
+          <p class="t-body-sm t-muted" style="margin-top: var(--space-3);">
+            Card structure reserved — awaiting your content.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     EXPERIENCE
+     Short and honest. A brief timeline stated plainly is credible;
+     a padded one is not.
+     ====================================================================== -->
+<section class="section section--raised" id="experience" aria-labelledby="experience-title">
+  <div class="container container--md">
+
+    <header class="section-head" data-reveal>
+      <p class="section-index">06 — Background</p>
+      <h2 class="t-display-2" id="experience-title">Education &amp; experience</h2>
+    </header>
+
+    <ol class="timeline" data-reveal>
+      <li class="timeline__item">
+        <p class="timeline__period">Current</p>
+        <h3 class="t-heading-1 timeline__title">HND, Software Engineering</h3>
+        <p class="timeline__org">Saint Louis University Institute Douala · Cameroon</p>
+        <p class="timeline__body">
+          Studying software engineering while building full-stack web systems
+          in PHP, MySQL and JavaScript.
+        </p>
+      </li>
+    </ol>
+
+    <div class="pending" style="margin-top: var(--space-7);" data-reveal>
+      <p class="pending__label">Optional</p>
+      <p class="pending__body">
+        If you have work experience, internships or freelance engagements to
+        add, they go here. If you do not, this section stays as it is — one
+        honest entry is more credible than a padded timeline, and recruiters
+        read padding immediately.
+      </p>
+      <p class="pending__ref">03-OPEN-QUESTIONS · Experience</p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     CONTACT
+     ====================================================================== -->
+<section class="section contact" id="contact" aria-labelledby="contact-title">
+  <div class="container container--sm contact__inner" data-reveal>
+
+    <p class="section-index">07 — Contact</p>
+    <h2 class="t-display-2 contact__title">Let's talk about your project</h2>
+
+    <p class="t-lead contact__lead">
+      Whether you are hiring, or you run a business with a process that still
+      happens on paper — tell me what you are trying to solve.
+    </p>
+
+    <p class="availability" style="margin-top: var(--space-6);">
+      <span class="availability__dot" aria-hidden="true"></span>
+      Open to select projects &amp; opportunities
+    </p>
+
+    <div class="pending" style="margin-top: var(--space-7); text-align: left;">
+      <p class="pending__label">Awaiting details</p>
+      <p class="pending__title">Contact channels</p>
+      <p class="pending__body">
+        Email address, WhatsApp number and LinkedIn URL. WhatsApp matters
+        especially here — for a Cameroonian client audience it is the primary
+        business channel, and its absence is a real conversion cost. A working
+        contact form arrives in Phase&nbsp;8.
+      </p>
+      <p class="pending__ref">03-OPEN-QUESTIONS · Q8, Q9</p>
+    </div>
+
+    <div class="btn-group contact__actions">
+      <a class="btn btn--primary btn--lg" href="#contact" aria-disabled="true">
+        Email me
+        <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+      </a>
+      <a class="btn btn--secondary btn--lg" href="#contact" aria-disabled="true">
+        WhatsApp
+      </a>
+    </div>
+
+    <ul class="meta-list contact__channels">
+      <li><a class="t-link" href="https://github.com/tebitramson69-netizen" rel="me noopener">GitHub</a></li>
+      <li><span class="t-muted">LinkedIn — awaiting URL</span></li>
+    </ul>
+
+  </div>
+</section>
+
+</main>
+
+
+<!-- ======================================================================
+     FOOTER
+     ====================================================================== -->
+<footer class="footer">
+  <div class="container">
+
+    <div class="footer__grid">
+
+      <div class="footer__brand">
+        <a class="brand" href="#top">
+          Ramson Titih<span class="brand__mark" aria-hidden="true">.</span>
+        </a>
+        <p class="footer__tagline">
+          Software engineer and full-stack developer building practical web
+          systems. Cameroon.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="footer__heading">Navigate</h2>
+        <ul class="footer__list">
+          <li><a href="#work">Work</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="footer__heading">Elsewhere</h2>
+        <ul class="footer__list">
+          <li>
+            <a href="https://github.com/tebitramson69-netizen" rel="me noopener">GitHub</a>
+          </li>
+          <li><span class="t-muted">LinkedIn — soon</span></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer__bottom">
+      <p>&copy; <span data-year>2026</span> Ramson Titih. All rights reserved.</p>
+      <p>Built with PHP, MySQL and hand-written CSS.</p>
+    </div>
+
+  </div>
+</footer>
+
+</body>
+</html>

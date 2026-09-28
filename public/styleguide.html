@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+
+<title>Design System — Ramson Titih Portfolio</title>
+<meta name="description" content="Internal design-system reference for the Ramson Titih portfolio.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/styleguide.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<header class="sg-header">
+  <p class="t-eyebrow">Internal reference · not a public page</p>
+  <h1 class="t-display-2" style="margin-top: var(--space-4);">Editorial Engineering</h1>
+  <p class="t-lead" style="margin-top: var(--space-4); max-width: 60ch;">
+    The design system behind the Ramson Titih portfolio. Token values here are
+    authoritative and mirror <code>docs/portfolio/01-DESIGN-SYSTEM.md</code>.
+  </p>
+  <p style="margin-top: var(--space-5);">
+    <a class="t-link" href="index.html">View the homepage</a> ·
+    <a class="t-link" href="case-study.html">View a case study</a>
+  </p>
+</header>
+
+
+<!-- ================= COLOUR ================= -->
+<section class="sg-section">
+  <div class="sg-section__head">
+    <p class="sg-section__num">01</p>
+    <h2 class="t-display-3" style="margin-top: var(--space-2);">Colour</h2>
+  </div>
+
+  <p class="sg-specimen__label">Surfaces — cool-shifted neutral ramp, hue ~222°</p>
+  <div class="sg-swatches">
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#0A0B0D"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--surface-base</p><p class="sg-swatch__value">#0A0B0D</p></div></div>
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#101216"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--surface-raised</p><p class="sg-swatch__value">#101216</p></div></div>
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#16181D"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--surface-overlay</p><p class="sg-swatch__value">#16181D</p></div></div>
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#07080A"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--surface-sunken</p><p class="sg-swatch__value">#07080A</p></div></div>
+  </div>
+
+  <p class="sg-specimen__label" style="margin-top: var(--space-6);">
+    Foreground — contrast ratios measured against --surface-base
+  </p>
+  <div class="sg-swatches">
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#F4F5F7"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--fg-primary</p><p class="sg-swatch__value">#F4F5F7 · 17.8:1 AAA</p></div></div>
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#A8ADB8"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--fg-secondary</p><p class="sg-swatch__value">#A8ADB8 · 8.1:1 AAA</p></div></div>
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#6E7480"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--fg-tertiary</p><p class="sg-swatch__value">#6E7480 · 4.6:1 AA</p></div></div>
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#43474F"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--fg-disabled</p><p class="sg-swatch__value">#43474F · non-text only</p></div></div>
+  </div>
+
+  <p class="sg-specimen__label" style="margin-top: var(--space-6);">Accent</p>
+  <div class="sg-swatches">
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#2DD4A7"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--accent</p><p class="sg-swatch__value">#2DD4A7</p></div></div>
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#4FE0BA"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--accent-hover</p><p class="sg-swatch__value">#4FE0BA</p></div></div>
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#1FBF95"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--accent-pressed</p><p class="sg-swatch__value">#1FBF95</p></div></div>
+    <div class="sg-swatch"><div class="sg-swatch__chip" style="background:#04211A"></div>
+      <div class="sg-swatch__meta"><p class="sg-swatch__name">--accent-fg</p><p class="sg-swatch__value">#04211A · on accent</p></div></div>
+  </div>
+
+  <p class="sg-note">
+    <strong>The accent discipline rule.</strong> The accent appears on at most
+    <strong>three elements per viewport</strong>. Permitted: the primary button, the
+    availability dot, a link underline on hover, a focus ring, the active nav
+    indicator. Forbidden: accent headings, accent gradients, accent card borders
+    by default, accent icons everywhere. Scarcity is what makes it read as
+    intentional — and this is the rule most likely to be violated under pressure.
+  </p>
+</section>
+
+
+<!-- ================= TYPOGRAPHY ================= -->
+<section class="sg-section">
+  <div class="sg-section__head">
+    <p class="sg-section__num">02</p>
+    <h2 class="t-display-3" style="margin-top: var(--space-2);">Typography</h2>
+    <p class="t-body-sm t-muted" style="margin-top: var(--space-3);">
+      Instrument Serif (display) · Inter (body &amp; UI) · JetBrains Mono (meta &amp; code)
+    </p>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">.t-display-1 — clamp(2.75rem, 7vw, 5.25rem) · -0.03em · 0.98</p>
+    <p class="t-display-1">Ramson Titih</p>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">.t-display-2 — clamp(2.25rem, 5vw, 3.75rem) · -0.025em · 1.05</p>
+    <p class="t-display-2">Systems I have built</p>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">.t-display-3 — clamp(1.75rem, 3.5vw, 2.5rem) · -0.02em · 1.1</p>
+    <p class="t-display-3">School Management System</p>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">.t-heading-1 · .t-heading-2 — Inter 600</p>
+    <p class="t-heading-1">Automated report card generation</p>
+    <p class="t-heading-2" style="margin-top: var(--space-3);">Role-based dashboards</p>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">.t-eyebrow — JetBrains Mono · 0.12em · uppercase</p>
+    <p class="t-eyebrow">Business automation · SaaS</p>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">.t-lead — 1.125rem · 1.55</p>
+    <p class="t-lead" style="max-width:60ch;">
+      I build practical web systems that turn manual workflows into simple
+      digital experiences.
+    </p>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">.t-prose — body at 1rem · 1.65 · capped at 68ch</p>
+    <div class="t-prose">
+      <p>
+        Small appointment-based businesses coordinate with customers through the
+        messaging app both sides already use. But that conversation is not
+        connected to any booking system, so appointments are recorded by hand and
+        a missed message is a lost booking.
+      </p>
+      <p>
+        The measure is capped at <strong>68 characters</strong>, which is what keeps
+        long-form case-study prose readable rather than sprawling across the full
+        container width.
+      </p>
+    </div>
+  </div>
+
+  <p class="sg-note">
+    Display type takes <strong>tighter</strong> tracking and leading than browser
+    defaults give it. Loose display type is the most common reason a heading looks
+    amateur. Weights are limited to three — 400 body, 500 UI, 600 headings — and
+    the display serif is never set above 400.
+  </p>
+</section>
+
+
+<!-- ================= SPACING ================= -->
+<section class="sg-section">
+  <div class="sg-section__head">
+    <p class="sg-section__num">03</p>
+    <h2 class="t-display-3" style="margin-top: var(--space-2);">Spacing &amp; rhythm</h2>
+  </div>
+
+  <div class="sg-space"><span class="sg-space__name">--space-1</span><span class="sg-space__bar" style="width:0.25rem"></span><span class="t-caption">4px</span></div>
+  <div class="sg-space"><span class="sg-space__name">--space-2</span><span class="sg-space__bar" style="width:0.5rem"></span><span class="t-caption">8px</span></div>
+  <div class="sg-space"><span class="sg-space__name">--space-3</span><span class="sg-space__bar" style="width:0.75rem"></span><span class="t-caption">12px</span></div>
+  <div class="sg-space"><span class="sg-space__name">--space-4</span><span class="sg-space__bar" style="width:1rem"></span><span class="t-caption">16px</span></div>
+  <div class="sg-space"><span class="sg-space__name">--space-5</span><span class="sg-space__bar" style="width:1.5rem"></span><span class="t-caption">24px</span></div>
+  <div class="sg-space"><span class="sg-space__name">--space-6</span><span class="sg-space__bar" style="width:2rem"></span><span class="t-caption">32px</span></div>
+  <div class="sg-space"><span class="sg-space__name">--space-7</span><span class="sg-space__bar" style="width:3rem"></span><span class="t-caption">48px</span></div>
+  <div class="sg-space"><span class="sg-space__name">--space-8</span><span class="sg-space__bar" style="width:4rem"></span><span class="t-caption">64px</span></div>
+  <div class="sg-space"><span class="sg-space__name">--space-9</span><span class="sg-space__bar" style="width:6rem"></span><span class="t-caption">96px</span></div>
+  <div class="sg-space"><span class="sg-space__name">--space-10</span><span class="sg-space__bar" style="width:8rem"></span><span class="t-caption">128px</span></div>
+
+  <p class="sg-note">
+    <strong>Section vertical rhythm: <code>clamp(5rem, 10vw, 10rem)</code>.</strong>
+    One value, applied consistently to every section. This is the single
+    highest-leverage decision for making the site feel premium — cramped
+    vertical spacing is the number-one reason a portfolio reads as a template.
+  </p>
+</section>
+
+
+<!-- ================= BUTTONS ================= -->
+<section class="sg-section">
+  <div class="sg-section__head">
+    <p class="sg-section__num">04</p>
+    <h2 class="t-display-3" style="margin-top: var(--space-2);">Buttons</h2>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">Variants</p>
+    <div class="sg-row">
+      <button class="btn btn--primary">Primary</button>
+      <button class="btn btn--secondary">Secondary</button>
+      <button class="btn btn--ghost">Ghost</button>
+      <button class="btn btn--primary" disabled>Disabled</button>
+    </div>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">Sizes — 36 / 44 / 52px, all meeting the 44px touch minimum at md+</p>
+    <div class="sg-row">
+      <button class="btn btn--secondary btn--sm">Small</button>
+      <button class="btn btn--secondary">Medium</button>
+      <button class="btn btn--secondary btn--lg">Large</button>
+    </div>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">With directional affordance</p>
+    <div class="sg-row">
+      <button class="btn btn--primary btn--lg">
+        View selected work <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+      </button>
+    </div>
+  </div>
+
+  <p class="sg-note">
+    Focus is <strong>never</strong> removed. Every interactive element carries
+    <code>outline: 2px solid var(--accent)</code> with a 2px offset on
+    <code>:focus-visible</code>. Tab through this page to verify.
+  </p>
+</section>
+
+
+<!-- ================= TAGS, PILLS, CARDS ================= -->
+<section class="sg-section">
+  <div class="sg-section__head">
+    <p class="sg-section__num">05</p>
+    <h2 class="t-display-3" style="margin-top: var(--space-2);">Tags, pills &amp; cards</h2>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">Technology tags — bordered marks, never coloured pills</p>
+    <div class="tag-list">
+      <span class="tag">PHP</span>
+      <span class="tag">MySQL</span>
+      <span class="tag">JavaScript</span>
+      <span class="tag">HTML</span>
+      <span class="tag">CSS</span>
+    </div>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">Availability pill — carries one of the three permitted accent uses</p>
+    <p class="availability">
+      <span class="availability__dot" aria-hidden="true"></span>
+      Open to select projects &amp; opportunities
+    </p>
+  </div>
+
+  <div class="sg-specimen">
+    <p class="sg-specimen__label">Cards — elevation by hairline border, never by shadow</p>
+    <div class="sg-grid">
+      <div class="card">
+        <h3 class="t-heading-2">Standard card</h3>
+        <p class="t-body-sm" style="margin-top: var(--space-3);">
+          Raised surface, subtle hairline, 6px radius. The border strengthens on hover.
+        </p>
+      </div>
+      <div class="card card--link">
+        <h3 class="t-heading-2"><a href="#top">Link card</a></h3>
+        <p class="t-body-sm" style="margin-top: var(--space-3);">
+          The anchor wraps the heading and a pseudo-element covers the card, so
+          screen readers get sensible link text and body text stays selectable.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================= PORTRAIT ================= -->
+<section class="sg-section">
+  <div class="sg-section__head">
+    <p class="sg-section__num">06</p>
+    <h2 class="t-display-3" style="margin-top: var(--space-2);">Portrait</h2>
+  </div>
+
+  <div class="sg-grid">
+    <div>
+      <p class="sg-specimen__label">Fallback state — renders when the CMS holds no photo</p>
+      <figure class="portrait" style="max-width:300px;">
+        <div class="portrait__inner">
+          <div class="portrait__fallback">
+            <span class="portrait__monogram" aria-hidden="true">RT</span>
+            <span class="portrait__note">Photo managed from<br>the admin dashboard</span>
+          </div>
+          <span class="portrait__tint" aria-hidden="true"></span>
+        </div>
+      </figure>
+    </div>
+  </div>
+
+  <p class="sg-note">
+    A <strong>rectangular 4:5 editorial frame at 4px radius — never a circle.</strong>
+    Circular avatars read as social-media profile pictures; this reads as a magazine
+    feature. A hairline border offset 16px down-right sits behind it, giving depth
+    with no shadow and no glow. The uploaded photo receives slight desaturation and
+    a 4% accent tint so that <em>any</em> photograph harmonises with the palette —
+    which matters because the image is CMS-managed and unknown at design time.
+  </p>
+</section>
+
+
+<!-- ================= FORMS ================= -->
+<section class="sg-section">
+  <div class="sg-section__head">
+    <p class="sg-section__num">07</p>
+    <h2 class="t-display-3" style="margin-top: var(--space-2);">Form fields</h2>
+  </div>
+
+  <div style="max-width: var(--container-xs);">
+    <div class="field">
+      <label class="field__label" for="sg-name">
+        Name <span class="field__required" aria-hidden="true">*</span>
+      </label>
+      <input class="field__input" type="text" id="sg-name" placeholder="Your name">
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="sg-email">
+        Email <span class="field__required" aria-hidden="true">*</span>
+      </label>
+      <input class="field__input" type="email" id="sg-email"
+             placeholder="you@example.com" aria-describedby="sg-email-help">
+      <p class="field__help" id="sg-email-help">So I can reply to you directly.</p>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="sg-message">Message</label>
+      <textarea class="field__textarea" id="sg-message"
+                placeholder="What are you trying to solve?"></textarea>
+    </div>
+  </div>
+
+  <p class="sg-note">
+    Labels are <strong>always visible above the field</strong> — never
+    placeholder-as-label, which disappears on focus and fails accessibility.
+    Inputs are set at exactly 16px, because anything smaller makes iOS Safari zoom
+    on focus.
+  </p>
+</section>
+
+
+<!-- ================= PENDING STATE ================= -->
+<section class="sg-section">
+  <div class="sg-section__head">
+    <p class="sg-section__num">08</p>
+    <h2 class="t-display-3" style="margin-top: var(--space-2);">Pending state</h2>
+  </div>
+
+  <div class="pending" style="max-width: var(--container-sm);">
+    <p class="pending__label">Awaiting content</p>
+    <p class="pending__title">What this component is for</p>
+    <p class="pending__body">
+      A designed empty state for content that has not been supplied yet.
+      Deliberately unmistakable, so nothing placeholder can reach production by
+      accident, and every instance names exactly what is needed.
+    </p>
+    <p class="pending__ref">03-OPEN-QUESTIONS · reference</p>
+  </div>
+
+  <p class="sg-note">
+    This is the mechanism that keeps the content-integrity rule enforceable. Rather
+    than inventing services, a process or project details to fill the layout, each
+    gap renders this component and names the question it is waiting on. In Phase 7
+    it becomes the CMS empty state.
+  </p>
+</section>
+
+
+<!-- ================= RADII & MOTION ================= -->
+<section class="sg-section">
+  <div class="sg-section__head">
+    <p class="sg-section__num">09</p>
+    <h2 class="t-display-3" style="margin-top: var(--space-2);">Radii &amp; motion</h2>
+  </div>
+
+  <div class="sg-grid">
+    <div class="sg-radius" style="border-radius: var(--radius-sm);">--radius-sm · 4px</div>
+    <div class="sg-radius" style="border-radius: var(--radius-md);">--radius-md · 6px</div>
+    <div class="sg-radius" style="border-radius: var(--radius-lg);">--radius-lg · 10px</div>
+    <div class="sg-radius" style="border-radius: var(--radius-full);">--radius-full · dot only</div>
+  </div>
+
+  <p class="sg-note">
+    Radii are restrained by rule: cards, images, buttons and inputs at 6px; the
+    portrait frame at 4px. <code>--radius-full</code> is permitted
+    <strong>only</strong> on the availability dot and avatar thumbnails — no 24px
+    blobs, no pill-shaped buttons. Motion animates opacity, transform, colour and
+    border-colour only. Scroll reveals fire <strong>once</strong> and are then
+    unobserved, and all motion is disabled under
+    <code>prefers-reduced-motion</code>.
+  </p>
+</section>
+
+<footer style="padding-block: var(--space-8); color: var(--fg-disabled); font-size: var(--fs-caption);">
+  <p>Design system reference · Phase 1 · Ramson Titih portfolio</p>
+</footer>
+
+</div>
+
+</body>
+</html>
