@@ -36,6 +36,10 @@ claim may only be published once it is marked ✅ **Verified** — supplied by R
 HTML · CSS · JavaScript · PHP · MySQL · Git · GitHub · XAMPP · AI-assisted development ·
 AI/automation exploration
 
+✅ **Verified via Rendo's stack** (added to the public skills section in Phase 4 — say the word
+if you would rather they appeared only as project tags):
+TypeScript · Deno · PostgreSQL · Supabase · Netlify · WhatsApp Cloud API · VS Code
+
 ⚠️ **Framing note.** "AI-assisted development" and "AI/automation exploration" were supplied in
 those words. The locked technology line says "AI & Automation". Present these honestly as
 areas he works with and explores — **not** as machine-learning engineering or model training,
@@ -56,7 +60,10 @@ supplied, and none is verifiable.
 | Channel: WhatsApp | ✅ Verified |
 | Scope: customer messaging, booking, appointment reminders, business onboarding, waitlist, automated workflow | ✅ Verified |
 | Has a polished SaaS-style landing page | ✅ Verified |
-| Technology stack | ⬜ Outstanding (Q5) — **Rendo has zero technology rows in the database as a result.** Nothing was assumed |
+| Technology stack | ✅ **Verified** — supplied as a layer-by-layer table. Live/in-progress only: TypeScript, Deno, Supabase, PostgreSQL, Netlify, WhatsApp Cloud API (Graph v25.0), HTML, CSS, JavaScript |
+| Live URL: `rendo-cm.netlify.app` | ✅ Verified — supplied |
+| Status: landing page and waitlist live, booking flow in development | ✅ Verified — from the supplied status column |
+| Planned work (pg_cron reminders, owner dashboard, LLM understanding, MTN MoMo / Orange Money, coexistence numbers) | ⚠️ **Planned, never claimed as built** — appears only under "Next steps" |
 | Current state (concept / landing live / functional) | ⬜ Outstanding (Q5) |
 | Live URL · GitHub URL | ⬜ Outstanding (Q5) |
 | Screenshots | ⬜ Outstanding (Q5) |
