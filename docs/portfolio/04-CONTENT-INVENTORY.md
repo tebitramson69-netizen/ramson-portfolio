@@ -36,9 +36,14 @@ claim may only be published once it is marked ✅ **Verified** — supplied by R
 HTML · CSS · JavaScript · PHP · MySQL · Git · GitHub · XAMPP · AI-assisted development ·
 AI/automation exploration
 
-✅ **Verified via Rendo's stack** (added to the public skills section in Phase 4 — say the word
-if you would rather they appeared only as project tags):
+✅ **Verified via Rendo's stack** — **approved for public display**, both as Rendo's project
+tags and in the "What I work with" section:
 TypeScript · Deno · PostgreSQL · Supabase · Netlify · WhatsApp Cloud API · VS Code
+
+⚠️ Of those seven, **Deno** and the **WhatsApp Cloud API** are in progress on Rendo rather than
+shipped (edge functions under way; a Meta test number, not a production one). Listing them
+under "what I work with" is honest — they are genuinely in use. Do **not** let them drift into
+language implying a delivered, production integration.
 
 ⚠️ **Framing note.** "AI-assisted development" and "AI/automation exploration" were supplied in
 those words. The locked technology line says "AI & Automation". Present these honestly as
