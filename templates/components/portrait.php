@@ -22,17 +22,30 @@ $showCaption = $showCaption ?? true;
   <div class="portrait__plate">
     <div class="portrait__inner">
 
-      <?php if ($photo !== null): ?>
+      <?php
+      // The JPEG is the fallback every browser understands, so its variant is
+      // also what supplies width and height. Those MUST be the variant's own
+      // dimensions and not the source photograph's: the source is a 4:3 phone
+      // photo, the variant is a 4:5 crop, and using the source numbers would
+      // reserve the wrong aspect ratio and shift the whole page on load.
+      // Null-safe: a profile with no photograph at all falls through to the
+      // designed monogram below, and so does one whose JPEG variant is
+      // somehow missing. Neither case can render a broken image.
+      $fallback = $photo?->variant($variant, 'jpeg');
+      ?>
+      <?php if ($photo !== null && $fallback !== null): ?>
         <picture>
-          <?php if ($webp = $photo->url($variant, 'webp')): ?>
-            <source srcset="<?= e(route_url($webp)) ?>" type="image/webp">
-          <?php endif; ?>
+          <?php foreach ([['avif', 'image/avif'], ['webp', 'image/webp']] as [$format, $type]): ?>
+            <?php if ($url = $photo->url($variant, $format)): ?>
+              <source srcset="<?= e(route_url($url)) ?>" type="<?= e($type) ?>">
+            <?php endif; ?>
+          <?php endforeach; ?>
           <img class="portrait__img"
                src="<?= e(route_url((string) $photo->url($variant, 'jpeg'))) ?>"
                alt="<?= e($photo->alt('Portrait of ' . $name)) ?>"
-               width="<?= e((string) $photo->width) ?>"
-               height="<?= e((string) $photo->height) ?>"
-               fetchpriority="high"
+               width="<?= e((string) $fallback->width) ?>"
+               height="<?= e((string) $fallback->height) ?>"
+               <?= $variant === 'hero' ? 'fetchpriority="high"' : 'loading="lazy"' ?>
                decoding="async">
         </picture>
       <?php else: ?>

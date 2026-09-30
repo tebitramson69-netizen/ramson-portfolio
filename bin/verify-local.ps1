@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Phase 2 local environment verification for Windows + XAMPP.
+    Local environment verification for Windows + XAMPP (Phases 2-5).
 
 .DESCRIPTION
     Discovers the local toolchain, checks configuration, creates the
@@ -132,7 +132,7 @@ function Get-Status([string] $Url) {
 }
 
 Write-Host ''
-Write-Host '  Phase 2 local verification - Tebit Ramson Titih portfolio' -ForegroundColor White
+Write-Host '  Local verification (Phases 2-5) - Tebit Ramson Titih portfolio' -ForegroundColor White
 Write-Host "  Project: $script:Root"
 
 # =====================================================================
@@ -328,7 +328,14 @@ if ($php) {
         @{ Path = '/work/does-not-exist';  Want = 404 },
         @{ Path = '/definitely-not-a-page';Want = 404 },
         @{ Path = '/assets/css/main.css';  Want = 200 },
-        @{ Path = '/assets/js/app.js';     Want = 200 }
+        @{ Path = '/assets/js/app.js';      Want = 200 },
+        @{ Path = '/assets/js/admin.js';     Want = 200 },
+        # The route guard: every admin path must send an anonymous visitor to
+        # the login form, which is a 302. A 200 here would mean the guard is
+        # not running.
+        @{ Path = '/admin';                  Want = 302 },
+        @{ Path = '/admin/profile';          Want = 302 },
+        @{ Path = '/admin/login';            Want = 200 }
     )
     foreach ($c in $cases) {
         $r = Get-Status "http://127.0.0.1:8123$($c.Path)"
@@ -343,6 +350,19 @@ if ($php) {
     # were passing without ever looking at a page. Guarded properly below.
     $homePage = Get-Status 'http://127.0.0.1:8123/'
     Assert-PageContent -Label 'dev server' -Page $homePage
+
+    # The guarded POST routes. A guard that only covers GET would leave the
+    # upload and remove endpoints wide open, so each is probed separately
+    # rather than assumed to be covered.
+    foreach ($p in @('/admin/profile', '/admin/profile/photo', '/admin/profile/photo/alt', '/admin/profile/photo/remove')) {
+        $r = try {
+            Invoke-WebRequest -Uri "http://127.0.0.1:8123$p" -Method POST -UseBasicParsing `
+                -TimeoutSec 15 -MaximumRedirection 0 -ErrorAction Stop
+        } catch { $_.Exception.Response }
+
+        $code = if ($r -and $r.StatusCode) { [int] $r.StatusCode } else { 0 }
+        Report "POST $p guarded" $(if ($code -eq 302) { 'PASS' } else { 'FAIL' }) "got $code, want 302 (redirect to login)"
+    }
 }
 
 # =====================================================================
@@ -413,6 +433,64 @@ Report 'Root .htaccess denies all' $(if ($htRoot -match 'Require all denied') { 
 $htUp = Get-Content (Join-Path $script:Root 'public\uploads\.htaccess') -Raw -ErrorAction SilentlyContinue
 Report 'Uploads deny executables' $(if ($htUp -match 'Require all denied') { 'PASS' } else { 'FAIL' }) ''
 Pop-Location
+
+# =====================================================================
+Section 'STEP 12 - MEDIA PIPELINE (Phase 5)'
+# =====================================================================
+
+if ($php) {
+    Push-Location $script:Root
+
+    # The real assertions live in bin\verify-media.php so they run identically
+    # on Windows and on a Linux host. This step runs it and reports its verdict
+    # rather than duplicating the checks in PowerShell.
+    $mediaOut = & $php 'bin\verify-media.php' 2>&1
+    $mediaExit = $LASTEXITCODE
+    $mediaOut | ForEach-Object { Write-Host "    $_" -ForegroundColor DarkGray }
+
+    $summary = ($mediaOut | Where-Object { $_ -match '\d+ passed, \d+ failed' } | Select-Object -Last 1)
+    Report 'Media pipeline self-check' $(if ($mediaExit -eq 0) { 'PASS' } else { 'FAIL' }) `
+        $(if ($summary) { $summary.Trim() } else { "exit code $mediaExit" })
+
+    Pop-Location
+} else {
+    Report 'Media pipeline self-check' 'WARN' 'php not found - skipped'
+}
+
+# Uploads directory rules, asserted against the file rather than guessed.
+$htUp2 = Get-Content (Join-Path $script:Root 'public\uploads\.htaccess') -Raw -ErrorAction SilentlyContinue
+Report 'Uploads cache is immutable' $(if ($htUp2 -match 'max-age=31536000, immutable') { 'PASS' } else { 'FAIL' }) `
+    'safe only because every URL carries ?v=<updated_at>'
+Report 'Uploads send nosniff'       $(if ($htUp2 -match 'X-Content-Type-Options') { 'PASS' } else { 'FAIL' }) ''
+Report 'Uploads disable indexes'    $(if ($htUp2 -match 'Options -Indexes') { 'PASS' } else { 'FAIL' }) ''
+
+# Under Apache, prove it: drop a .php file into public\uploads, request it, and
+# delete it again. A directive that is present but not taking effect - because
+# AllowOverride is None, say - passes a file-content check and fails this one.
+if ($apacheBase) {
+    $probeName = 'verify-probe.php'
+    $probePath = Join-Path $script:Root ('public\uploads\' + $probeName)
+
+    try {
+        Set-Content -LiteralPath $probePath -Value '<?php echo "EXECUTED"; ?>' -Encoding ASCII
+        $r = Get-Status "$apacheBase/uploads/$probeName"
+        Report 'Apache refuses .php in uploads' $(if ($r.Code -eq 403 -or $r.Code -eq 404) { 'PASS' } else { 'FAIL' }) `
+            "got $($r.Code) - must be 403/404, and the body must never contain EXECUTED"
+        Report 'Uploaded .php is not executed' $(if ($r.Body -notmatch 'EXECUTED') { 'PASS' } else { 'FAIL' }) ''
+    } finally {
+        Remove-Item -LiteralPath $probePath -Force -ErrorAction SilentlyContinue
+    }
+
+    $r = Get-Status "$apacheBase/uploads/"
+    Report 'Apache refuses an uploads listing' $(if ($r.Code -eq 403 -or $r.Code -eq 404) { 'PASS' } else { 'FAIL' }) "got $($r.Code)"
+} else {
+    Report 'Apache uploads rules' 'WARN' 'Apache not serving the project - upload directory rules not proven'
+}
+
+Write-Host ''
+Write-Host '  The authenticated flow (upload, replace, remove) needs your admin' -ForegroundColor DarkGray
+Write-Host '  password, so this script does not attempt it. Sign in at' -ForegroundColor DarkGray
+Write-Host '  /admin/profile and check the three crops shown there.' -ForegroundColor DarkGray
 
 # =====================================================================
 Section 'STEP 13 - GIT'

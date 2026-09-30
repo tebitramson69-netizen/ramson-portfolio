@@ -8,7 +8,7 @@ use App\Core\Database;
 use PDO;
 
 /**
- * Read access to media. Writes arrive in Phase 5 with the upload pipeline.
+ * Media persistence.
  */
 final class MediaRepository
 {
@@ -78,5 +78,59 @@ final class MediaRepository
             updatedAt:  (int) $row['updated_ts'],
             variants:   $variants,
         );
+    }
+
+    /**
+     * @param array{storage_key:string, original_name:string, mime_type:string,
+     *              width:int, height:int, byte_size:int, checksum:string,
+     *              alt_text:?string} $data
+     */
+    public function create(array $data): int
+    {
+        $statement = Database::connection()->prepare(
+            'INSERT INTO media
+                (storage_key, original_name, mime_type, width, height, byte_size, checksum, alt_text)
+             VALUES
+                (:storage_key, :original_name, :mime_type, :width, :height, :byte_size, :checksum, :alt_text)'
+        );
+        $statement->execute($data);
+
+        return (int) Database::connection()->lastInsertId();
+    }
+
+    /**
+     * @param list<array{variant:string, format:string, path:string,
+     *                   width:int, height:int, bytes:int}> $variants
+     */
+    public function addVariants(int $mediaId, array $variants): void
+    {
+        $statement = Database::connection()->prepare(
+            'INSERT INTO media_variants (media_id, variant, format, path, width, height, byte_size)
+             VALUES (:media_id, :variant, :format, :path, :width, :height, :bytes)'
+        );
+
+        foreach ($variants as $variant) {
+            $statement->execute($variant + ['media_id' => $mediaId]);
+        }
+    }
+
+    public function updateAltText(int $mediaId, ?string $altText): void
+    {
+        $statement = Database::connection()->prepare(
+            'UPDATE media SET alt_text = :alt WHERE id = :id'
+        );
+        $statement->execute(['alt' => $altText, 'id' => $mediaId]);
+    }
+
+    /** Variants cascade; a row still referenced elsewhere is refused by RESTRICT. */
+    public function delete(int $mediaId): void
+    {
+        $statement = Database::connection()->prepare('DELETE FROM media WHERE id = :id');
+        $statement->execute(['id' => $mediaId]);
+    }
+
+    public function count(): int
+    {
+        return (int) Database::connection()->query('SELECT COUNT(*) FROM media')->fetchColumn();
     }
 }

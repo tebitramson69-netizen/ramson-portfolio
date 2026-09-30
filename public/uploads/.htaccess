@@ -22,7 +22,20 @@ RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phps
 RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phps
 
 <IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
+    # setifempty, not set: the parent public/.htaccess already sends this, and
+    # `set` in a nested context appends a second identical header. `always`
+    # matches the parent, which writes to the err_headers_out table — a plain
+    # setifempty inspects the other table and so never sees it.
+    Header always setifempty X-Content-Type-Options "nosniff"
+
+    # A one-year immutable cache is only safe because every URL the templates
+    # emit carries ?v=<media.updated_at>. Replacing a photograph creates a new
+    # storage key AND a new version string, so a visitor holding the old file
+    # is never asked to revalidate and still sees the replacement immediately.
+    # Without that versioning this directive would pin a stale photo for a year.
+    <FilesMatch "(?i)\.(jpe?g|png|webp|avif)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
 </IfModule>
 
 Options -Indexes -ExecCGI

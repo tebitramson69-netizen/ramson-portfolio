@@ -3,6 +3,7 @@
  * @var \App\Domain\Auth\AdminUser|null $admin
  * @var string $pageTitle
  */
+$here = static fn (string $title): string => ($pageTitle ?? '') === $title ? ' aria-current="page"' : '';
 ?>
 <header class="admin-header">
   <div class="admin-container admin-header__inner">
@@ -14,7 +15,8 @@
 
     <nav class="admin-nav" aria-label="Admin">
       <ul class="admin-nav__list">
-        <li><a class="admin-nav__link" href="<?= e(route_url('/admin')) ?>" aria-current="page">Dashboard</a></li>
+        <li><a class="admin-nav__link" href="<?= e(route_url('/admin')) ?>"<?= $here('Dashboard') ?>>Dashboard</a></li>
+        <li><a class="admin-nav__link" href="<?= e(route_url('/admin/profile')) ?>"<?= $here('Profile') ?>>Profile</a></li>
         <li><a class="admin-nav__link" href="<?= e(route_url('/')) ?>">View site</a></li>
       </ul>
 

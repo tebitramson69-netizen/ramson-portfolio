@@ -3,7 +3,7 @@
 Ten phases. Each is independently valuable and ends with something demonstrably working — no
 phase leaves the project in a broken state.
 
-**Current phase: 4 — complete. Awaiting confirmation to begin Phase 5.**
+**Current phase: 5 — complete. Awaiting confirmation to begin Phase 6.**
 
 | Phase | Name | Status |
 |---|---|---|
@@ -12,7 +12,7 @@ phase leaves the project in a broken state.
 | 2 | Application Skeleton | ✅ Complete |
 | 3 | Database & Read Path | ✅ Complete |
 | 4 | Authentication & Admin Shell | ✅ Complete |
-| 5 | Profile Management & Media ⭐ | ⬜ Not started |
+| 5 | Profile Management & Media ⭐ | ✅ Complete |
 | 6 | Projects & Case Studies ⭐ | ⬜ Not started |
 | 7 | Remaining Content Management | ⬜ Not started |
 | 8 | Contact System | ⬜ Not started |
@@ -155,19 +155,39 @@ right one, so response time reveals nothing.
 
 ---
 
-## Phase 5 — Profile Management & Media ⭐ ⬜
+## Phase 5 — Profile Management & Media ✅
 
-The `media` table · `ImageUploadService` with the complete 11-step validation pipeline ·
-variant generation · the profile editor · upload / preview / replace / remove · the monogram
-fallback · versioned-URL cache strategy.
+**Delivered.** `ImageValidator` (an eight-step pipeline) · `ImageProcessor` (EXIF correction,
+cropping, encoding) · `MediaUploadService` (files, transaction, cleanup) · the profile editor
+at `/admin/profile` · upload, preview, replace, alt-text and remove, each on its own route ·
+the monogram fallback · `bin/verify-media.php`, a self-check that runs on Windows and Linux
+alike.
 
 **Why here and not later:** this is the requirement Ramson emphasised most, and `media` is the
 abstraction every subsequent phase depends on. Building projects first would mean retrofitting
 image handling into project management.
 
-**Acceptance test:** `grep` finds no image filename anywhere in `public/` or `src/`.
+**Key decisions** (reasoning in `05-ARCHITECTURE.md` §2.13a–2.13f): the uploaded bytes are
+never served, only a decode and re-encode · variants are rows, not conventions · files are
+written before the transaction commits and old files deleted only after · crops are anchored
+high and capped, never centred · `post_max_size` is checked before CSRF · the photograph, its
+description and the text fields are three separate forms.
 
-**Deliverable:** he changes his photo from the admin and it updates everywhere.
+**Verified:** 38 end-to-end HTTP assertions and 34 pipeline assertions pass. Covered: the
+route guard on every GET *and* POST, CSRF rejection, a PHP file renamed `.jpg`, a GIF, an
+undersized image, a file over `upload_max_filesize`, a body over `post_max_size`, all eight
+EXIF orientations, aspect-ratio and subject retention for all four crops, no upscaling,
+transparency flattening to white, EXIF actually being stripped, every variant URL resolving,
+replace leaving no orphan files, remove restoring the monogram, and removing twice being
+harmless. Under Apache: a `.php` file inside `public/uploads` returns 403 and is never
+executed, directory listing is refused, and images are served
+`Cache-Control: public, max-age=31536000, immutable`.
+
+**Acceptance test:** `grep` finds no image filename anywhere in `public/` or `src/`. **Passes**
+— the only image paths in the codebase are built from a server-generated `storage_key` inside
+`MediaUploadService`; no template knows a filename.
+
+**Deliverable:** he changes his photo from the admin and it updates everywhere. **Done.**
 
 ---
 

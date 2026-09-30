@@ -6,7 +6,10 @@ namespace App\Domain\Admin;
 
 use App\Core\Config;
 use App\Domain\Auth\PasswordHasher;
+use App\Domain\Media\ImageProcessor;
+use App\Domain\Media\ImageValidator;
 use App\Core\Database;
+use App\Http\Controllers\Admin\ProfileController;
 use PDO;
 
 /**
@@ -60,7 +63,9 @@ final class DashboardStats
         $items[] = [
             'label'  => 'Profile photograph uploaded',
             'done'   => $hasPhoto,
-            'detail' => $hasPhoto ? 'Shown in the hero and about section' : 'The RT monogram fallback is showing (Phase 5)',
+            'detail' => $hasPhoto
+                ? 'Shown in the hero, the about section and every social preview'
+                : 'The monogram fallback is showing — upload one under Profile',
         ];
 
         // CV
@@ -101,7 +106,7 @@ final class DashboardStats
             'label'  => 'Featured projects have a screenshot',
             'done'   => $noThumb === 0,
             'detail' => $noThumb === 0 ? 'Every featured project shows a real preview'
-                                       : $noThumb . ' still showing the placeholder frame (Phase 5)',
+                                       : $noThumb . ' still showing the placeholder frame (Phase 6)',
         ];
 
         // Projects missing the high-signal case-study sections
@@ -166,8 +171,8 @@ final class DashboardStats
                 'label'  => 'GD image library',
                 'ok'     => extension_loaded('gd'),
                 'detail' => extension_loaded('gd')
-                    ? 'Available — image resizing will work in Phase 5'
-                    : 'Missing — profile photo uploads will fail in Phase 5',
+                    ? 'Available — uploads are resized and re-encoded'
+                    : 'Missing — profile photo uploads cannot work at all',
             ],
             [
                 'label'  => 'fileinfo extension',
@@ -183,6 +188,15 @@ final class DashboardStats
                           . (is_writable($storage) ? '' : 'storage/uploads not writable.')
                           ?: 'Both writable',
             ],
+            $this->uploadSizeCheck(),
+            $this->imageFormatCheck(),
+            [
+                'label'  => 'EXIF orientation',
+                'ok'     => extension_loaded('exif'),
+                'detail' => extension_loaded('exif')
+                    ? 'Available — a phone photo is rotated upright before cropping'
+                    : 'Missing — GD ignores EXIF, so a phone photo may be stored sideways',
+            ],
             [
                 'label'  => 'Debug mode off',
                 'ok'     => !Config::isDebug(),
@@ -190,6 +204,92 @@ final class DashboardStats
                     ? 'Debug is ON — correct locally, must be off in production'
                     : 'Errors show no internal detail',
             ],
+        ];
+    }
+
+    /**
+     * php.ini versus the application's configured ceiling.
+     *
+     * This is the check that earns its place. When upload_max_filesize is
+     * below the configured limit, the form promises a size the server will
+     * reject — and when post_max_size is the smaller of the two, PHP throws
+     * the request body away before the application runs, so there is no
+     * $_FILES entry and no error code to report. Both failures are silent at
+     * the point of use, which is exactly why they belong here instead.
+     *
+     * @return array{label:string, ok:bool, detail:string}
+     */
+    private function uploadSizeCheck(): array
+    {
+        $configured = (int) Config::get('uploads.max_bytes', 5 * 1024 * 1024);
+        $uploadMax  = ProfileController::iniBytes((string) ini_get('upload_max_filesize'));
+        $postMax    = ProfileController::iniBytes((string) ini_get('post_max_size'));
+
+        $problems = [];
+
+        if ($uploadMax > 0 && $uploadMax < $configured) {
+            $problems[] = sprintf(
+                'upload_max_filesize is %s, below the configured %s',
+                (string) ini_get('upload_max_filesize'),
+                ImageValidator::formatBytes($configured)
+            );
+        }
+
+        if ($postMax > 0 && $postMax <= $uploadMax) {
+            $problems[] = sprintf(
+                'post_max_size (%s) is not larger than upload_max_filesize (%s), '
+                . 'so a file at the limit plus its form fields is discarded',
+                (string) ini_get('post_max_size'),
+                (string) ini_get('upload_max_filesize')
+            );
+        }
+
+        $effective = min(array_filter([$configured, $uploadMax, $postMax]));
+
+        return [
+            'label'  => 'Upload size limits agree',
+            'ok'     => $problems === [],
+            'detail' => $problems === []
+                ? 'Effective limit ' . ImageValidator::formatBytes((int) $effective)
+                : implode('; ', $problems) . '. Raise both in php.ini and restart Apache.',
+        ];
+    }
+
+    /**
+     * Which output formats this GD build can actually write.
+     *
+     * Not a failure: a missing format simply produces fewer variants and the
+     * <picture> element falls through to the next source. Reported because
+     * "why is the site serving JPEG" otherwise has no visible answer.
+     *
+     * @return array{label:string, ok:bool, detail:string}
+     */
+    private function imageFormatCheck(): array
+    {
+        $wanted = [];
+
+        /** @var array<string, array{formats:list<string>}> $variants */
+        $variants = (array) Config::get('uploads.variants', []);
+
+        foreach ($variants as $spec) {
+            foreach ($spec['formats'] as $format) {
+                $wanted[$format] = true;
+            }
+        }
+
+        $missing = array_keys(array_filter(
+            $wanted,
+            static fn (bool $_, string $format): bool => !ImageProcessor::supports($format),
+            ARRAY_FILTER_USE_BOTH
+        ));
+
+        return [
+            'label'  => 'Image formats available',
+            'ok'     => $missing === [],
+            'detail' => $missing === []
+                ? strtoupper(implode(', ', array_keys($wanted))) . ' — all configured variants can be written'
+                : 'GD cannot write ' . strtoupper(implode(', ', $missing))
+                  . '; those variants are skipped and the next format is served instead',
         ];
     }
 }

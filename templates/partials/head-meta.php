@@ -16,10 +16,17 @@ $description = $meta->description;
 $canonical   = $meta->canonical;
 $ogImage     = $meta->ogImage;
 
+// Dimensions and alt text accompany the image when it comes from the profile.
+// Scrapers that are given them lay the card out before the file has finished
+// downloading; scrapers that are not given them sometimes skip the image.
+$ogVariant = null;
+
 if ($ogImage === '' && ($profile?->hasPhoto() ?? false)) {
     $path = $profile->photo?->url('og', 'jpeg');
     if ($path !== null) {
-        $ogImage = absolute_url($path);
+        $ogImage   = absolute_url($path);
+        $ogVariant = $profile->photo?->variant('og', 'jpeg');
+        $ogAlt     = $profile->photo?->alt($profile->fullName);
     }
 }
 ?>
@@ -45,6 +52,11 @@ if ($ogImage === '' && ($profile?->hasPhoto() ?? false)) {
 <?php endif; ?>
 <?php if ($ogImage !== ''): ?>
 <meta property="og:image" content="<?= e_url($ogImage) ?>">
+<?php if ($ogVariant !== null): ?>
+<meta property="og:image:width" content="<?= e((string) $ogVariant->width) ?>">
+<meta property="og:image:height" content="<?= e((string) $ogVariant->height) ?>">
+<meta property="og:image:alt" content="<?= e($ogAlt ?? '') ?>">
+<?php endif; ?>
 <meta name="twitter:card" content="summary_large_image">
 <?php else: ?>
 <meta name="twitter:card" content="summary">

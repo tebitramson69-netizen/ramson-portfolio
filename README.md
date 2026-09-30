@@ -12,12 +12,18 @@ Full-stack development · PHP · JavaScript · MySQL · AI & Automation
 
 ## Status
 
-**Phase 2 — Application architecture and database foundation.** Complete.
+**Phase 5 — Profile management and media.** Complete.
 
-The public site now runs as a server-rendered PHP application: front
-controller, router, repositories, view layer, security headers and a database
-foundation with migrations. Identity content comes from the database. The CMS,
-authentication and media uploads belong to Phases 4–6.
+The public site runs as a server-rendered PHP application: front controller,
+router, repositories, view layer, security headers, and a database foundation
+with migrations. The admin area is live — Argon2id sign-in, a kernel-enforced
+route guard, CSRF on every POST, a dashboard, and a profile editor that
+uploads, previews, replaces and removes the profile photograph. Uploads are
+validated in eight steps, re-encoded (which strips EXIF), and derived into
+sized variants that no template ever names by filename.
+
+Project and case-study editing is Phase 6; project content is still edited via
+SQL until then.
 
 See [`docs/portfolio/02-ROADMAP.md`](docs/portfolio/02-ROADMAP.md) for the
 current phase and what ships next.
@@ -73,7 +79,7 @@ honest counter-argument.
 | [`docs/portfolio/02-ROADMAP.md`](docs/portfolio/02-ROADMAP.md) | Ten phases with deliverables and status |
 | [`docs/portfolio/03-OPEN-QUESTIONS.md`](docs/portfolio/03-OPEN-QUESTIONS.md) | Information still needed, grouped by what it blocks |
 | [`docs/portfolio/04-CONTENT-INVENTORY.md`](docs/portfolio/04-CONTENT-INVENTORY.md) | Every content claim, marked verified or outstanding |
-| [`docs/portfolio/05-ARCHITECTURE.md`](docs/portfolio/05-ARCHITECTURE.md) | Phase 2 architecture: decisions, alternatives, trade-offs, setup |
+| [`docs/portfolio/05-ARCHITECTURE.md`](docs/portfolio/05-ARCHITECTURE.md) | Architecture: decisions, alternatives, trade-offs, setup, verification |
 
 ---
 
@@ -118,12 +124,22 @@ php bin/migrate.php --status
 #    Either point an Apache virtual host at public/ …
 #    … or run without Apache:
 php -S localhost:8000 -t public bin/dev-server.php
+
+# 5. Create the administrator account (CLI only — there is no sign-up route)
+php bin/create-admin.php
 ```
 
 Verify the whole install in one command (Windows/XAMPP):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File bin\verify-local.ps1
+```
+
+Verify the image pipeline on any platform — it touches no database and no
+files of yours:
+
+```bash
+php bin/verify-media.php
 ```
 
 No `composer install` is needed: the project has no runtime dependencies yet

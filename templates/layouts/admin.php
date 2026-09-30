@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="<?= e(asset('assets/css/main.css')) ?>">
 <link rel="stylesheet" href="<?= e(asset('assets/css/admin.css')) ?>">
 <script src="<?= e(asset('assets/js/app.js')) ?>" defer></script>
+<script src="<?= e(asset('assets/js/admin.js')) ?>" defer></script>
 </head>
 <body class="admin-body">
 

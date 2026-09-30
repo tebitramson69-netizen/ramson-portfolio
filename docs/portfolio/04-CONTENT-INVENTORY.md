@@ -23,7 +23,7 @@ claim may only be published once it is marked ✅ **Verified** — supplied by R
 | Location: Cameroon | ✅ Verified | Supplied |
 | Value proposition | ✅ Verified | Supplied verbatim |
 | Technology line | ✅ Verified | Supplied verbatim |
-| Profile photograph | ⬜ Outstanding | Q2 — monogram fallback until provided |
+| Profile photograph | ⬜ Outstanding | Q2 — the monogram fallback shows until one exists. Since Phase 5 it is uploaded at `/admin/profile`; no file or code change is needed |
 | Availability status | ⬜ Outstanding | Q3 |
 | About paragraph | ⬜ Outstanding | Q12 |
 | Years of experience | 🚫 **Never state** | No figure supplied; do not infer one |

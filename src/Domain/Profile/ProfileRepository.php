@@ -88,4 +88,64 @@ final class ProfileRepository
             photo:              $photo,
         );
     }
+
+    /**
+     * Update the editable profile fields.
+     *
+     * A fixed column allowlist: the caller cannot name a column, so no request
+     * value can ever reach the SQL as an identifier.
+     *
+     * @param array<string, string|null> $data
+     */
+    public function update(array $data): void
+    {
+        $allowed = [
+            'full_name', 'monogram', 'professional_title', 'value_proposition',
+            'technology_line', 'short_intro', 'biography', 'location',
+            'education', 'institution', 'availability_status', 'availability_note',
+            'email', 'whatsapp', 'github_url', 'linkedin_url',
+        ];
+
+        $fields = array_intersect_key($data, array_flip($allowed));
+
+        if ($fields === []) {
+            return;
+        }
+
+        $assignments = implode(', ', array_map(
+            static fn (string $column): string => "{$column} = :{$column}",
+            array_keys($fields)
+        ));
+
+        Database::connection()
+            ->prepare("UPDATE profile SET {$assignments} WHERE id = 1")
+            ->execute($fields);
+
+        $this->forget();
+    }
+
+    public function setPhoto(?int $mediaId): void
+    {
+        Database::connection()
+            ->prepare('UPDATE profile SET photo_media_id = :id WHERE id = 1')
+            ->execute(['id' => $mediaId]);
+
+        $this->forget();
+    }
+
+    public function currentPhotoId(): ?int
+    {
+        $value = Database::connection()
+            ->query('SELECT photo_media_id FROM profile WHERE id = 1')
+            ->fetchColumn();
+
+        return $value === false || $value === null ? null : (int) $value;
+    }
+
+    /** Drop the per-request cache after a write. */
+    public function forget(): void
+    {
+        $this->cached = null;
+        $this->loaded = false;
+    }
 }

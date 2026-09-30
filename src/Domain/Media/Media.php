@@ -58,4 +58,19 @@ final class Media
     {
         return $this->altText !== null && $this->altText !== '' ? $this->altText : $fallback;
     }
+
+    /** @return list<string> Relative paths of every stored variant. */
+    public function variantPaths(): array
+    {
+        return array_map(
+            static fn (MediaVariant $v): string => $v->path,
+            $this->variants
+        );
+    }
+
+    /** @return list<MediaVariant> */
+    public function allVariants(): array
+    {
+        return $this->variants;
+    }
 }

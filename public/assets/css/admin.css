@@ -228,8 +228,215 @@
 .admin-check__label { font-size: var(--fs-body-sm); color: var(--fg-primary); }
 .admin-check__detail { font-size: var(--fs-caption); color: var(--fg-tertiary); }
 
+/* --- Forms ---------------------------------------------------------------- */
+
+/* Two columns where the fields are genuinely short, one where they are not.
+   auto-fit rather than a fixed count, so nothing has to be re-declared at a
+   breakpoint. */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
+}
+.admin-grid .field + .field { margin-top: 0; }
+.admin-grid + .field { margin-top: var(--space-5); }
+
+.admin-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.field__input--file {
+  padding: var(--space-3);
+  font-size: var(--fs-caption);
+  cursor: pointer;
+}
+.field__input--file::file-selector-button {
+  margin-right: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  font: inherit;
+  color: var(--fg-primary);
+  background: var(--surface-overlay);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+/* --- Media panel ---------------------------------------------------------- */
+
+.media-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-7);
+  margin-top: var(--space-5);
+  align-items: start;
+}
+
+.media-panel__upload {
+  padding: var(--space-6);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+/* The stored crops, shown at their real aspect ratios. A 1:1 crop that cuts a
+   chin off is invisible in a file picker and unmissable here — which is the
+   entire reason this block exists. */
+.media-crops {
+  display: flex;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.media-crop { margin: 0; max-width: 100%; }
+.media-crop__img {
+  display: block;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+}
+.media-crop--hero  .media-crop__img { width: 176px; height: auto; }
+.media-crop--thumb .media-crop__img { width: 96px;  height: 96px; border-radius: var(--radius-full); }
+.media-crop--og    .media-crop__img { width: 224px; height: auto; }
+
+.media-crop__caption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+  max-width: 24ch;
+}
+.media-crop__caption b {
+  font-size: var(--fs-micro);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--fg-secondary);
+}
+.media-crop__caption span { font-size: var(--fs-micro); color: var(--fg-tertiary); }
+
+.media-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+}
+.media-facts dt {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-tertiary);
+}
+.media-facts dd {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  color: var(--fg-secondary);
+}
+
+.media-empty {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--surface-raised);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-lg);
+}
+.media-empty__mark {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 90px;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  letter-spacing: 0.04em;
+  color: var(--fg-tertiary);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.media-empty p { margin: 0; }
+
+/* --- Pre-upload preview --------------------------------------------------- */
+
+.media-preview {
+  margin-top: var(--space-5);
+  padding: var(--space-5);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.media-preview__title {
+  margin: 0;
+  color: var(--fg-tertiary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: var(--fs-micro);
+}
+.media-preview__frames {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+/* The frames crop with object-fit exactly as the server will. CSS
+   object-position measures the offset as a percentage of the OVERFLOW, which
+   is the same measure as ImageProcessor::PORTRAIT_ANCHOR — so 38% here shows
+   the crop that actually gets stored for these two shapes, rather than a
+   friendlier one. (The processor's MAX_HEADROOM cap only bites on a much
+   wider frame than either of these, such as the social card.) */
+.media-preview__frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-base);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+}
+.media-preview__frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 38%;
+}
+.media-preview__frame--hero   { width: 104px; height: 130px; }
+.media-preview__frame--square { width: 104px; height: 104px; border-radius: var(--radius-full); }
+
+.media-preview__label {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 2px 0;
+  text-align: center;
+  font-size: var(--fs-micro);
+  color: var(--fg-secondary);
+  background: color-mix(in srgb, var(--surface-base) 78%, transparent);
+}
+.media-preview__frame--square .media-preview__label { display: none; }
+
+.media-preview__meta {
+  margin: var(--space-4) 0 0;
+  color: var(--fg-secondary);
+}
+.media-preview__meta.is-problem { color: var(--danger); }
+
+@media (max-width: 1023px) {
+  .media-panel { grid-template-columns: minmax(0, 1fr); }
+}
+
 @media (max-width: 639px) {
   .admin-header__inner { flex-direction: column; align-items: flex-start; }
   .admin-nav { width: 100%; justify-content: space-between; }
   .admin-nav__user { padding-left: 0; border-left: 0; }
+  .media-panel__upload { padding: var(--space-5); }
+  .media-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-actions .btn { width: 100%; justify-content: center; }
 }

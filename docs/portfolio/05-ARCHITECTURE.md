@@ -369,6 +369,131 @@ weakening the policy to keep eight attributes is the wrong trade. They were
 replaced by `u-mt-*` utility classes — no visual change, a materially stronger
 policy. **Verified:** zero CSP violations across three pages and four widths.
 
+
+### 2.13a The uploaded bytes are never served
+
+**Decision.** Every variant is produced by decoding the upload with GD and
+re-encoding it. The original file the browser sent is discarded; a re-encoded
+JPEG is kept outside the web root as the canonical source for future sizes.
+
+**Alternatives.** Store the upload as-is and resize on demand; store the
+original in `public/` and serve it directly; sanitise metadata with a library.
+
+**Why.** A decode and re-encode is the single cheapest control that closes an
+entire class of attack at once. A polyglot file — valid GIF, valid PHP — does
+not survive it. Neither does a payload hidden in an EXIF comment. It also
+removes the GPS coordinates a phone writes into every photograph, which is a
+privacy problem, not a security one, and would otherwise be published. No
+allow-list of MIME types achieves any of that on its own.
+
+**Trade-off.** A small quality loss on re-encode, and CPU at upload time. The
+measured cost for the full set is 178 ms without AVIF and 2,061 ms with it.
+An upload happens perhaps twice a year.
+
+### 2.13b Variants are rows, not a naming convention
+
+**Decision.** `media_variants` stores one row per derived file, carrying its
+variant name, format, path and real dimensions. Templates ask a `Media` object
+for a URL.
+
+**Alternatives.** Derive the filename in the template from the storage key and
+a size name (`{key}-hero.webp`); store a JSON blob of variants on `media`.
+
+**Why.** A convention cannot answer "does this variant exist?" without hitting
+the filesystem, and it cannot record the variant's real size. Both matter
+here: a GD build without AVIF simply writes fewer files, and the `<picture>`
+element must not advertise a source that was never produced. The real
+dimensions matter because they are not the configured ones — a source smaller
+than the frame is not upscaled, so `hero` may legitimately be 420×525. Those
+are the numbers the `<img>` must carry, or the browser reserves the wrong
+aspect ratio and the page shifts on load. On MariaDB a JSON column is
+`longtext` with no validation (verified), so a child table is also the only
+option that a foreign key and an index can act on.
+
+**Trade-off.** One extra table and one extra query — batched with
+`WHERE media_id IN (…)`, so it stays one query however many images a page
+shows.
+
+### 2.13c Files are written before the commit; old files are deleted after it
+
+**Decision.** The order is: validate → decode → orient → derive → write new
+files → COMMIT → delete the old files. A failure anywhere unlinks the files
+just written and leaves the database untouched.
+
+**Alternatives.** Write files inside the transaction; delete the old photo
+first and then upload the new one; a queue with a background sweeper.
+
+**Why.** The filesystem is not transactional, so one of the two must be able
+to fail cleanly, and an orphaned *file* is harmless where an orphaned *row* is
+a broken image on the live site. Deleting first is worse still: a failure
+would leave the portfolio with no photograph at all.
+
+**Trade-off.** A crash between the writes and the commit leaves files nothing
+references. They are invisible and cost a few hundred kilobytes; a sweeper can
+be added if that ever matters, and it never needs to run for correctness.
+
+### 2.13d Crops are anchored high, and the anchor is capped
+
+**Decision.** A vertical crop starts 38% of the way into the height being
+discarded, but never more than 10% of the source height from the top.
+
+**Alternatives.** Centre the crop; anchor at a fixed fraction of the source;
+detect the face.
+
+**Why.** A centred crop of a portrait decapitates it, because a face sits in
+the upper part of the frame. A fraction of the discarded height fixes the
+mild cases but not the severe ones: cropping 1200×1500 to the 1200×630 social
+card discards 870 px, and 38% of that starts the frame 330 px down — past the
+face entirely. The cap bounds the offset in terms of the source, so the
+subject survives every configured shape. **Verified:** an assertion in
+`bin/verify-media.php` places a marker in the top fifth of a test portrait and
+fails if any of the four crops loses it. It did fail for the social card
+before the cap existed.
+
+**Trade-off.** Two constants rather than one, and neither is derived from the
+actual image. Face detection would be better and is not available in GD; the
+admin shows all three crops before anything is committed, which is the
+practical answer.
+
+### 2.13e `post_max_size` is checked before CSRF
+
+**Decision.** `ProfileController::uploadPhoto()` detects a discarded request
+body — a POST with a declared `Content-Length` but empty `$_POST` and
+`$_FILES` — and reports it, before the CSRF token is examined.
+
+**Alternatives.** Let the CSRF branch handle it; raise the limits and ignore
+the case; a `MAX_FILE_SIZE` hidden field.
+
+**Why.** When a body exceeds `post_max_size`, PHP discards it entirely: there
+is no token, no file, and no `$_FILES` error code. The CSRF check therefore
+fires and reports "that form expired" — a message that names the wrong cause
+and sends the author to retry the same upload forever. `MAX_FILE_SIZE` is no
+help at all, since it is a client-side hint PHP only honours after parsing a
+body it has already thrown away.
+
+**Trade-off.** One check runs before CSRF. It is safe because it only reads
+`Content-Length` and reports a message; it changes nothing and reveals
+nothing an attacker does not already know.
+
+### 2.13f Three forms, three routes
+
+**Decision.** The photograph, its description, and the text fields each post
+to their own route: `/admin/profile`, `/admin/profile/photo`,
+`/admin/profile/photo/alt`, `/admin/profile/photo/remove`.
+
+**Alternatives.** One form containing everything; a single route branching on
+which fields arrived.
+
+**Why.** They fail independently and should be recoverable independently. A
+rejected image must not discard a page of edited biography, and correcting a
+typo in the alt text must not re-encode nine files. Separate routes also make
+the audit trivial: every one of them is a POST, guarded, and CSRF-checked, and
+that can be read off the route table rather than inferred from a controller.
+
+**Trade-off.** Four routes where one would do, and the page renders four
+`<form>` elements. Neither costs anything a reader of the route table has to
+untangle.
+
 ---
 
 ## 3. Request lifecycle
@@ -457,8 +582,25 @@ powershell -ExecutionPolicy Bypass -File bin\verify-local.ps1
 Discovers the toolchain, checks configuration without printing secrets,
 creates the database if it is missing (`IF NOT EXISTS` only — it never drops
 or resets one), runs migrations and seeds, exercises every route on both the
-development server and Apache, and performs the security checks. Writes
+development server and Apache, proves the admin guard on every GET *and* POST,
+runs the media self-check below, and performs the security checks — including
+dropping a `.php` file into `public/uploads`, requesting it through Apache, and
+deleting it again, because a directive that is present but not in effect passes
+a file-content check and fails that one. Writes
 `storage/logs/verify-local-report.txt`.
+
+### Verifying the media pipeline anywhere
+
+```
+php bin/verify-media.php
+```
+
+Touches nothing: no database, no uploads directory, no configuration beyond
+reading it. It builds its own fixtures in the temp directory, runs them through
+the real `ImageProcessor` and `ImageValidator`, and exits non-zero if any
+assertion fails. Covers all eight EXIF orientations, every configured crop's
+aspect ratio and subject retention, the no-upscale rule, transparency
+flattening, EXIF actually being stripped, and the `php.ini` limits.
 
 ---
 
@@ -472,5 +614,7 @@ development server and Apache, and performs the security checks. Writes
 | Google Fonts widens the CSP | Two hosts allowed explicitly; Phase 9 self-hosts and removes them | Tracked |
 | Migration runner's SQL splitter | Quote- and comment-aware; no stored programs in the schema. Extend `splitStatements()` if that changes | Bounded |
 | `root` used as the database user | `config.example.php` documents a least-privilege user | Documented, not enforced |
-| No automated tests | Verification is manual and browser-based. A test suite belongs with the first business logic worth testing — the upload validator in Phase 5 | Open |
+| No automated tests | `bin/verify-media.php` covers the media pipeline with 34 assertions and runs on Windows and Linux alike; `bin/verify-local.ps1` covers the environment and routes. Everything else is still verified by hand | Partly closed |
+| A variant format the GD build cannot write | The upload succeeds with fewer variants and `<picture>` falls through; the dashboard reports which formats are available | Mitigated |
+| Orphaned files after a crash between write and commit | Files without a row are invisible and cost a few hundred kilobytes; correctness never depends on cleaning them | Accepted |
 | Case-study prose is seeded, not authored | The overview/problem/solution text is Phase 1 wording built from supplied scope. Editable from the CMS in Phase 6 | Tracked |
