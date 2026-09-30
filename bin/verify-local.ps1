@@ -109,26 +109,67 @@ function Assert-PageContent {
     }
 }
 
-function Get-Status([string] $Url) {
+function Get-Status([string] $Url, [string] $Method = 'GET') {
+    <#
+        Deliberately NOT Invoke-WebRequest.
+
+        A redirect has to be observable, and -MaximumRedirection 0 does not
+        report one identically across PowerShell versions or hosts. On Windows
+        PowerShell 5.1 an admin route that answers 302 came back as code 0 -
+        indistinguishable from a connection failure, which is the same class of
+        bug as the vacuous assertions fixed above.
+
+        HttpWebRequest with AllowAutoRedirect disabled returns a 3xx as an
+        ordinary response on every version, so "the guard redirects" is proven
+        rather than inferred. Any genuine transport failure now carries the
+        exception type AND message, so a future 0 says why instead of leaving
+        it to be guessed.
+    #>
     try {
-        $r = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 15 -MaximumRedirection 0 -ErrorAction Stop
-        return [pscustomobject]@{ Code = [int] $r.StatusCode; Body = $r.Content; Headers = $r.Headers; Error = '' }
+        $request = [System.Net.WebRequest]::Create($Url)
     } catch {
-        $resp = $_.Exception.Response
-        if ($resp -and $resp.StatusCode) {
-            $body = ''
-            try {
-                $sr = New-Object System.IO.StreamReader($resp.GetResponseStream())
-                $body = $sr.ReadToEnd(); $sr.Close()
-            } catch { }
-            return [pscustomobject]@{ Code = [int] $resp.StatusCode; Body = $body; Headers = $null; Error = '' }
-        }
-        # The failure message goes in its own field. Putting it in Body makes
-        # a connection failure look like page content: the body is then
-        # non-empty, so an emptiness guard does not trip, and every
-        # "-notmatch" assertion passes against an error string.
-        return [pscustomobject]@{ Code = 0; Body = ''; Headers = $null; Error = $_.Exception.Message }
+        return [pscustomobject]@{ Code = 0; Body = ''; Headers = $null; Error = "bad URL: $($_.Exception.Message)" }
     }
+
+    $request.Method            = $Method
+    $request.AllowAutoRedirect = $false
+    $request.Timeout           = 15000
+    $request.UserAgent         = 'verify-local.ps1'
+
+    $response = $null
+    try {
+        if ($Method -eq 'POST') {
+            # An empty body still needs the stream opened and closed, or the
+            # request is never sent.
+            $request.ContentType   = 'application/x-www-form-urlencoded'
+            $request.ContentLength = 0
+            $request.GetRequestStream().Close()
+        }
+        $response = $request.GetResponse()
+    } catch [System.Net.WebException] {
+        $response = $_.Exception.Response
+        if (-not $response) {
+            return [pscustomobject]@{ Code = 0; Body = ''; Headers = $null; Error = "WebException/$($_.Exception.Status): $($_.Exception.Message)" }
+        }
+    } catch {
+        return [pscustomobject]@{ Code = 0; Body = ''; Headers = $null; Error = "$($_.Exception.GetType().Name): $($_.Exception.Message)" }
+    }
+
+    $body = ''
+    try {
+        $stream = $response.GetResponseStream()
+        if ($stream) {
+            $reader = New-Object System.IO.StreamReader($stream)
+            $body = $reader.ReadToEnd()
+            $reader.Close()
+        }
+    } catch { }
+
+    $code    = [int] $response.StatusCode
+    $headers = $response.Headers
+    $response.Close()
+
+    return [pscustomobject]@{ Code = $code; Body = $body; Headers = $headers; Error = '' }
 }
 
 Write-Host ''
@@ -339,7 +380,8 @@ if ($php) {
     )
     foreach ($c in $cases) {
         $r = Get-Status "http://127.0.0.1:8123$($c.Path)"
-        Report "dev $($c.Path)" $(if ($r.Code -eq $c.Want) { 'PASS' } else { 'FAIL' }) "got $($r.Code), want $($c.Want)"
+        $why = if ($r.Error) { " - $($r.Error)" } else { '' }
+        Report "dev $($c.Path)" $(if ($r.Code -eq $c.Want) { 'PASS' } else { 'FAIL' }) "got $($r.Code), want $($c.Want)$why"
     }
 
     # NOTE: the variable below must NOT be called $home. $HOME is a read-only
@@ -355,13 +397,9 @@ if ($php) {
     # upload and remove endpoints wide open, so each is probed separately
     # rather than assumed to be covered.
     foreach ($p in @('/admin/profile', '/admin/profile/photo', '/admin/profile/photo/alt', '/admin/profile/photo/remove')) {
-        $r = try {
-            Invoke-WebRequest -Uri "http://127.0.0.1:8123$p" -Method POST -UseBasicParsing `
-                -TimeoutSec 15 -MaximumRedirection 0 -ErrorAction Stop
-        } catch { $_.Exception.Response }
-
-        $code = if ($r -and $r.StatusCode) { [int] $r.StatusCode } else { 0 }
-        Report "POST $p guarded" $(if ($code -eq 302) { 'PASS' } else { 'FAIL' }) "got $code, want 302 (redirect to login)"
+        $r   = Get-Status "http://127.0.0.1:8123$p" 'POST'
+        $why = if ($r.Error) { " - $($r.Error)" } else { '' }
+        Report "POST $p guarded" $(if ($r.Code -eq 302) { 'PASS' } else { 'FAIL' }) "got $($r.Code), want 302 (redirect to login)$why"
     }
 }
 
@@ -388,7 +426,8 @@ if ($apacheBase) {
         @{ P = '/assets/css/main.css'; W = 200 }
     )) {
         $r = Get-Status "$apacheBase$($c.P)"
-        Report "apache $($c.P)" $(if ($r.Code -eq $c.W) { 'PASS' } else { 'FAIL' }) "got $($r.Code), want $($c.W)"
+        $why = if ($r.Error) { " - $($r.Error)" } else { '' }
+        Report "apache $($c.P)" $(if ($r.Code -eq $c.W) { 'PASS' } else { 'FAIL' }) "got $($r.Code), want $($c.W)$why"
     }
 
     $projectBase = $apacheBase -replace '/public$', ''

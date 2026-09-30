@@ -80,15 +80,25 @@ $configured = (int) Config::get('uploads.max_bytes', 5 * 1024 * 1024);
 $uploadMax  = ProfileController::iniBytes((string) ini_get('upload_max_filesize'));
 $postMax    = ProfileController::iniBytes((string) ini_get('post_max_size'));
 
+$effective = (int) min(array_filter([$configured, $uploadMax, $postMax]));
+
 check(
     'upload_max_filesize covers the configured limit',
     $uploadMax === 0 || $uploadMax >= $configured,
     'php.ini ' . ini_get('upload_max_filesize') . ' vs configured ' . ImageValidator::formatBytes($configured)
 );
+
+// Compared against the EFFECTIVE limit, not against upload_max_filesize.
+// XAMPP ships 40M for both, and a naive "post_max_size must exceed
+// upload_max_filesize" reports that as broken — when the application only ever
+// accepts 5 MB, so a body carrying the largest file it will take plus a few
+// form fields is nowhere near 40M. What actually breaks is a post_max_size
+// below what we accept, because PHP then discards the body with no error code.
 check(
-    'post_max_size exceeds upload_max_filesize',
-    $postMax === 0 || $postMax > $uploadMax,
-    'a body at the limit plus its form fields must still fit'
+    'post_max_size covers the largest upload we accept',
+    $postMax === 0 || $postMax > $effective,
+    'accepting ' . ImageValidator::formatBytes($effective)
+        . ' with post_max_size ' . ini_get('post_max_size')
 );
 
 $memory = ImageProcessor::memoryAvailable();

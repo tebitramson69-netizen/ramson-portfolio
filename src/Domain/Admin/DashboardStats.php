@@ -235,22 +235,28 @@ final class DashboardStats
             );
         }
 
-        if ($postMax > 0 && $postMax <= $uploadMax) {
+        $effective = (int) min(array_filter([$configured, $uploadMax, $postMax]));
+
+        // Measured against what we actually accept, not against
+        // upload_max_filesize. XAMPP ships 40M for both, which is fine here:
+        // the application caps uploads at 5 MB, so the largest body it can
+        // produce is nowhere near 40M. The real failure is a post_max_size
+        // below the accepted size, because PHP then throws the body away with
+        // no error code for the application to report.
+        if ($postMax > 0 && $postMax <= $effective) {
             $problems[] = sprintf(
-                'post_max_size (%s) is not larger than upload_max_filesize (%s), '
-                . 'so a file at the limit plus its form fields is discarded',
+                'post_max_size (%s) is not larger than the %s this site accepts, '
+                . 'so an upload at the limit is discarded before PHP can report it',
                 (string) ini_get('post_max_size'),
-                (string) ini_get('upload_max_filesize')
+                ImageValidator::formatBytes($effective)
             );
         }
-
-        $effective = min(array_filter([$configured, $uploadMax, $postMax]));
 
         return [
             'label'  => 'Upload size limits agree',
             'ok'     => $problems === [],
             'detail' => $problems === []
-                ? 'Effective limit ' . ImageValidator::formatBytes((int) $effective)
+                ? 'Effective limit ' . ImageValidator::formatBytes($effective)
                 : implode('; ', $problems) . '. Raise both in php.ini and restart Apache.',
         ];
     }
