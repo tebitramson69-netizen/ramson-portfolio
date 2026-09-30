@@ -18,31 +18,35 @@ namespace App\Core;
  */
 final class Router
 {
-    /** @var list<array{method:string, pattern:string, handler:array{0:class-string,1:string}}> */
+    /** @var list<array{method:string, pattern:string, handler:array{0:class-string,1:string}, guard:?string}> */
     private array $routes = [];
 
     /** @var array<string, array{regex:string, names:list<string>}> */
     private array $compiled = [];
 
-    /** @param array{0:class-string, 1:string} $handler [ControllerClass, 'method'] */
-    public function get(string $pattern, array $handler): void
+    /**
+     * @param array{0:class-string, 1:string} $handler [ControllerClass, 'method']
+     * @param string|null $guard 'auth' requires a signed-in administrator
+     */
+    public function get(string $pattern, array $handler, ?string $guard = null): void
     {
-        $this->add('GET', $pattern, $handler);
+        $this->add('GET', $pattern, $handler, $guard);
     }
 
     /** @param array{0:class-string, 1:string} $handler */
-    public function post(string $pattern, array $handler): void
+    public function post(string $pattern, array $handler, ?string $guard = null): void
     {
-        $this->add('POST', $pattern, $handler);
+        $this->add('POST', $pattern, $handler, $guard);
     }
 
     /** @param array{0:class-string, 1:string} $handler */
-    private function add(string $method, string $pattern, array $handler): void
+    private function add(string $method, string $pattern, array $handler, ?string $guard = null): void
     {
         $this->routes[] = [
             'method'  => $method,
             'pattern' => self::normalise($pattern),
             'handler' => $handler,
+            'guard'   => $guard,
         ];
     }
 
@@ -53,7 +57,7 @@ final class Router
     }
 
     /**
-     * @return array{handler:array{0:class-string,1:string}, params:array<string,string>}|null
+     * @return array{handler:array{0:class-string,1:string}, params:array<string,string>, guard:?string}|null
      *         null when no route matches the path at all (404).
      * @throws MethodNotAllowedException when the path matches but the verb does not (405).
      */
@@ -75,7 +79,11 @@ final class Router
             $pathMatched = true;
 
             if ($route['method'] === $verb) {
-                return ['handler' => $route['handler'], 'params' => $params];
+                return [
+                    'handler' => $route['handler'],
+                    'params'  => $params,
+                    'guard'   => $route['guard'],
+                ];
             }
         }
 

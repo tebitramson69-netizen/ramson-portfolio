@@ -39,6 +39,28 @@ final class ErrorHandler
             if ((error_reporting() & $severity) === 0) {
                 return false;
             }
+
+            // Deprecations are RECORDED, not thrown.
+            //
+            // Promoting them to exceptions means a future PHP release can
+            // take the whole site down for something that still works —
+            // which is exactly what happened when PHP 8.4 deprecated
+            // session.sid_length and every admin page began returning 500.
+            // A deprecation is a warning about tomorrow; it should not be
+            // fatal today. Warnings and notices still throw, because those
+            // signal a bug now.
+            if ($severity === E_DEPRECATED || $severity === E_USER_DEPRECATED) {
+                self::logLine(sprintf(
+                    "[%s] DEPRECATION: %s in %s:%d\n",
+                    date('c'),
+                    $message,
+                    $file,
+                    $line
+                ));
+
+                return true;
+            }
+
             throw new ErrorException($message, 0, $severity, $file, $line);
         });
 
@@ -90,6 +112,11 @@ final class ErrorHandler
             $e->getTraceAsString()
         );
 
+        self::logLine($line);
+    }
+
+    private static function logLine(string $line): void
+    {
         if (self::$logFile !== '' && is_dir(dirname(self::$logFile))) {
             @file_put_contents(self::$logFile, $line, FILE_APPEND | LOCK_EX);
         } else {

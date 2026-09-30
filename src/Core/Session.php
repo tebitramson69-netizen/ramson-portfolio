@@ -21,6 +21,23 @@ final class Session
 {
     private static bool $started = false;
 
+    /**
+     * The cookie name this application uses, resolvable WITHOUT starting a
+     * session.
+     *
+     * PHP's own session_name() returns the ini default ("PHPSESSID") until
+     * session_name() has been called inside start(). Anything that needs to
+     * ask "is there a session cookie on this request?" before deciding to
+     * start one — which is the whole point of starting lazily — must use this
+     * instead, or it will look for the wrong cookie and never find it.
+     */
+    public static function cookieName(): string
+    {
+        $name = (string) Config::get('session.name', 'rp_session');
+
+        return self::requestIsSecure() ? '__Host-' . $name : $name;
+    }
+
     public static function start(): void
     {
         if (self::$started || session_status() === PHP_SESSION_ACTIVE) {
@@ -36,12 +53,7 @@ final class Session
         // only be used over HTTPS — on local XAMPP over plain HTTP the
         // browser would reject the cookie entirely and logins would appear to
         // fail for no visible reason.
-        $name = (string) Config::get('session.name', 'rp_session');
-        if ($secure) {
-            $name = '__Host-' . $name;
-        }
-
-        session_name($name);
+        session_name(self::cookieName());
 
         $savePath = dirname(__DIR__, 2) . '/storage/sessions';
         if (is_dir($savePath) && is_writable($savePath)) {
@@ -60,9 +72,14 @@ final class Session
         ini_set('session.use_strict_mode', '1');
         ini_set('session.use_only_cookies', '1');
         ini_set('session.use_trans_sid', '0');
-        ini_set('session.sid_length', '48');
-        ini_set('session.sid_bits_per_character', '5');
         ini_set('session.gc_maxlifetime', (string) Config::get('session.lifetime', 7200));
+
+        // session.sid_length and session.sid_bits_per_character were set here
+        // to widen the session id. Both are DEPRECATED as of PHP 8.4 and
+        // emit a deprecation notice. They are also unnecessary: PHP already
+        // generates ids from a CSPRNG with ample entropy, and use_strict_mode
+        // above is what actually prevents an attacker-chosen id being
+        // accepted.
 
         session_start();
         self::$started = true;

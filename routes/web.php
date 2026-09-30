@@ -3,23 +3,39 @@
 /**
  * Route table.
  *
- * One flat, greppable list. Adding a page is one line here plus a controller
- * method — there is no route caching, no attribute scanning and no magic.
+ * One flat, greppable list. The third argument is a guard: 'auth' means the
+ * kernel refuses the request and redirects to the login form BEFORE the
+ * controller is constructed, so an admin screen cannot be reached by an
+ * anonymous visitor even if a check inside it were ever forgotten.
  *
- * PHASE 2 SCOPE. /about and /contact are currently sections of the home page
- * rather than separate documents, so giving them URLs now would create two
- * addresses for the same content and split their ranking. They become routes
- * in Phase 7, when the CMS gives them content of their own. The admin routes
- * arrive in Phase 4.
+ * PHASE 4 SCOPE. Profile editing, project CRUD and media management arrive in
+ * Phases 5 and 6. /about and /contact remain sections of the home page until
+ * they have content of their own, so the site does not ship two URLs for the
+ * same text.
  */
 
 declare(strict_types=1);
 
 use App\Core\Router;
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WorkController;
 
 return static function (Router $router): void {
-    $router->get('/',             [HomeController::class, 'index']);
-    $router->get('/work/{slug}',  [WorkController::class, 'show']);
+
+    // ---- public ---------------------------------------------------------
+    $router->get('/',            [HomeController::class, 'index']);
+    $router->get('/work/{slug}', [WorkController::class, 'show']);
+
+    // ---- admin: unauthenticated by necessity ----------------------------
+    $router->get('/admin/login',  [AuthController::class, 'showLogin']);
+    $router->post('/admin/login', [AuthController::class, 'login']);
+
+    // Logout is a POST because it changes state; a GET logout can be fired by
+    // any third-party image tag.
+    $router->post('/admin/logout', [AuthController::class, 'logout']);
+
+    // ---- admin: guarded -------------------------------------------------
+    $router->get('/admin', [DashboardController::class, 'index'], 'auth');
 };

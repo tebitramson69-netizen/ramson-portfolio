@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Core\Response;
 use App\Core\Seo;
 use App\Core\View;
+use App\Domain\Auth\AuthService;
 use App\Domain\Profile\ProfileRepository;
 use App\Domain\Project\ProjectRepository;
 use App\Domain\Settings\SettingsRepository;
@@ -28,6 +29,7 @@ abstract class Controller
         protected readonly SettingsRepository $settings,
         protected readonly ProjectRepository $projects,
         protected readonly SkillRepository $skills,
+        protected readonly AuthService $auth,
     ) {
     }
 

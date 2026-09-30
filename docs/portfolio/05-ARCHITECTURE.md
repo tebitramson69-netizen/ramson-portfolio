@@ -313,6 +313,54 @@ injection, but it requires `Secure`, and a `Secure` cookie is silently dropped
 over plain HTTP. Applying it unconditionally would make local XAMPP logins fail
 with no visible cause. The prefix is therefore conditional on the scheme.
 
+### 2.11b Argon2id, not PASSWORD_DEFAULT
+
+**Decision.** `PASSWORD_ARGON2ID` at 64 MiB / t=3 / p=1, falling back to bcrypt only where the
+PHP build lacks Argon2.
+
+**Why not `PASSWORD_DEFAULT`.** It is still bcrypt in PHP 8.4 — verified, it emits `$2y$` — and
+**bcrypt silently truncates at 72 bytes**. This is not theoretical: hashing a 72-character
+password and then verifying a 100-character password that merely starts with those 72
+characters SUCCEEDS. Reproduced on PHP 8.4.19. A long passphrase would be quietly reduced.
+
+**Parameters.** OWASP's floor is 19 MiB / t=2 / p=1, which measured 18 ms here — cheap for an
+attacker too. A login happens rarely, so the cost is raised to ~143 ms locally. More memory
+buys more GPU resistance than more iterations; 64 MiB rather than 128 MiB keeps it comfortable
+on modest shared hosting.
+
+**Trade-off.** Argon2 must be present in the PHP build. Where it is not, the fallback
+**rejects** anything over 72 bytes rather than truncating it — refusing is honest, truncating
+is a silent downgrade. The dashboard states which algorithm is actually in use.
+
+### 2.11c Throttling on account AND address
+
+Failed attempts are counted against both the submitted email and the client IP, and either
+crossing the limit blocks. Throttling on the account alone lets a botnet spread attempts across
+addresses; throttling on the address alone lets one attacker lock the owner out of their own
+account. A successful login clears that account's failures.
+
+**Verified:** five failures lock the account; the sixth and seventh are refused *before* the
+password check, so they do not inflate the count; and the correct password is refused while
+locked, so the lockout cannot be bypassed by finally guessing right.
+
+### 2.11d The guard runs before the controller exists
+
+Route guards are enforced in `Kernel::handle()`, not in an admin base class. A base-class check
+invites the assumption that a controller which forgets to extend it is still safe; a kernel
+check means an unauthenticated request never reaches any admin controller at all.
+
+Two further properties, both verified: re-logging in rotates a stored `session_token` that every
+request compares against, so a stolen cookie stops working the moment the owner signs in again;
+and the session is bound to a user-agent hash, so replaying the cookie elsewhere fails.
+
+### 2.11e Deprecations are logged, not thrown
+
+`ErrorHandler` promotes warnings and notices to exceptions, which catches bugs early. It
+deliberately does **not** do this for `E_DEPRECATED`. PHP 8.4 deprecated `session.sid_length`,
+which the session bootstrap set — and because deprecations were fatal, every admin page returned
+500 the first time a session was started. A deprecation is a warning about tomorrow and must not
+be fatal today.
+
 ### 2.12 Inline styles removed for the CSP
 
 The Phase 1 static pages used `style="margin-top: …"` in about eight places.

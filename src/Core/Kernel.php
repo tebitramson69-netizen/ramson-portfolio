@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Domain\Auth\AdminUserRepository;
+use App\Domain\Auth\AuthService;
+use App\Domain\Auth\LoginThrottle;
 use App\Domain\Media\MediaRepository;
 use App\Domain\Project\ProjectRepository;
 use App\Domain\Profile\ProfileRepository;
@@ -54,6 +57,11 @@ final class Kernel
             SettingsRepository::class => new SettingsRepository(),
             ProjectRepository::class  => new ProjectRepository($media),
             SkillRepository::class    => new SkillRepository(),
+            AuthService::class        => new AuthService(
+                new AdminUserRepository(),
+                new LoginThrottle(),
+                (int) Config::get('auth.idle_timeout', 7200),
+            ),
             View::class               => $this->view,
         ];
 
@@ -72,6 +80,13 @@ final class Kernel
                 return $this->notFound($request);
             }
 
+            // Route guard. Enforced HERE, before the controller exists, so an
+            // admin controller can never be reached by an anonymous request —
+            // not even if someone forgets a check inside it.
+            if (($match['guard'] ?? null) === 'auth' && !$this->auth()->check()) {
+                return $this->redirectToLogin($request);
+            }
+
             [$controllerClass, $method] = $match['handler'];
 
             $controller = new $controllerClass(
@@ -80,6 +95,7 @@ final class Kernel
                 $this->services[SettingsRepository::class],
                 $this->services[ProjectRepository::class],
                 $this->services[SkillRepository::class],
+                $this->services[AuthService::class],
             );
 
             /** @var Response $response */
@@ -94,6 +110,30 @@ final class Kernel
         }
 
         return SecurityHeaders::apply($response, $request);
+    }
+
+    private function auth(): AuthService
+    {
+        /** @var AuthService */
+        return $this->services[AuthService::class];
+    }
+
+    /**
+     * Send an anonymous visitor to the login form, remembering where they
+     * were going so they land there after signing in.
+     *
+     * Only the PATH is stored, never a full URL from the request, so this
+     * cannot be turned into an open redirect.
+     */
+    private function redirectToLogin(Request $request): Response
+    {
+        Session::start();
+        $_SESSION['admin_intended'] = $request->path;
+
+        return SecurityHeaders::apply(
+            Response::redirect(route_url('/admin/login')),
+            $request
+        );
     }
 
     private function notFound(Request $request): Response

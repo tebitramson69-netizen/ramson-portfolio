@@ -37,6 +37,34 @@ return [
     ],
 
     /**
+     * Authentication.
+     *
+     * Argon2id is used whenever the PHP build provides it. OWASP's floor is
+     * 19 MiB / t=2 / p=1, which measured 18 ms here — cheap for an attacker
+     * too. A login happens rarely, so the cost is raised well above the
+     * floor; more memory buys more GPU resistance than more iterations.
+     * 64 MiB keeps it comfortable on modest shared hosting.
+     */
+    'auth' => [
+        'argon' => [
+            'memory_cost' => 65536,   // KiB — 64 MiB
+            'time_cost'   => 3,
+            'threads'     => 1,
+        ],
+
+        // Only reached when Argon2id is absent from the PHP build.
+        'bcrypt_cost' => 12,
+
+        'throttle' => [
+            'max_attempts'  => 5,
+            'decay_seconds' => 900,   // 15 minutes
+        ],
+
+        // Server-enforced idle timeout for an admin session.
+        'idle_timeout' => 7200,       // 2 hours
+    ],
+
+    /**
      * Upload limits, read by the media pipeline in Phase 5. Declared now so
      * the schema and the validator agree from the start.
      */

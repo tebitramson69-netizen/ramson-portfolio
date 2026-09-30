@@ -3,7 +3,7 @@
 Ten phases. Each is independently valuable and ends with something demonstrably working — no
 phase leaves the project in a broken state.
 
-**Current phase: 3 — complete. Awaiting confirmation to begin Phase 4.**
+**Current phase: 4 — complete. Awaiting confirmation to begin Phase 5.**
 
 | Phase | Name | Status |
 |---|---|---|
@@ -11,7 +11,7 @@ phase leaves the project in a broken state.
 | 1 | Design Foundation | ✅ Complete |
 | 2 | Application Skeleton | ✅ Complete |
 | 3 | Database & Read Path | ✅ Complete |
-| 4 | Authentication & Admin Shell | ⬜ Not started |
+| 4 | Authentication & Admin Shell | ✅ Complete |
 | 5 | Profile Management & Media ⭐ | ⬜ Not started |
 | 6 | Projects & Case Studies ⭐ | ⬜ Not started |
 | 7 | Remaining Content Management | ⬜ Not started |
@@ -135,12 +135,23 @@ renders its designed pending state naming exactly what is missing.
 
 ---
 
-## Phase 4 — Authentication & Admin Shell ⬜
+## Phase 4 — Authentication & Admin Shell ✅
 
-`scripts/create-admin.php` · login/logout · sessions · CSRF · rate limiting · auth middleware ·
-admin layout and navigation · dashboard with counts and the content-completeness checklist.
+**Delivered.** `bin/create-admin.php` (CLI only) · Argon2id hashing · login and logout ·
+session binding · CSRF on every POST · dual-key throttling · a route guard enforced in the
+kernel · admin layout and navigation · a dashboard with live counts, a content-completeness
+checklist and an environment health panel.
 
-**Deliverable:** a secure, empty CMS he can log into.
+**Key decisions** (reasoning in `05-ARCHITECTURE.md` §2.11b–2.11d): Argon2id rather than
+`PASSWORD_DEFAULT`; throttling on account *and* IP; the guard enforced before the controller
+is constructed; no registration or email-reset route at all.
+
+**Verified:** 14 authentication assertions pass, covering the guard, CSRF rejection, session
+invalidation on re-login, user-agent binding, POST-only logout, and lockout that the correct
+password cannot bypass. Login timing is level at 262 ms for a wrong password and 263 ms for a
+right one, so response time reveals nothing.
+
+**Deliverable:** a secure, empty CMS he can log into. **Done.**
 
 ---
 
