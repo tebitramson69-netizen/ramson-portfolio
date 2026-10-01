@@ -34,13 +34,26 @@ Confirm the public nav: `Work · About · Services · Contact`, or a different s
 ## Blocking Phase 6 — Projects & Case Studies
 
 **5. Rendo.**
-- Technology stack
-- Current state — concept, landing page live, or functional product?
-- Live URL, if any
+- ~~Technology stack~~ — ✅ supplied as a layer-by-layer table
+- ~~Current state~~ — ✅ landing page and waitlist live, booking flow in development
+- ~~Live URL~~ — ✅ `rendo-cm.netlify.app`
 - GitHub URL, if any
 - Screenshots (the landing page at minimum)
-- **What you personally built**
-- The hardest technical problem you hit, and how you solved it
+- ~~**What you personally built**~~ — ✅ **owner and builder**, built with AI
+  assistance. See the authorship rule in `04-CONTENT-INVENTORY.md`.
+
+**Still needed — these two are the gate on Phase 6.** Nobody else can supply
+them, and a case study without them is a feature list.
+
+- **Where did you hit a fork, and why did you go that way?** Concretely:
+  Supabase rather than writing your own backend · WhatsApp rather than an app ·
+  RLS on the database · a landing page and waitlist shipped before the booking
+  flow. Any one of those is a decision worth a paragraph.
+- **What surprised you?** Something that did not go the way you expected, and
+  what you would do differently. This is the part interviewers probe hardest.
+
+*These belong to you whoever typed the code, which is exactly why they are what
+the case study is built from.*
 
 **6. School Management System.**
 - Is `github.com/tebitramson69-netizen/School-Management-System` the right repository? *(Observed on your GitHub account — not assumed to be this project.)*
@@ -62,12 +75,12 @@ Any other genuine projects to include?
 ## Blocking Phase 8 — Contact
 
 **8. Contact channels.**
-- Public email address
-- WhatsApp number for the `wa.me` link
-- ~~LinkedIn URL~~ — **decided, deferred.** Handle claimed as
-  `linkedin.com/in/tebit-ramson-titih`; the field stays empty until the profile
-  itself is worth visiting. Not an oversight, and not to be filled with a
-  placeholder.
+- ~~Public email address~~ — ✅ supplied and entered
+- ~~WhatsApp number for the `wa.me` link~~ — ✅ supplied and entered
+- **LinkedIn URL — ⚠️ added, but the stored value is unstable.** It is
+  LinkedIn's auto-generated handle. Set the custom URL
+  (`linkedin.com/in/tebit-ramson-titih`), then replace the value at
+  `/admin/profile`. The open item is the *swap*, not the decision.
 - Any other social profiles to show
 
 **9. Response-time commitment.**

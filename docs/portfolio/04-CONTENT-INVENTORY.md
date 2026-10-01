@@ -72,9 +72,26 @@ supplied, and none is verifiable.
 | Current state (concept / landing live / functional) | ⬜ Outstanding (Q5) |
 | Live URL · GitHub URL | ⬜ Outstanding (Q5) |
 | Screenshots | ⬜ Outstanding (Q5) |
-| His personal role | ⬜ Outstanding (Q5) |
-| Challenges · key decisions · lessons | ⬜ Outstanding (Q5) |
+| His personal role | ✅ **Verified** — **owner and builder**, in his own words: *"I worked with Claude to realise that and I own ownership of it."* |
+| Build method: AI-assisted | ✅ **Verified** — stated by him. See the authorship rule below the table |
+| Challenges · key decisions · lessons | ⬜ Outstanding (Q5) — **the gate on Phase 6** |
 | Users, clients, bookings processed, revenue | 🚫 **Never state** — nothing supplied |
+
+⚠️ **Authorship rule for Rendo.** He has decided the case study **describes the
+decisions and outcomes, and does not name the tooling** — the reasoning being
+that no engineer lists their IDE or Stack Overflow, and AI assistance sits in
+that same category. That is his call and it is legitimate.
+
+The boundary it must not cross: **no sentence may state or imply that the code
+was written unaided.** Describing what he chose and why is true. "Hand-coded",
+"built from scratch", "wrote every line" and anything of that shape are not,
+and nobody has claimed them. Both halves of this rule travel together — the
+first is the decision, the second is what keeps the decision honest.
+
+What he owns, and what the case study is actually made of, is unaffected by
+tooling: choosing Supabase over a hand-rolled backend, choosing WhatsApp over
+an app, putting RLS on the database, shipping a landing page and waitlist
+before the booking flow.
 
 ---
 
@@ -112,10 +129,10 @@ supplied, and none is verifiable.
 
 | Element | Status |
 |---|---|
-| Email | ⬜ Outstanding (Q8) |
-| WhatsApp number | ⬜ Outstanding (Q8) |
+| Email | ✅ Verified — supplied and entered at `/admin/profile` |
+| WhatsApp number | ✅ Verified — supplied and entered at `/admin/profile` |
 | GitHub: `github.com/tebitramson69-netizen` | ✅ Verified — the account this repository lives in |
-| LinkedIn | ⏸ **Decided — deliberately deferred.** The custom URL `linkedin.com/in/tebit-ramson-titih` is claimed so the address is fixed (a new account's default carries random digits, and LinkedIn does not redirect an old custom URL to a new one). The portfolio field stays **empty** until the profile has a headline and real content: a link landing a recruiter on an empty profile reads as abandoned, which is worse than no link. `Profile::contactLinks()` hides an empty channel, so adding it later is one paste in `/admin/profile` — no code change |
+| LinkedIn | ⚠️ **Present but unstable — action needed.** A URL is stored, but it is LinkedIn's auto-generated handle (name + dash + random characters). It stops resolving the moment a custom URL is set, and LinkedIn issues no redirect, so the site would link to a 404 silently. Fix: set the custom URL on LinkedIn (`linkedin.com/in/tebit-ramson-titih`), then replace the value at `/admin/profile`. Stays flagged until that swap is confirmed |
 | Response-time commitment | ⬜ Outstanding (Q9) |
 
 ---
