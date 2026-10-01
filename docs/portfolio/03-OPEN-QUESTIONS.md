@@ -64,7 +64,10 @@ Any other genuine projects to include?
 **8. Contact channels.**
 - Public email address
 - WhatsApp number for the `wa.me` link
-- LinkedIn URL
+- ~~LinkedIn URL~~ — **decided, deferred.** Handle claimed as
+  `linkedin.com/in/tebit-ramson-titih`; the field stays empty until the profile
+  itself is worth visiting. Not an oversight, and not to be filled with a
+  placeholder.
 - Any other social profiles to show
 
 **9. Response-time commitment.**

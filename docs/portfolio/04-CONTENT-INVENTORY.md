@@ -115,7 +115,7 @@ supplied, and none is verifiable.
 | Email | ⬜ Outstanding (Q8) |
 | WhatsApp number | ⬜ Outstanding (Q8) |
 | GitHub: `github.com/tebitramson69-netizen` | ✅ Verified — the account this repository lives in |
-| LinkedIn | ⬜ Outstanding (Q8) |
+| LinkedIn | ⏸ **Decided — deliberately deferred.** The custom URL `linkedin.com/in/tebit-ramson-titih` is claimed so the address is fixed (a new account's default carries random digits, and LinkedIn does not redirect an old custom URL to a new one). The portfolio field stays **empty** until the profile has a headline and real content: a link landing a recruiter on an empty profile reads as abandoned, which is worse than no link. `Profile::contactLinks()` hides an empty channel, so adding it later is one paste in `/admin/profile` — no code change |
 | Response-time commitment | ⬜ Outstanding (Q9) |
 
 ---
