@@ -589,6 +589,12 @@ deleting it again, because a directive that is present but not in effect passes
 a file-content check and fails that one. Writes
 `storage/logs/verify-local-report.txt`.
 
+A route reporting `got 0` means no HTTP response arrived at all — not a wrong
+status, nothing. On Windows the first thing to suspect is antivirus, not the
+application: Avast's Behavior Shield flags `php.exe` as `IDP.Generic` when it
+opens a listening socket and suspends the process, so the request never
+completes. The README's antivirus note has the fix.
+
 ### Verifying the media pipeline anywhere
 
 ```
@@ -618,3 +624,4 @@ flattening, EXIF actually being stripped, and the `php.ini` limits.
 | A variant format the GD build cannot write | The upload succeeds with fewer variants and `<picture>` falls through; the dashboard reports which formats are available | Mitigated |
 | Orphaned files after a crash between write and commit | Files without a row are invisible and cost a few hundred kilobytes; correctness never depends on cleaning them | Accepted |
 | Case-study prose is seeded, not authored | The overview/problem/solution text is Phase 1 wording built from supplied scope. Editable from the CMS in Phase 6 | Tracked |
+| Antivirus suspends `php.exe`, so the dev server and CLI scripts stall with no error | Documented in the README; `verify-local.ps1` reports the transport error and names antivirus as the first suspect rather than printing a bare `0` | Environment, documented |

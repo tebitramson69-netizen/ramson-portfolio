@@ -378,10 +378,28 @@ if ($php) {
         @{ Path = '/admin/profile';          Want = 302 },
         @{ Path = '/admin/login';            Want = 200 }
     )
+    $transportFailures = 0
+
     foreach ($c in $cases) {
         $r = Get-Status "http://127.0.0.1:8123$($c.Path)"
         $why = if ($r.Error) { " - $($r.Error)" } else { '' }
+        if ($r.Code -eq 0) { $transportFailures++ }
         Report "dev $($c.Path)" $(if ($r.Code -eq $c.Want) { 'PASS' } else { 'FAIL' }) "got $($r.Code), want $($c.Want)$why"
+    }
+
+    # A code of 0 means no response arrived at all - not a wrong status,
+    # nothing. On Windows that is far more often antivirus than the
+    # application: Avast's Behavior Shield flags php.exe as IDP.Generic for
+    # opening a listening socket and suspends it, which is exactly what
+    # bin\dev-server.php makes it do. This is a hint, not a verdict - the
+    # script cannot see why a socket failed, and claiming to would be the
+    # same vacuous assertion removed from it twice already.
+    if ($transportFailures -gt 0) {
+        Write-Host ''
+        Write-Host "    $transportFailures request(s) got no response at all." -ForegroundColor Yellow
+        Write-Host '    On Windows, suspect antivirus before the application: allow' -ForegroundColor Yellow
+        Write-Host '    php.exe as an application, not just this folder as an exception.' -ForegroundColor Yellow
+        Write-Host '    See the antivirus note in README.md.' -ForegroundColor Yellow
     }
 
     # NOTE: the variable below must NOT be called $home. $HOME is a read-only

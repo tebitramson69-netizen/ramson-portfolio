@@ -150,6 +150,16 @@ and ships a small PSR-4 autoloader. Composer takes over automatically once
 > On XAMPP that means a virtual host. Serving the project root would expose
 > `config/`, `src/`, `storage/` and `.git` over HTTP.
 
+> **Antivirus note (Windows).** Avast, AVG and some Defender configurations
+> flag `php.exe` as `IDP.Generic` through Behavior Shield when it opens a
+> listening socket — which is exactly what `bin/dev-server.php` makes it do.
+> The symptom is not an error message. PHP is suspended, so HTTP requests
+> return nothing at all and CLI scripts hang without ever reading input;
+> `verify-local.ps1` reports `got 0` and `bin/create-admin.php` stops dead at
+> a prompt. Allow `C:\xampp1\php\php.exe` as an **application**, and add the
+> project folder as an exception. Allowing only the folder is not enough: the
+> verdict is on the process, not on any file's contents.
+
 ---
 
 ## Conventions
