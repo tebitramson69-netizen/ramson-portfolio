@@ -74,7 +74,7 @@ supplied, and none is verifiable.
 | Screenshots | ⬜ Outstanding (Q5) |
 | His personal role | ✅ **Verified** — **owner and builder**, in his own words: *"I worked with Claude to realise that and I own ownership of it."* |
 | Build method: AI-assisted | ✅ **Verified** — stated by him. See the authorship rule below the table |
-| Challenges · key decisions · lessons | ⬜ Outstanding (Q5) — **the gate on Phase 6** |
+| Key decisions · lessons learned | ✅ **Verified** — supplied in his own words and published via `database/seeds/0005_rendo_case_study.php`. Supabase over a self-hosted backend (constraint, rejected alternative, trade-off and lock-in mitigation all stated); waitlist before booking flow; three lessons |
 | Users, clients, bookings processed, revenue | 🚫 **Never state** — nothing supplied |
 
 ⚠️ **Authorship rule for Rendo.** He has decided the case study **describes the
@@ -92,6 +92,24 @@ What he owns, and what the case study is actually made of, is unaffected by
 tooling: choosing Supabase over a hand-rolled backend, choosing WhatsApp over
 an app, putting RLS on the database, shipping a landing page and waitlist
 before the booking flow.
+
+**Two further presentation decisions, both his, both already applied in
+`0005_rendo_case_study.php`:**
+
+1. The sentence *"I worked through this with an AI assistant (Claude) as a
+   mentor and pair-programmer, but the decisions and the setup were mine to
+   make and test"* stays **off the page** and is his interview answer. Do not
+   add it to the case study without asking him again.
+2. The sales lesson keeps the **decision** and drops the self-criticism. "I am
+   not comfortable cold-calling" was his phrasing to me; the published text
+   leads with the QR-code demo insight, because a reader who sees the weakness
+   first will not be in the room to hear the rest.
+
+One edit of mine is in the published lessons and he accepted it: his stated fix
+for the wrong-version deploy was a consistent filename plus a visible version
+number, which helps him *notice* the fault rather than prevent it. The text now
+names the real cause — deploying from downloaded copies rather than from
+version control.
 
 ---
 

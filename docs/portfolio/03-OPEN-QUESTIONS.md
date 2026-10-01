@@ -42,18 +42,15 @@ Confirm the public nav: `Work · About · Services · Contact`, or a different s
 - ~~**What you personally built**~~ — ✅ **owner and builder**, built with AI
   assistance. See the authorship rule in `04-CONTENT-INVENTORY.md`.
 
-**Still needed — these two are the gate on Phase 6.** Nobody else can supply
-them, and a case study without them is a feature list.
+- ~~**Where did you hit a fork, and why did you go that way?**~~ — ✅ answered:
+  Supabase over a self-hosted backend, with the constraint, the rejected
+  alternative, the trade-off and the lock-in mitigation all stated; plus
+  waitlist before booking flow. Published.
+- ~~**What surprised you?**~~ — ✅ answered: stale documentation, the
+  wrong-version deploy, and changing the sales approach so the product demos
+  itself. Published.
 
-- **Where did you hit a fork, and why did you go that way?** Concretely:
-  Supabase rather than writing your own backend · WhatsApp rather than an app ·
-  RLS on the database · a landing page and waitlist shipped before the booking
-  flow. Any one of those is a decision worth a paragraph.
-- **What surprised you?** Something that did not go the way you expected, and
-  what you would do differently. This is the part interviewers probe hardest.
-
-*These belong to you whoever typed the code, which is exactly why they are what
-the case study is built from.*
+**Q5 is closed except for the GitHub URL and screenshots above.**
 
 **6. School Management System.**
 - Is `github.com/tebitramson69-netizen/School-Management-System` the right repository? *(Observed on your GitHub account — not assumed to be this project.)*
