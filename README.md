@@ -156,9 +156,20 @@ and ships a small PSR-4 autoloader. Composer takes over automatically once
 > The symptom is not an error message. PHP is suspended, so HTTP requests
 > return nothing at all and CLI scripts hang without ever reading input;
 > `verify-local.ps1` reports `got 0` and `bin/create-admin.php` stops dead at
-> a prompt. Allow `C:\xampp1\php\php.exe` as an **application**, and add the
-> project folder as an exception. Allowing only the folder is not enough: the
-> verdict is on the process, not on any file's contents.
+> a prompt.
+>
+> The alert names a `.php` file, but the verdict is on the **process**, not on
+> that file's contents — the file is only what `php.exe` had open at the time.
+> So the exception has to cover the executables. In Avast:
+> **Menu → Settings → General → Exceptions → Add exception**, which accepts a
+> file *or* a folder path, typed or browsed. Add `C:\xampp1` as one entry —
+> that covers `php.exe`, `httpd.exe` and `mysqld.exe` together, so the next
+> detection on Apache or MySQL does not start this over. (Not "Blocked &
+> Allowed apps": that list shows installed applications and will not surface a
+> loose `.exe` inside XAMPP.)
+>
+> The cost is worth stating: XAMPP, `htdocs` included, is then unscanned.
+> Normal on a development machine, but it is a real reduction in protection.
 
 ---
 
