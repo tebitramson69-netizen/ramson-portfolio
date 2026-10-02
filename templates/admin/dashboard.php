@@ -112,13 +112,6 @@ $unhealthy   = array_values(array_filter($health, static fn (array $i): bool => 
     <li class="admin-check__item">
       <span class="admin-check__mark" aria-hidden="true">&rarr;</span>
       <span class="admin-check__body">
-        <span class="admin-check__label">Project editing and case studies</span>
-        <span class="admin-check__detail">Phase 6 — project content is edited via SQL until then</span>
-      </span>
-    </li>
-    <li class="admin-check__item">
-      <span class="admin-check__mark" aria-hidden="true">&rarr;</span>
-      <span class="admin-check__body">
         <span class="admin-check__label">Contact inbox</span>
         <span class="admin-check__detail">Phase 8 — the contact form is not live yet</span>
       </span>

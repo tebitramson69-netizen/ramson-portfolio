@@ -3,7 +3,7 @@
 Ten phases. Each is independently valuable and ends with something demonstrably working — no
 phase leaves the project in a broken state.
 
-**Current phase: 5 — complete. Awaiting confirmation to begin Phase 6.**
+**Current phase: 6 — complete. Awaiting confirmation to begin Phase 7.**
 
 | Phase | Name | Status |
 |---|---|---|
@@ -13,7 +13,7 @@ phase leaves the project in a broken state.
 | 3 | Database & Read Path | ✅ Complete |
 | 4 | Authentication & Admin Shell | ✅ Complete |
 | 5 | Profile Management & Media ⭐ | ✅ Complete |
-| 6 | Projects & Case Studies ⭐ | ⬜ Not started |
+| 6 | Projects & Case Studies ⭐ | ✅ Complete |
 | 7 | Remaining Content Management | ⬜ Not started |
 | 8 | Contact System | ⬜ Not started |
 | 9 | SEO / Performance / Accessibility | ⬜ Not started |
@@ -191,16 +191,36 @@ executed, directory listing is refused, and images are served
 
 ---
 
-## Phase 6 — Projects & Case Studies ⭐ ⬜
+## Phase 6 — Projects & Case Studies ⭐ ✅
 
-Projects CRUD · tabbed editor · section management · features · technology tagging · gallery ·
-reordering · publish/feature toggles · draft preview with signed tokens · Markdown pipeline
-with sanitisation · public case-study page rendering from the database.
+**Delivered.** Project list with every publication state · create and edit · the full
+`SectionKey` case-study vocabulary · features · technology tagging with a separate
+home-page-card selection · thumbnail and cover upload reusing the Phase 5 pipeline unchanged ·
+publish / draft / archive · featured toggle · reordering · soft delete and restore · a draft
+preview behind the admin guard.
 
-**Blocked on:** questions 5–7 in `03-OPEN-QUESTIONS.md`.
+**Three things in the original line were deliberately NOT built**, each for a stated reason
+rather than being quietly dropped:
 
-**Deliverable:** Rendo and the School Management System entered and published **entirely
-through the CMS**. This is the milestone at which the portfolio becomes genuinely usable.
+| Not built | Why |
+|---|---|
+| Markdown pipeline | Section bodies split on blank lines and pass through `e()`, so they are XSS-safe by construction. Markdown means adding a sanitiser, and an unsanitised Markdown renderer is the most common XSS hole in a hand-built CMS. The prose here is paragraphs. Revisit only when a section needs links or lists, and then with a real sanitiser |
+| Signed draft-preview tokens | There is one administrator. `/admin/preview/{slug}` behind the kernel guard covers every case. Signed tokens exist to show a draft to someone who cannot sign in |
+| Multi-image gallery | `project_images` exists, but nothing renders it: the case-study template has no gallery section, and `Project` carries no gallery field. Building an admin screen for images the public site cannot display would be a feature that does nothing. It belongs with its own public presentation, in Phase 7 |
+
+**Key decisions** (reasoning in `05-ARCHITECTURE.md` §2.14a–2.14c): admin reads as `findAll*`
+in the existing repository rather than a duplicate class; writes in a separate `ProjectWriter`;
+child collections replaced wholesale inside a transaction rather than diffed.
+
+**Verified:** 48 end-to-end assertions. Covered: the guard on every route, GET *and* POST;
+CSRF rejection; a draft 404ing publicly while rendering under preview; an unknown section key
+being refused; empty feature rows dropped; a non-http URL refused with nothing saved; script
+tags escaped on both admin and public pages; publish → 200, unpublish → 404; a slug reusable
+after soft delete and a restore onto a taken slug refused cleanly; image upload producing the
+same nine variants as the profile photo, and removal leaving no orphaned files or rows.
+
+**Deliverable:** Rendo and the School Management System are now editable **entirely through
+the CMS**. This is the milestone at which the portfolio becomes genuinely usable.
 
 ---
 

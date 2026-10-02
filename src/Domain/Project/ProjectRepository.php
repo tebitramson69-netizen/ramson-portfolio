@@ -116,6 +116,95 @@ final class ProjectRepository
         return Database::connection()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // ----------------------------------------------------------------- admin
+
+    /**
+     * EVERY project, whatever its publication state, including soft-deleted
+     * ones when asked.
+     *
+     * Named findAll* rather than taking an $includeDrafts flag, for the reason
+     * in the class docblock: a flag has a default, and a default is how a draft
+     * leaks onto a public page. A reviewer proves the public side is clean by
+     * grepping the public controllers for "findAll" and finding nothing.
+     *
+     * @return list<Project>
+     */
+    public function findAll(bool $includeDeleted = false): array
+    {
+        $where = $includeDeleted ? '1 = 1' : 'p.deleted_at IS NULL';
+
+        $sql = 'SELECT ' . $this->columns() . '
+                FROM projects p
+                ' . $this->mediaJoins() . '
+                WHERE ' . $where . '
+                ORDER BY p.deleted_at IS NOT NULL, p.is_featured DESC,
+                         p.sort_order ASC, p.id ASC';
+
+        return $this->hydrateList(
+            Database::connection()->query($sql)->fetchAll(PDO::FETCH_ASSOC),
+            withChildren: false
+        );
+    }
+
+    /** Soft-deleted projects only, for the restore list. @return list<Project> */
+    public function findAllDeleted(): array
+    {
+        $sql = 'SELECT ' . $this->columns() . '
+                FROM projects p
+                ' . $this->mediaJoins() . '
+                WHERE p.deleted_at IS NOT NULL
+                ORDER BY p.deleted_at DESC';
+
+        return $this->hydrateList(
+            Database::connection()->query($sql)->fetchAll(PDO::FETCH_ASSOC),
+            withChildren: false
+        );
+    }
+
+    /**
+     * One project by id with its full case study, whatever its state.
+     *
+     * The editor needs this; nothing on the public side may call it, which is
+     * why it is an id lookup rather than a slug one — a URL carries a slug, so
+     * an id-only method cannot be reached by guessing a public address.
+     */
+    public function findAnyById(int $id): ?Project
+    {
+        $sql = 'SELECT ' . $this->columns() . '
+                FROM projects p
+                ' . $this->mediaJoins() . '
+                WHERE p.id = :id
+                LIMIT 1';
+
+        $statement = Database::connection()->prepare($sql);
+        $statement->execute(['id' => $id]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $row === false ? null : ($this->hydrateList([$row], withChildren: true)[0] ?? null);
+    }
+
+    /**
+     * One project by slug whatever its state — for the signed-in draft preview
+     * only. WorkController still uses findPublishedBySlug and must continue to:
+     * this method is reached only after the kernel's auth guard has run.
+     */
+    public function findAnyBySlug(string $slug): ?Project
+    {
+        $sql = 'SELECT ' . $this->columns() . '
+                FROM projects p
+                ' . $this->mediaJoins() . '
+                WHERE p.slug = :slug AND p.deleted_at IS NULL
+                LIMIT 1';
+
+        $statement = Database::connection()->prepare($sql);
+        $statement->execute(['slug' => $slug]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $row === false ? null : ($this->hydrateList([$row], withChildren: true)[0] ?? null);
+    }
+
     // --------------------------------------------------------------- private
 
     private function columns(): string

@@ -34,7 +34,7 @@ use App\Core\Autoloader;
 use App\Core\Config;
 use App\Domain\Media\ImageProcessor;
 use App\Domain\Media\ImageValidator;
-use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\AdminController;
 
 Autoloader::register('App', __DIR__ . '/../src');
 Config::load(__DIR__ . '/../config');
@@ -77,8 +77,8 @@ echo '  ..   optional: '
     . ', AVIF ' . ($formats['avif'] ? 'yes' : 'no') . "\n";
 
 $configured = (int) Config::get('uploads.max_bytes', 5 * 1024 * 1024);
-$uploadMax  = ProfileController::iniBytes((string) ini_get('upload_max_filesize'));
-$postMax    = ProfileController::iniBytes((string) ini_get('post_max_size'));
+$uploadMax  = AdminController::iniBytes((string) ini_get('upload_max_filesize'));
+$postMax    = AdminController::iniBytes((string) ini_get('post_max_size'));
 
 $effective = (int) min(array_filter([$configured, $uploadMax, $postMax]));
 

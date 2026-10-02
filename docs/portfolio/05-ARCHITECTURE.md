@@ -494,6 +494,86 @@ that can be read off the route table rather than inferred from a controller.
 `<form>` elements. Neither costs anything a reader of the route table has to
 untangle.
 
+
+### 2.14a Admin reads in the same repository, writes in another
+
+**Decision.** `ProjectRepository` gained `findAll()`, `findAllDeleted()`,
+`findAnyById()` and `findAnyBySlug()`. Writes went into a new `ProjectWriter`.
+
+**Alternatives.** A separate `ProjectAdminRepository` holding both; an
+`$includeDrafts` flag on the existing methods.
+
+**Why.** The flag was never an option — a flag has a default, and a default is
+how a draft reaches a public page. That was already settled in this class's
+docblock, which also named `findAll*` as the admin convention; following it
+costs nothing and keeps one documented rule instead of two.
+
+A fully separate admin repository was planned and then rejected on reading the
+code: it would have duplicated `columns()`, `mediaJoins()`, `hydrateList()`,
+`mediaFrom()`, `technologiesFor()`, `sectionsFor()` and `featuresFor()` —
+around 120 lines of hydration, in two copies that drift. Two hydration paths
+producing subtly different `Project` objects is a worse failure than the one
+the split was meant to prevent. Writes share none of that, so they did move
+out.
+
+**The safety property is unchanged and still mechanically checkable**, though
+not as simply as "nothing outside `Admin/`". Running
+
+```
+grep -rn "findAll\|findAny" src/Http/Controllers/*.php
+```
+
+returns **exactly one** line: `WorkController::preview()`. That method is
+declared with the `'auth'` guard in `routes/web.php`, so the kernel refuses the
+request before the controller is constructed. A *second* line from that grep is
+a bug, and `WorkController::show()` — the method anonymous visitors actually
+reach — must keep calling `findPublishedBySlug()`.
+
+(This paragraph first claimed the grep returned nothing. It was written before
+being run, and the run contradicted it. Corrected rather than quietly amended,
+because a verification claim nobody executed is worth less than no claim.)
+
+**Trade-off.** One class now serves two audiences. The method names carry the
+distinction, and the public methods remain the only ones filtering on
+`PUBLISHED`.
+
+### 2.14b Child collections are replaced, not diffed
+
+**Decision.** Saving a project deletes its sections, features and technology
+rows and inserts the submitted set, inside one `Database::transaction()`.
+
+**Alternatives.** Diff the submitted items against the stored ones and issue
+the minimal inserts, updates and deletes.
+
+**Why.** The form posts the whole collection, so a diff would mean matching
+submitted items back to row ids — more code, and more ways to attach the wrong
+body to the wrong section. Delete-then-insert is obviously correct by
+inspection. The transaction is what makes it safe: a failure part-way rolls
+back to the previous set rather than leaving a project with no sections.
+
+**Trade-off.** Row ids and `created_at` are not stable across a save. Nothing
+references a section by id, so nothing notices.
+
+### 2.14c The preview lives in WorkController, and the bar in the layout
+
+**Decision.** `/admin/preview/{slug}` is a second method on `WorkController`,
+sharing every private helper with `show()`. The warning bar is rendered by the
+public layout, not by the case-study template.
+
+**Why.** A preview that assembles its view model separately from the real page
+is a preview of something else, and the copy that drifts is always the one
+nobody looks at. Sharing the helpers makes drift impossible.
+
+The bar moved to the layout because the site header is `position: fixed; top:
+0` — rendering the bar inside the page content put two elements at the same
+offset, and they overlapped. From the layout it precedes the header and
+`body.is-preview` offsets the header by `--preview-h`.
+
+**Trade-off.** `WorkController` now has a method only reachable behind the
+admin guard, declared in the route table. `show()` still calls
+`findPublishedBySlug()`, so an anonymous visitor guessing a draft's address
+still gets a genuine 404 — which the test suite asserts rather than assumes.
+
 ---
 
 ## 3. Request lifecycle
@@ -620,7 +700,7 @@ flattening, EXIF actually being stripped, and the `php.ini` limits.
 | Google Fonts widens the CSP | Two hosts allowed explicitly; Phase 9 self-hosts and removes them | Tracked |
 | Migration runner's SQL splitter | Quote- and comment-aware; no stored programs in the schema. Extend `splitStatements()` if that changes | Bounded |
 | `root` used as the database user | `config.example.php` documents a least-privilege user | Documented, not enforced |
-| No automated tests | `bin/verify-media.php` covers the media pipeline with 34 assertions and runs on Windows and Linux alike; `bin/verify-local.ps1` covers the environment and routes. Everything else is still verified by hand | Partly closed |
+| No automated tests | `bin/verify-media.php` covers the media pipeline with 34 assertions and runs on Windows and Linux alike; `bin/verify-local.ps1` covers the environment and routes; the admin flows are covered by end-to-end suites run against a live server. Everything else is still verified by hand | Partly closed |
 | A variant format the GD build cannot write | The upload succeeds with fewer variants and `<picture>` falls through; the dashboard reports which formats are available | Mitigated |
 | Orphaned files after a crash between write and commit | Files without a row are invisible and cost a few hundred kilobytes; correctness never depends on cleaning them | Accepted |
 | Case-study prose is seeded, not authored | The overview/problem/solution text is Phase 1 wording built from supplied scope. Editable from the CMS in Phase 6 | Tracked |

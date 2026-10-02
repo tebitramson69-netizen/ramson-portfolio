@@ -9,7 +9,7 @@ use App\Domain\Auth\PasswordHasher;
 use App\Domain\Media\ImageProcessor;
 use App\Domain\Media\ImageValidator;
 use App\Core\Database;
-use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\AdminController;
 use PDO;
 
 /**
@@ -106,7 +106,7 @@ final class DashboardStats
             'label'  => 'Featured projects have a screenshot',
             'done'   => $noThumb === 0,
             'detail' => $noThumb === 0 ? 'Every featured project shows a real preview'
-                                       : $noThumb . ' still showing the placeholder frame (Phase 6)',
+                                       : $noThumb . ' still showing the placeholder frame — upload one under Projects',
         ];
 
         // Projects missing the high-signal case-study sections
@@ -222,8 +222,8 @@ final class DashboardStats
     private function uploadSizeCheck(): array
     {
         $configured = (int) Config::get('uploads.max_bytes', 5 * 1024 * 1024);
-        $uploadMax  = ProfileController::iniBytes((string) ini_get('upload_max_filesize'));
-        $postMax    = ProfileController::iniBytes((string) ini_get('post_max_size'));
+        $uploadMax  = AdminController::iniBytes((string) ini_get('upload_max_filesize'));
+        $postMax    = AdminController::iniBytes((string) ini_get('post_max_size'));
 
         $problems = [];
 

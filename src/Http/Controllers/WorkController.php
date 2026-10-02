@@ -30,6 +30,36 @@ final class WorkController extends Controller
             throw new HttpNotFoundException('No published project for slug: ' . $slug);
         }
 
+        return $this->render($project, $slug, preview: false);
+    }
+
+    /**
+     * The same page, for a project in any state, behind the admin guard.
+     *
+     * Lives here rather than in the admin controller so there is ONE assembly
+     * of this view model. A second copy would drift, and the copy that drifts
+     * is the preview — which would then stop being a preview of anything.
+     *
+     * Reaching it requires the kernel's 'auth' guard to have passed; show()
+     * still calls findPublishedBySlug and must continue to, so an anonymous
+     * visitor guessing a draft's address still gets a real 404.
+     *
+     * @param array<string, string> $params
+     */
+    public function preview(Request $request, array $params = []): Response
+    {
+        $slug    = $params['slug'] ?? '';
+        $project = $this->projects->findAnyBySlug($slug);
+
+        if ($project === null) {
+            throw new HttpNotFoundException('No project for slug: ' . $slug);
+        }
+
+        return $this->render($project, $slug, preview: true);
+    }
+
+    private function render(Project $project, string $slug, bool $preview): Response
+    {
         [$previous, $next] = $this->neighbours($slug);
 
         $meta = new Seo(
@@ -39,12 +69,15 @@ final class WorkController extends Controller
             ogType:      'article',
             ogImage:     $this->socialImage($project),
             jsonLd:      [$this->creativeWorkSchema($project)],
+            // A preview must never be indexed, whatever the project's state.
+            noindex:     $preview,
         );
 
         return $this->page('pages/work-show', $meta, [
-            'project'  => $project,
-            'previous' => $previous,
-            'next'     => $next,
+            'project'   => $project,
+            'previous'  => $previous,
+            'next'      => $next,
+            'isPreview' => $preview,
         ]);
     }
 

@@ -29,6 +29,13 @@
   /* --- Surfaces -----------------------------------------------------------
      Five-step neutral ramp, cool-shifted to hue ~222 deg so it reads
      intentional rather than like default grey. */
+  /* Tells the browser to render its OWN widgets dark: select dropdowns and
+     their selected options, scrollbars, date pickers, form autofill. Without
+     it a selected <option> paints with the light-mode system colours and a
+     white bar appears in the middle of a dark panel. One line, and it fixes
+     every native control at once rather than each one being patched. */
+  color-scheme: dark;
+
   --surface-base:    #0A0B0D;
   --surface-raised:  #101216;
   --surface-overlay: #16181D;
@@ -1716,3 +1723,52 @@ h1, h2, h3, h4 {
 /* Error pages — centred within the standard section rhythm. */
 .error-page { padding-top: calc(var(--header-h) + var(--section-y)); }
 .error-page .btn-group { flex-wrap: wrap; }
+
+/* --- Draft preview bar ----------------------------------------------------
+   Shown only on the guarded /admin/preview/{slug} route. Deliberately loud:
+   an unpublished page otherwise looks identical to a published one, and the
+   easy mistake is believing a draft is live because it rendered.            */
+
+/* The site header is position:fixed at top:0, so the bar claims that strip and
+   the header is pushed below it by body.is-preview. Both sticking to 0 made
+   them overlap. */
+.preview-bar {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 200;
+  background: var(--warning);
+  color: #1A1206;
+}
+
+body.is-preview { padding-top: var(--preview-h); }
+body.is-preview .header { top: var(--preview-h); }
+
+:root { --preview-h: 44px; }
+.preview-bar__inner {
+  min-height: var(--preview-h);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding-block: var(--space-3);
+  font-size: var(--fs-caption);
+}
+.preview-bar__state {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px var(--space-3);
+  border: 1px solid rgba(26, 18, 6, 0.35);
+  border-radius: var(--radius-full);
+}
+.preview-bar__text { flex: 1 1 auto; min-width: 0; }
+.preview-bar__link { color: inherit; font-weight: 500; }
+
+@media (max-width: 639px) {
+  /* Wraps to two lines on a phone, so the strip has to be taller or the
+     header lands on top of it again. */
+  :root { --preview-h: 72px; }
+  .preview-bar__inner { gap: var(--space-2); }
+}

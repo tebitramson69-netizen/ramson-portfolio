@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
-use App\Core\Config;
 use App\Core\Csrf;
 use App\Core\Request;
 use App\Core\Response;
-use App\Domain\Media\ImageValidator;
 use App\Domain\Media\MediaRepository;
-use App\Domain\Media\MediaUploadService;
 
 /**
  * Profile editing, including the photograph.
@@ -26,7 +23,7 @@ final class ProfileController extends AdminController
     {
         return $this->adminPage('admin/profile', 'Profile', [
             'csrf'   => Csrf::token(),
-            'limits' => $this->limits(),
+            'limits' => $this->uploadLimits(),
         ]);
     }
 
@@ -106,12 +103,7 @@ final class ProfileController extends AdminController
         // actually an oversized file — the single most confusing upload bug
         // there is, because the real cause is never mentioned.
         if ($this->postDiscarded($request)) {
-            $this->flash('error', sprintf(
-                'That file is too large for this server to accept at all. PHP discards a request '
-                . 'body over post_max_size (%s) before the application sees it. Choose a smaller '
-                . 'image, or raise post_max_size and upload_max_filesize in php.ini.',
-                (string) ini_get('post_max_size')
-            ));
+            $this->flash('error', $this->postDiscardedMessage());
 
             return Response::redirect(route_url('/admin/profile'));
         }
@@ -216,74 +208,4 @@ final class ProfileController extends AdminController
         return Response::redirect(route_url('/admin/profile'));
     }
 
-    /**
-     * True when PHP threw the request body away for exceeding post_max_size.
-     *
-     * The signature is a POST that declared a content length but arrived with
-     * nothing parsed out of it.
-     */
-    private function postDiscarded(Request $request): bool
-    {
-        $declared = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
-
-        return $declared > 0 && $request->post === [] && $_FILES === [];
-    }
-
-    private function uploadService(): MediaUploadService
-    {
-        $root = dirname(__DIR__, 4);
-
-        return new MediaUploadService(
-            new MediaRepository(),
-            new ImageValidator(),
-            $root . '/public/uploads',
-            $root . '/storage/uploads',
-        );
-    }
-
-    /**
-     * The limit actually in force, which is the SMALLEST of three numbers.
-     *
-     * Stating the application's configured 5 MB when php.ini allows 2 MB would
-     * invite a failure the form had already promised would not happen, so the
-     * effective ceiling is computed rather than quoted.
-     *
-     * @return array<string, string>
-     */
-    private function limits(): array
-    {
-        $configured = (int) Config::get('uploads.max_bytes', 5 * 1024 * 1024);
-        $uploadMax  = self::iniBytes((string) ini_get('upload_max_filesize'));
-        $postMax    = self::iniBytes((string) ini_get('post_max_size'));
-
-        $effective = min(array_filter([$configured, $uploadMax, $postMax]));
-
-        return [
-            'max'        => ImageValidator::formatBytes((int) $effective),
-            'max_bytes'  => (string) $effective,
-            'min_side'   => (string) Config::get('uploads.min_dimension', 400),
-            'php_limit'  => (string) ini_get('upload_max_filesize'),
-            'post_limit' => (string) ini_get('post_max_size'),
-            'mismatch'   => $effective < $configured ? 'yes' : '',
-            'configured' => ImageValidator::formatBytes($configured),
-        ];
-    }
-
-    public static function iniBytes(string $value): int
-    {
-        $value = trim($value);
-
-        if ($value === '') {
-            return 0;
-        }
-
-        $bytes = (int) $value;
-
-        return $bytes * match (strtolower(substr($value, -1))) {
-            'g' => 1024 ** 3,
-            'm' => 1024 ** 2,
-            'k' => 1024,
-            default => 1,
-        };
-    }
 }

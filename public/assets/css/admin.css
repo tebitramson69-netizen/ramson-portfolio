@@ -164,6 +164,12 @@
 .admin-badge--ok   { border-color: var(--accent-border); color: var(--accent); }
 .admin-badge--warn { border-color: rgba(251, 191, 36, 0.35); color: var(--warning); }
 
+/* A quieter badge for secondary state. The design system allows the accent on
+   at most three elements per viewport; a list of projects each carrying two
+   accent badges blows that immediately, and the accent stops meaning anything.
+   "live" keeps it, "featured" does not. */
+.admin-badge--muted { border-color: var(--border-default); color: var(--fg-tertiary); }
+
 /* --- Stat tiles ----------------------------------------------------------- */
 
 .admin-stats {
@@ -428,6 +434,142 @@
 }
 .media-preview__meta.is-problem { color: var(--danger); }
 
+/* --- Project list --------------------------------------------------------- */
+
+.admin-list { margin-top: var(--space-5); }
+
+.admin-list__item {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+}
+.admin-list__item + .admin-list__item { border-top: 1px solid var(--border-subtle); }
+
+.admin-list__order-input {
+  width: 56px;
+  padding: var(--space-2);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  color: var(--fg-primary);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+.admin-list__thumb {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+.admin-list__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.admin-list__thumb-empty { font-size: var(--fs-caption); color: var(--fg-disabled); }
+
+.admin-list__body { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.admin-list__title { font-size: var(--fs-body-sm); color: var(--fg-primary); text-decoration: none; }
+a.admin-list__title:hover { color: var(--accent); }
+.admin-list__meta { font-size: var(--fs-micro); color: var(--fg-tertiary); }
+.admin-list__meta code { font-family: var(--font-mono); }
+
+.admin-list__state { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.admin-list__links { display: flex; gap: var(--space-4); align-items: center; font-size: var(--fs-caption); }
+
+/* --- Editor --------------------------------------------------------------- */
+
+.admin-state-row {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Each image slot is self-contained: preview, upload, remove. Two of them sit
+   in the existing .admin-grid, so no new breakpoint is needed. */
+.media-slot {
+  padding: var(--space-5);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.media-slot__label {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-tertiary);
+}
+.media-slot__img {
+  display: block;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+}
+.media-slot__empty {
+  display: grid;
+  place-items: center;
+  width: 120px;
+  height: 120px;
+  font-size: var(--fs-caption);
+  color: var(--fg-disabled);
+  background: var(--surface-sunken);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+.admin-tags {
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  border: 0;
+}
+.admin-tags__legend {
+  padding: 0;
+  margin-bottom: var(--space-3);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-tertiary);
+}
+.admin-tags { display: block; }
+
+.admin-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 var(--space-2) var(--space-2) 0;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-caption);
+  color: var(--fg-secondary);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+.admin-tag:hover { border-color: var(--border-strong); color: var(--fg-primary); }
+.admin-tag:has(input:checked) {
+  color: var(--accent);
+  border-color: var(--accent-border);
+  background: var(--accent-subtle);
+}
+.admin-tag input { accent-color: var(--accent); }
+
+.admin-multiselect {
+  height: auto;
+  padding: var(--space-3);
+  font-size: var(--fs-caption);
+}
+.admin-multiselect optgroup { color: var(--fg-tertiary); }
+.admin-multiselect option { padding: 2px var(--space-2); color: var(--fg-primary); }
+
 @media (max-width: 1023px) {
   .media-panel { grid-template-columns: minmax(0, 1fr); }
 }
@@ -439,4 +581,16 @@
   .media-panel__upload { padding: var(--space-5); }
   .media-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-actions .btn { width: 100%; justify-content: center; }
+
+  /* The list collapses to two rows per project: the identity, then the state
+     and links beneath it. The order box and thumbnail stay on the first row so
+     a project is still scannable by eye. */
+  .admin-list__item {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    row-gap: var(--space-3);
+  }
+  .admin-list__state,
+  .admin-list__links { grid-column: 1 / -1; }
+  .media-slot__img,
+  .media-slot__empty { width: 96px; height: 96px; }
 }

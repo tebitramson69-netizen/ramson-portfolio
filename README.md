@@ -12,7 +12,7 @@ Full-stack development · PHP · JavaScript · MySQL · AI & Automation
 
 ## Status
 
-**Phase 5 — Profile management and media.** Complete.
+**Phase 6 — Projects and case studies.** Complete.
 
 The public site runs as a server-rendered PHP application: front controller,
 router, repositories, view layer, security headers, and a database foundation
@@ -22,8 +22,13 @@ uploads, previews, replaces and removes the profile photograph. Uploads are
 validated in eight steps, re-encoded (which strips EXIF), and derived into
 sized variants that no template ever names by filename.
 
-Project and case-study editing is Phase 6; project content is still edited via
-SQL until then.
+Projects and their case studies are editable too: create, edit every section,
+tag technologies, upload screenshots, publish, feature, reorder, soft delete and
+restore — with a draft preview behind the admin guard. A draft's public URL
+returns a genuine 404, not an empty page.
+
+Remaining content (a GitHub URL, screenshots, a second case study) is entered
+through the admin whenever it is ready. No code change, no redeploy.
 
 See [`docs/portfolio/02-ROADMAP.md`](docs/portfolio/02-ROADMAP.md) for the
 current phase and what ships next.
