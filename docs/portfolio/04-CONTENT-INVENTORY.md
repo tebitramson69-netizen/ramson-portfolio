@@ -69,8 +69,7 @@ supplied, and none is verifiable.
 | Live URL: `rendo-cm.netlify.app` | ✅ Verified — supplied |
 | Status: landing page and waitlist live, booking flow in development | ✅ Verified — from the supplied status column |
 | Planned work (pg_cron reminders, owner dashboard, LLM understanding, MTN MoMo / Orange Money, coexistence numbers) | ⚠️ **Planned, never claimed as built** — appears only under "Next steps" |
-| Current state (concept / landing live / functional) | ⬜ Outstanding (Q5) |
-| Live URL · GitHub URL | ⬜ Outstanding (Q5) |
+| GitHub URL: `github.com/tebitramson69-netizen/Rendo` | ✅ **Verified** — supplied, and confirmed to load **while signed out**. That second check is the one that matters: the application renders whatever URL the database holds and never tests reachability (a network call per page render would be a poor trade), so if the repository is ever made private this link silently 404s for every visitor with nothing to warn you. Re-check if its visibility changes |
 | Screenshots | ⬜ Outstanding (Q5) |
 | His personal role | ✅ **Verified** — **owner and builder**, in his own words: *"I worked with Claude to realise that and I own ownership of it."* |
 | Build method: AI-assisted | ✅ **Verified** — stated by him. See the authorship rule below the table |

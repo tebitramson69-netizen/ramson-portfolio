@@ -37,7 +37,7 @@ Confirm the public nav: `Work · About · Services · Contact`, or a different s
 - ~~Technology stack~~ — ✅ supplied as a layer-by-layer table
 - ~~Current state~~ — ✅ landing page and waitlist live, booking flow in development
 - ~~Live URL~~ — ✅ `rendo-cm.netlify.app`
-- GitHub URL, if any
+- ~~GitHub URL~~ — ✅ `github.com/tebitramson69-netizen/Rendo`, verified publicly reachable
 - Screenshots (the landing page at minimum)
 - ~~**What you personally built**~~ — ✅ **owner and builder**, built with AI
   assistance. See the authorship rule in `04-CONTENT-INVENTORY.md`.
@@ -50,7 +50,7 @@ Confirm the public nav: `Work · About · Services · Contact`, or a different s
   wrong-version deploy, and changing the sales approach so the product demos
   itself. Published.
 
-**Q5 is closed except for the GitHub URL and screenshots above.**
+**Q5 is closed except for screenshots.**
 
 **6. School Management System.**
 - Is `github.com/tebitramson69-netizen/School-Management-System` the right repository? *(Observed on your GitHub account — not assumed to be this project.)*
