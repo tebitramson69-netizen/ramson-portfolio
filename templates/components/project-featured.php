@@ -27,16 +27,39 @@ $questionRef = $project->slug === 'rendo'
           <span class="frame__dot"></span><span class="frame__dot"></span><span class="frame__dot"></span>
         </div>
         <div class="frame__body">
-          <?php if ($project->thumbnail !== null): ?>
+          <?php
+          /**
+           * 'wide' is a 16:10 crop, matching .frame__body's aspect-ratio. A
+           * project card shows a website screenshot, which is landscape; the
+           * 4:5 'hero' crop belongs to a portrait photograph. Asking for
+           * 'hero' here cropped a wide screenshot tall, and object-fit: cover
+           * then cropped it wide again.
+           *
+           * Falls back to 'hero' so an image uploaded before 'wide' existed
+           * still renders — badly cropped, but present, which beats a card
+           * that silently shows nothing.
+           */
+          $shot = $project->thumbnail?->variant('wide', 'jpeg')
+              ?? $project->thumbnail?->variant('hero', 'jpeg');
+          ?>
+          <?php if ($project->thumbnail !== null && $shot !== null): ?>
+            <?php $size = $shot->variant; ?>
             <picture>
-              <?php if ($webp = $project->thumbnail->url('hero', 'webp')): ?>
-                <source srcset="<?= e(route_url($webp)) ?>" type="image/webp">
-              <?php endif; ?>
+              <?php foreach ([['avif', 'image/avif'], ['webp', 'image/webp']] as [$format, $type]): ?>
+                <?php if ($url = $project->thumbnail->url($size, $format)): ?>
+                  <source srcset="<?= e(route_url($url)) ?>" type="<?= e($type) ?>">
+                <?php endif; ?>
+              <?php endforeach; ?>
               <img class="frame__img"
-                   src="<?= e(route_url((string) $project->thumbnail->url('hero', 'jpeg'))) ?>"
+                   src="<?= e(route_url((string) $project->thumbnail->url($size, 'jpeg'))) ?>"
                    alt="<?= e($project->thumbnail->alt($project->title . ' screenshot')) ?>"
-                   width="<?= e((string) $project->thumbnail->width) ?>"
-                   height="<?= e((string) $project->thumbnail->height) ?>"
+                   <?php /* The VARIANT's dimensions, not the source photo's. The
+                             source is whatever was uploaded; the variant is the
+                             crop actually being served, and using the source
+                             numbers reserves the wrong aspect ratio and shifts
+                             the page on load. */ ?>
+                   width="<?= e((string) $shot->width) ?>"
+                   height="<?= e((string) $shot->height) ?>"
                    loading="lazy" decoding="async">
             </picture>
           <?php else: ?>

@@ -102,6 +102,14 @@ return [
          */
         'variants' => [
             'hero'  => ['width' => 800,  'height' => 1000, 'formats' => ['avif', 'webp', 'jpeg']],
+
+            // 16:10 landscape, to match `.frame__body`'s aspect-ratio exactly.
+            // Project cards show a website screenshot, which is landscape; the
+            // 4:5 `hero` crop is right for a portrait photograph and wrong for
+            // this. Asking `hero` for a card meant the pipeline cropped a wide
+            // screenshot tall, then object-fit: cover cropped it wide again —
+            // a narrow vertical slice stretched across the frame.
+            'wide'  => ['width' => 1280, 'height' => 800,  'formats' => ['avif', 'webp', 'jpeg']],
             'about' => ['width' => 600,  'height' => 750,  'formats' => ['avif', 'webp', 'jpeg']],
             'thumb' => ['width' => 160,  'height' => 160,  'formats' => ['webp', 'jpeg']],
             'og'    => ['width' => 1200, 'height' => 630,  'formats' => ['jpeg']],
