@@ -8,10 +8,11 @@
  * controller is constructed, so an admin screen cannot be reached by an
  * anonymous visitor even if a check inside it were ever forgotten.
  *
- * PHASE 6 SCOPE. Profile editing, the profile photograph, and project and
- * case-study editing are all live. /about and /contact remain sections of the
- * home page until they have content of their own, so the site does not ship
- * two URLs for the same text.
+ * PHASE 7 SCOPE. Profile, the profile photograph, projects and case studies,
+ * the skills vocabulary, services, the process steps and site settings are all
+ * editable. /about and /contact remain sections of the home page until they
+ * have content of their own, so the site does not ship two URLs for the same
+ * text.
  */
 
 declare(strict_types=1);
@@ -19,8 +20,12 @@ declare(strict_types=1);
 use App\Core\Router;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProcessController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WorkController;
 
@@ -66,6 +71,43 @@ return static function (Router $router): void {
     $router->post('/admin/projects/{id:\d+}/delete',       [ProjectController::class, 'destroy'], 'auth');
     $router->post('/admin/projects/{id:\d+}/restore',      [ProjectController::class, 'restore'], 'auth');
     $router->post('/admin/projects/reorder',                [ProjectController::class, 'reorder'], 'auth');
+
+    // Skills. Categories and skills share one screen, so they share one path
+    // and differ by the noun in the segment after it.
+    $router->get('/admin/skills', [SkillController::class, 'index'], 'auth');
+
+    $router->post('/admin/skills/categories',                   [SkillController::class, 'storeCategory'], 'auth');
+    $router->post('/admin/skills/categories/{id:\d+}',          [SkillController::class, 'updateCategory'], 'auth');
+    $router->post('/admin/skills/categories/{id:\d+}/visible',  [SkillController::class, 'categoryVisibility'], 'auth');
+    $router->post('/admin/skills/categories/{id:\d+}/delete',   [SkillController::class, 'destroyCategory'], 'auth');
+
+    $router->post('/admin/skills/items',                  [SkillController::class, 'storeSkill'], 'auth');
+    $router->post('/admin/skills/items/{id:\d+}',         [SkillController::class, 'updateSkill'], 'auth');
+    $router->post('/admin/skills/items/{id:\d+}/visible', [SkillController::class, 'skillVisibility'], 'auth');
+    $router->post('/admin/skills/items/{id:\d+}/delete',  [SkillController::class, 'destroySkill'], 'auth');
+
+    $router->post('/admin/skills/reorder', [SkillController::class, 'reorder'], 'auth');
+
+    // Services and process steps. Identical shapes, two controllers that
+    // differ only in which list they name — see ContentListController.
+    $router->get('/admin/services',  [ServiceController::class, 'index'], 'auth');
+    $router->post('/admin/services', [ServiceController::class, 'store'], 'auth');
+    $router->post('/admin/services/{id:\d+}',         [ServiceController::class, 'update'], 'auth');
+    $router->post('/admin/services/{id:\d+}/visible', [ServiceController::class, 'visibility'], 'auth');
+    $router->post('/admin/services/{id:\d+}/delete',  [ServiceController::class, 'destroy'], 'auth');
+    $router->post('/admin/services/reorder',           [ServiceController::class, 'reorder'], 'auth');
+
+    $router->get('/admin/process',  [ProcessController::class, 'index'], 'auth');
+    $router->post('/admin/process', [ProcessController::class, 'store'], 'auth');
+    $router->post('/admin/process/{id:\d+}',         [ProcessController::class, 'update'], 'auth');
+    $router->post('/admin/process/{id:\d+}/visible', [ProcessController::class, 'visibility'], 'auth');
+    $router->post('/admin/process/{id:\d+}/delete',  [ProcessController::class, 'destroy'], 'auth');
+    $router->post('/admin/process/reorder',           [ProcessController::class, 'reorder'], 'auth');
+
+    // Settings. One form, saved whole — there are few enough that a per-field
+    // save would be more chrome than content.
+    $router->get('/admin/settings',  [SettingsController::class, 'edit'], 'auth');
+    $router->post('/admin/settings', [SettingsController::class, 'update'], 'auth');
 
     // Draft preview. The public /work/{slug} still goes through
     // findPublishedBySlug, so an anonymous visitor guessing a draft's address

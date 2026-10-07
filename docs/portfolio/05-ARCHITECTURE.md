@@ -688,6 +688,73 @@ assertion fails. Covers all eight EXIF orientations, every configured crop's
 aspect ratio and subject retention, the no-upscale rule, transparency
 flattening, EXIF actually being stripped, and the `php.ini` limits.
 
+### 2.15a One writer for two lists, with the table name in an enum
+
+Services and process steps are structurally identical — an ordered,
+visibility-flagged list of a title and a short body. They share
+`ContentListWriter`, parameterised by a `ContentList` enum, rather than having
+a class each.
+
+The enum is not decoration. Both the writer and the repository interpolate a
+table name into SQL, which no prepared statement can parameterise. The enum is
+what makes that safe: a table name can only ever come from a case declared in
+this application, never from a request, and adding a list is a deliberate code
+change rather than a string someone passed in.
+
+### 2.15b Deleting counts first and refuses; hiding is the reversible action
+
+`fk_skill_category` is `ON DELETE RESTRICT`, so the database would already
+refuse to delete a category holding skills — but it would refuse with a
+`PDOException` and a 500, which tells the author nothing. `SkillWriter`
+counts first and returns the count, so the controller can say *"Nothing was
+deleted: "Platform" still holds 4 skills"*.
+
+Cascading was never an option. These rows are the site's technology
+vocabulary, referenced by `project_technologies` on every published case
+study. Deleting a category because someone clicked Delete would silently strip
+tags off live pages, and there is no undo for that. The same reasoning guards
+an individual skill: it counts the projects tagged with it first.
+
+Every screen offers **hide** before **delete**, and hiding keeps the text. A
+service taken off the site for a month goes back without being rewritten.
+
+### 2.15c Settings can be edited but not invented
+
+`SettingsWriter` updates the value of a key that already exists. It cannot
+create keys and it cannot delete them, and the admin screen has no "add
+setting" button.
+
+A settings key is read by name in a template — `site_title`,
+`meta_description`. That makes it part of the code, not data. An admin screen
+that let someone type `site_titel` would write a row nothing reads while the
+real title silently kept its default, with no error anywhere. New keys arrive
+in a seed, next to the template that reads them.
+
+An unchecked checkbox posts nothing at all, so for a `boolean` the writer
+reads absence as `false` rather than skipping the field.
+
+### 2.15d An empty list renders nothing, and the nav agrees
+
+A services or process list with no rows produces no section on the home page:
+no heading, no empty grid, no "coming soon". Same rule `work-show.php` states
+for case-study sections — a visitor cannot tell the section exists.
+
+The nav is the part that is easy to get wrong. `#services` is linked from the
+header, the slide-out panel and the footer, on every page. Removing the
+section without removing those links leaves an anchor that does nothing when
+clicked, which reads as a broken site rather than as a section not yet
+written. So `Controller::page()` resolves `hasServices` once and every public
+template renders the link only when the section is actually there.
+
+### 2.15e Step numbers are positions, not a column
+
+`process_steps` has no `number` column. The number a visitor reads is the
+row's position in the list, rendered by the template's counter.
+
+Storing both would let them disagree — reorder the steps, forget to renumber,
+and the page shows "1, 2, 2, 4". One source of truth means moving a step
+renumbers the list for free.
+
 ---
 
 ## 6. Residual risks

@@ -8,6 +8,8 @@ use App\Core\Response;
 use App\Core\Seo;
 use App\Core\View;
 use App\Domain\Auth\AuthService;
+use App\Domain\Content\ContentList;
+use App\Domain\Content\ContentListRepository;
 use App\Domain\Profile\ProfileRepository;
 use App\Domain\Project\ProjectRepository;
 use App\Domain\Settings\SettingsRepository;
@@ -44,6 +46,13 @@ abstract class Controller
                 'Tebit Ramson Titih — Software Engineer & Full-Stack Developer'
             ),
             'isHome'   => $isHome,
+
+            // The nav links to #services on the home page from every page, so
+            // every page has to know whether that section is actually there.
+            // A link to an anchor that does not exist does nothing when
+            // clicked, which reads as a broken site rather than as a section
+            // the owner has not written yet.
+            'hasServices' => (new ContentListRepository())->visible(ContentList::Services) !== [],
         ]);
 
         return Response::html($html);

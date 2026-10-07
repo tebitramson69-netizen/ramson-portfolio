@@ -18,6 +18,10 @@ $here = static fn (string $title): string => ($pageTitle ?? '') === $title ? ' a
         <li><a class="admin-nav__link" href="<?= e(route_url('/admin')) ?>"<?= $here('Dashboard') ?>>Dashboard</a></li>
         <li><a class="admin-nav__link" href="<?= e(route_url('/admin/profile')) ?>"<?= $here('Profile') ?>>Profile</a></li>
         <li><a class="admin-nav__link" href="<?= e(route_url('/admin/projects')) ?>"<?= $here('Projects') ?>>Projects</a></li>
+        <li><a class="admin-nav__link" href="<?= e(route_url('/admin/skills')) ?>"<?= $here('Skills') ?>>Skills</a></li>
+        <li><a class="admin-nav__link" href="<?= e(route_url('/admin/services')) ?>"<?= $here('Services') ?>>Services</a></li>
+        <li><a class="admin-nav__link" href="<?= e(route_url('/admin/process')) ?>"<?= $here('Process') ?>>Process</a></li>
+        <li><a class="admin-nav__link" href="<?= e(route_url('/admin/settings')) ?>"<?= $here('Settings') ?>>Settings</a></li>
         <li><a class="admin-nav__link" href="<?= e(route_url('/')) ?>">View site</a></li>
       </ul>
 

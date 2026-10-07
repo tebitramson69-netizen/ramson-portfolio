@@ -1,6 +1,10 @@
 <?php
 /** @var \App\Domain\Profile\Profile|null $profile */
 /** @var bool $isHome */
+/** @var bool $hasServices */
+// Defaulted, not assumed: the admin layout renders no site nav, and a
+// template rendered outside Controller::page() must still be safe.
+$hasServices = $hasServices ?? false;
 $home = $isHome ? '#top' : route_url('/');
 $name = $profile?->fullName ?? 'Tebit Ramson Titih';
 ?>
@@ -15,7 +19,9 @@ $name = $profile?->fullName ?? 'Tebit Ramson Titih';
       <ul class="nav__list">
         <li><a class="nav__link" href="<?= e($isHome ? '#work' : route_url('/') . '#work') ?>"<?= $isHome ? ' data-spy-link' : '' ?>>Work</a></li>
         <li><a class="nav__link" href="<?= e($isHome ? '#about' : route_url('/') . '#about') ?>"<?= $isHome ? ' data-spy-link' : '' ?>>About</a></li>
-        <li><a class="nav__link" href="<?= e($isHome ? '#services' : route_url('/') . '#services') ?>"<?= $isHome ? ' data-spy-link' : '' ?>>Services</a></li>
+        <?php if ($hasServices): ?>
+          <li><a class="nav__link" href="<?= e($isHome ? '#services' : route_url('/') . '#services') ?>"<?= $isHome ? ' data-spy-link' : '' ?>>Services</a></li>
+        <?php endif; ?>
         <li><a class="nav__link" href="<?= e($isHome ? '#contact' : route_url('/') . '#contact') ?>"<?= $isHome ? ' data-spy-link' : '' ?>>Contact</a></li>
       </ul>
 

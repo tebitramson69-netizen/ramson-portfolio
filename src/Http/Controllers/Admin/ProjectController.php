@@ -388,11 +388,6 @@ final class ProjectController extends AdminController
         ]);
     }
 
-    private function text(Request $request, string $key, int $max): string
-    {
-        return mb_substr(trim((string) ($request->post[$key] ?? '')), 0, $max);
-    }
-
     /**
      * Sections arrive as sections[<key>] = body, one textarea per known key.
      *
@@ -431,20 +426,5 @@ final class ProjectController extends AdminController
         }
 
         return $features;
-    }
-
-    /**
-     * A URL-safe slug.
-     *
-     * Deliberately ASCII-only: a slug ends up in a URL, a filename-like path
-     * and a unique index, and transliterating accented characters predictably
-     * without intl is not worth the surprise. The author can always type one.
-     */
-    public static function slugify(string $value): string
-    {
-        $value = strtolower(trim($value));
-        $value = (string) preg_replace('/[^a-z0-9]+/', '-', $value);
-
-        return trim($value, '-');
     }
 }

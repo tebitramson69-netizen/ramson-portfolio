@@ -14,7 +14,7 @@ phase leaves the project in a broken state.
 | 4 | Authentication & Admin Shell | ✅ Complete |
 | 5 | Profile Management & Media ⭐ | ✅ Complete |
 | 6 | Projects & Case Studies ⭐ | ✅ Complete |
-| 7 | Remaining Content Management | ⬜ Not started |
+| 7 | Remaining Content Management | ✅ Complete |
 | 8 | Contact System | ⬜ Not started |
 | 9 | SEO / Performance / Accessibility | ⬜ Not started |
 | 10 | Deployment & Launch | ⬜ Not started |
@@ -224,12 +224,60 @@ the CMS**. This is the milestone at which the portfolio becomes genuinely usable
 
 ---
 
-## Phase 7 — Remaining Content Management ⬜
+## Phase 7 — Remaining Content Management ✅
 
-Skills and categories · experience · services · process steps · social links · site settings ·
-per-page SEO overrides.
+**Delivered.** The skills vocabulary — categories and skills, with create, edit, show/hide,
+reorder and a delete that refuses rather than cascades · services · process steps · site
+settings. Four new admin screens, all behind the kernel guard.
 
-**Deliverable:** zero hard-coded content anywhere.
+**Checking the schema before planning changed the shape of this phase.** Two line items in the
+original list turned out not to need building:
+
+| Line item | What was actually true |
+|---|---|
+| Social links | **Already done since Phase 5.** `email`, `whatsapp`, `github_url` and `linkedin_url` are columns on `profile` (migration 0003) and have been editable at `/admin/profile` all along. The roadmap line was stale, not the code |
+| Skills, site settings | Half built. The tables (0004, 0006) and read repositories existed from Phase 3; only the writers and screens were missing. Phase 7 added those, not a new design |
+
+**Two things were deliberately NOT built**, each for a stated reason rather than being quietly
+dropped:
+
+| Not built | Why |
+|---|---|
+| Experience | There is no `experience` table and no admin screen for one, because there is nothing verified to put in it. The standing rule here is that employment history is never invented, and an Experience CRUD would have shipped an empty admin screen feeding an empty public section. Unused schema is a liability — it has to be migrated, backed up and explained. The home page's Experience section keeps its `pending` block, which names the question it waits on. Build it when there are real entries |
+| Per-page SEO overrides | Phase 9 is the SEO phase. Designing the storage before that work establishes what it needs is guessing at a shape, and a guessed schema is harder to change than an absent one |
+
+**Key decisions:** one `ContentListWriter` parameterised by a `ContentList` enum rather than two
+identical writers for services and process steps — the table name can only come from the enum,
+never from a request, which is what makes interpolating it safe. Deleting a skill or a category
+**counts first and refuses** with a message naming what is in the way, because a cascade would
+silently strip technology tags off published case studies and there is no undo for that.
+Hiding is the reversible action and is offered first everywhere. `process_steps` has no
+`number` column: the step number a visitor reads is its position, and storing both would let
+them disagree.
+
+**The empty state is the designed state.** A services or process list with no rows renders
+*nothing* on the home page — no heading, no empty grid, no "coming soon" — the same rule
+`work-show.php` states for case-study sections. The nav follows the same fact, so Services
+never appears as a link to a section that is not on the page.
+
+**Verified:** 31 assertions in `bin/verify-phase7.php`, plus the Phase 7 routes added to STEP 9
+of `bin/verify-local.ps1` (GET *and* POST, each listed rather than assumed covered). Covered:
+duplicate slugs refused rather than thrown, for categories and across all skills; a category
+holding skills refusing deletion and surviving it; hidden rows absent from the public read and
+present in the admin read; new rows appended to the end; reorder writing dense positions rather
+than the numbers typed; a hidden row keeping its text; an unknown settings key ignored rather
+than created. The script writes to the database and ends by asserting the row counts are back
+where it found them — a cleanup that silently failed is a FAIL, not debris discovered months
+later.
+
+Checked over HTTP as well: all four screens 200 when signed in and 302 to the login form when
+not; the delete refusal reaching the user as a flash with the count correctly pluralised; the
+home page rendering no `id="services"` and no `#services` nav link while the table is empty,
+and all three nav links plus both sections once it is not.
+
+**Deliverable:** zero hard-coded content anywhere that Phase 7 covers. The four `pending`
+blocks still on the home page wait on *content* (About copy Q12, Experience, Contact Q8/Q9) or
+on Phase 8 — not on code.
 
 ---
 

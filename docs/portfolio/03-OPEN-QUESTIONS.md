@@ -85,16 +85,29 @@ What can you honestly promise on the contact page? "Usually within 24 hours" / "
 business days" / no stated time.
 *Only promise what you will actually meet — a missed promise here is worse than no promise.*
 
+**9b. Experience — do you have real entries?**
+Phase 7 deliberately built no `experience` table, because inventing employment history is
+excluded and an empty CRUD is unused schema rather than a feature. The question is simply
+whether there is anything genuine to list: an internship, freelance work, or the School
+Management System if it was a real engagement rather than a project. *Either answer is fine.*
+If yes, the table and screen are a small addition. If no, the home page's Experience section
+stays as it is and the roadmap records why.
+
 ---
 
 ## Blocking Phase 10 — Launch
 
 **10. Services.** Which three or four do you actually want to offer? Written in business
 outcomes, not stack names.
+**Phase 7 built the screen: `/admin/services`.** Nothing is seeded, and the section does not
+appear on the site at all while the list is empty — so this is now yours to type, not mine to
+build.
 
 **11. How I Work.** Your real process, in your own words — roughly four steps. *This is the
 highest-trust, lowest-cost section on the site for client conversion, and it cannot be
 invented.*
+**Phase 7 built the screen: `/admin/process`.** Step numbers come from the order, so there is
+nothing to renumber when you move one.
 
 **12. About copy.** A short paragraph in your own voice. I can draft from what you have given
 me and you edit, if that is easier than writing from blank.

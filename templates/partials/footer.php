@@ -1,6 +1,10 @@
 <?php
 /** @var \App\Domain\Profile\Profile|null $profile */
 /** @var bool $isHome */
+/** @var bool $hasServices */
+// Defaulted, not assumed: the admin layout renders no site nav, and a
+// template rendered outside Controller::page() must still be safe.
+$hasServices = $hasServices ?? false;
 $root   = $isHome ? '' : route_url('/');
 $name   = $profile?->fullName ?? 'Tebit Ramson Titih';
 $intro  = $profile?->shortIntro
@@ -25,7 +29,9 @@ $linked = $profile?->linkedinUrl;
         <ul class="footer__list">
           <li><a href="<?= e($root) ?>#work">Work</a></li>
           <li><a href="<?= e($root) ?>#about">About</a></li>
-          <li><a href="<?= e($root) ?>#services">Services</a></li>
+          <?php if ($hasServices): ?>
+            <li><a href="<?= e($root) ?>#services">Services</a></li>
+          <?php endif; ?>
           <li><a href="<?= e($root) ?>#contact">Contact</a></li>
         </ul>
       </div>

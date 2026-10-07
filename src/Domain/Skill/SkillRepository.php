@@ -65,4 +65,71 @@ final class SkillRepository
         return $names;
     }
 
+    // ----------------------------------------------------------------- admin
+    //
+    // Named `all*` against the public `visible*` above, the same split
+    // ProjectRepository uses. A flag would let a public template show hidden
+    // rows by passing true; a different name means that mistake has to be
+    // spelled out to happen.
+
+    /**
+     * Every category, hidden ones included, each with its skills.
+     *
+     * One query and a group in PHP rather than one query per category: the
+     * admin screen renders all of them at once, and the N+1 would grow with
+     * the vocabulary.
+     *
+     * @return list<array{id:int, name:string, slug:string, is_visible:bool, skills:list<array<string,mixed>>}>
+     */
+    public function allCategoriesWithSkills(): array
+    {
+        $categories = Database::connection()->query(
+            'SELECT id, name, slug, sort_order, is_visible
+             FROM skill_categories ORDER BY sort_order, name'
+        )->fetchAll(PDO::FETCH_ASSOC);
+
+        $skills = Database::connection()->query(
+            'SELECT id, category_id, name, slug, sort_order, is_visible
+             FROM skills ORDER BY sort_order, name'
+        )->fetchAll(PDO::FETCH_ASSOC);
+
+        $byCategory = [];
+        foreach ($skills as $skill) {
+            $byCategory[(int) $skill['category_id']][] = $skill;
+        }
+
+        return array_map(static fn (array $row): array => [
+            'id'         => (int) $row['id'],
+            'name'       => (string) $row['name'],
+            'slug'       => (string) $row['slug'],
+            'is_visible' => (bool) $row['is_visible'],
+            'skills'     => $byCategory[(int) $row['id']] ?? [],
+        ], $categories);
+    }
+
+    /** @return array<string, mixed>|null */
+    public function findCategory(int $id): ?array
+    {
+        $statement = Database::connection()->prepare(
+            'SELECT id, name, slug, is_visible FROM skill_categories WHERE id = :id'
+        );
+        $statement->execute(['id' => $id]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $row === false ? null : $row;
+    }
+
+    /** @return array<string, mixed>|null */
+    public function findSkill(int $id): ?array
+    {
+        $statement = Database::connection()->prepare(
+            'SELECT id, category_id, name, slug, is_visible FROM skills WHERE id = :id'
+        );
+        $statement->execute(['id' => $id]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $row === false ? null : $row;
+    }
 }

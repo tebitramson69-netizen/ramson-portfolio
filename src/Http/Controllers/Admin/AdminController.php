@@ -154,6 +154,34 @@ abstract class AdminController extends Controller
         };
     }
 
+    // -------------------------------------------------------- shared input
+    //
+    // Lifted here when the second and third admin screens needed them. Every
+    // admin form reads trimmed, length-capped POST strings and most of them
+    // need a slug, and three private copies of four lines is three places for
+    // the cap to drift.
+
+    /** A trimmed, length-capped POST value. Never null — absent reads as ''. */
+    protected function text(Request $request, string $key, int $max): string
+    {
+        return mb_substr(trim((string) ($request->post[$key] ?? '')), 0, $max);
+    }
+
+    /**
+     * A URL-safe slug.
+     *
+     * Deliberately ASCII-only: a slug ends up in a URL, a filename-like path
+     * and a unique index, and transliterating accented characters predictably
+     * without intl is not worth the surprise. The author can always type one.
+     */
+    public static function slugify(string $value): string
+    {
+        $value = strtolower(trim($value));
+        $value = (string) preg_replace('/[^a-z0-9]+/', '-', $value);
+
+        return trim($value, '-');
+    }
+
     protected function flash(string $type, string $message): void
     {
         \App\Core\Session::start();

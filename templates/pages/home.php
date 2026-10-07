@@ -7,13 +7,19 @@
  * attributes became utility classes so the CSP needs no 'unsafe-inline', and
  * the project cards link to real routes.
  *
- * Sections still carrying static content (Selected Work, Services, Process)
- * keep the approved markup until their tables exist — Phase 3 for projects,
- * Phase 7 for the rest. Forcing them through a database before they have one
- * would be scaffolding, not architecture.
+ * Phase 7 moved the last two static sections — Services and Process — onto
+ * their own tables. The rule they follow is the one work-show.php states: a
+ * section with no rows renders NOTHING. No heading, no empty grid, no
+ * "coming soon". A visitor cannot tell the section exists, which is the only
+ * honest way to ship a site whose owner has not written that part yet.
  *
- * @var \App\Domain\Profile\Profile|null $profile
- * @var \App\Core\View                   $view
+ * The nav follows the same fact — see Controller::page() and the partials —
+ * so Services never appears as a link to a section that is not on the page.
+ *
+ * @var \App\Domain\Profile\Profile|null        $profile
+ * @var \App\Core\View                          $view
+ * @var list<\App\Domain\Content\ContentItem>   $services
+ * @var list<\App\Domain\Content\ContentItem>   $processSteps
  */
 $p = $profile;
 
@@ -221,6 +227,7 @@ $pending = static function (array $data): void {
 
 
 <!-- ==================== HOW I WORK ==================== -->
+<?php if ($processSteps !== []): ?>
 <section class="section section--raised" id="process" aria-labelledby="process-title">
   <div class="container container--md">
 
@@ -233,30 +240,28 @@ $pending = static function (array $data): void {
       </p>
     </header>
 
-    <div data-reveal>
-      <?php $pending([
-        'label' => 'Awaiting content',
-        'title' => 'Your process, in your own words — roughly four steps',
-        'body'  => 'This is the highest-trust, lowest-cost section on the site for turning a visitor into a client, and it is the one thing here I will not draft for you: a process written by someone else reads false immediately.',
-        'ref'   => '03-OPEN-QUESTIONS · Q11',
-      ]); ?>
-
-      <ol class="process__list u-mt-7" aria-hidden="true">
-        <?php foreach (['Step one', 'Step two', 'Step three', 'Step four'] as $step): ?>
-          <li class="process__step">
-            <span class="process__num" aria-hidden="true"></span>
-            <h3 class="t-heading-2 t-muted"><?= e($step) ?></h3>
-            <p class="t-body-sm t-muted">Structure reserved — awaiting your content.</p>
-          </li>
-        <?php endforeach; ?>
-      </ol>
-    </div>
+    <?php /* The step numbers are positions, not a stored column — see
+             migration 0011. Moving a step renumbers the list for free, and
+             the two can never disagree. */ ?>
+    <ol class="process__list u-mt-7" data-reveal>
+      <?php foreach ($processSteps as $step): ?>
+        <li class="process__step">
+          <span class="process__num" aria-hidden="true"></span>
+          <h3 class="t-heading-2"><?= e($step->title) ?></h3>
+          <?php if ($step->description !== ''): ?>
+            <p class="t-body-sm"><?= e($step->description) ?></p>
+          <?php endif; ?>
+        </li>
+      <?php endforeach; ?>
+    </ol>
 
   </div>
 </section>
+<?php endif; ?>
 
 
 <!-- ===================== SERVICES ===================== -->
+<?php if ($services !== []): ?>
 <section class="section" id="services" aria-labelledby="services-title">
   <div class="container">
 
@@ -269,26 +274,20 @@ $pending = static function (array $data): void {
       </p>
     </header>
 
-    <div data-reveal>
-      <?php $pending([
-        'label' => 'Awaiting content',
-        'title' => 'Which three or four services do you actually want to offer?',
-        'body'  => 'Your real projects already suggest two strong candidates — business and booking automation, and custom management systems — but I will not commit you to offering something you have not chosen.',
-        'ref'   => '03-OPEN-QUESTIONS · Q10',
-      ]); ?>
-
-      <div class="services__grid u-mt-6" aria-hidden="true">
-        <?php for ($i = 0; $i < 4; $i++): ?>
-          <div class="card">
-            <h3 class="t-heading-2 t-muted">Service</h3>
-            <p class="t-body-sm t-muted u-mt-3">Card structure reserved — awaiting your content.</p>
-          </div>
-        <?php endfor; ?>
-      </div>
+    <div class="services__grid u-mt-6" data-reveal>
+      <?php foreach ($services as $service): ?>
+        <div class="card">
+          <h3 class="t-heading-2"><?= e($service->title) ?></h3>
+          <?php if ($service->description !== ''): ?>
+            <p class="t-body-sm u-mt-3"><?= e($service->description) ?></p>
+          <?php endif; ?>
+        </div>
+      <?php endforeach; ?>
     </div>
 
   </div>
 </section>
+<?php endif; ?>
 
 
 <!-- ==================== EXPERIENCE ==================== -->

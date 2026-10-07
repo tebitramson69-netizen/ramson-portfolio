@@ -376,6 +376,13 @@ if ($php) {
         # not running.
         @{ Path = '/admin';                  Want = 302 },
         @{ Path = '/admin/profile';          Want = 302 },
+        # Phase 7 screens. Each is listed rather than assumed to be covered by
+        # the two above: a guard is declared per route in routes/web.php, so a
+        # new route is exactly where one gets forgotten.
+        @{ Path = '/admin/skills';           Want = 302 },
+        @{ Path = '/admin/services';         Want = 302 },
+        @{ Path = '/admin/process';          Want = 302 },
+        @{ Path = '/admin/settings';         Want = 302 },
         @{ Path = '/admin/login';            Want = 200 }
     )
     $transportFailures = 0
@@ -414,7 +421,13 @@ if ($php) {
     # The guarded POST routes. A guard that only covers GET would leave the
     # upload and remove endpoints wide open, so each is probed separately
     # rather than assumed to be covered.
-    foreach ($p in @('/admin/profile', '/admin/profile/photo', '/admin/profile/photo/alt', '/admin/profile/photo/remove')) {
+    foreach ($p in @(
+        '/admin/profile', '/admin/profile/photo', '/admin/profile/photo/alt', '/admin/profile/photo/remove',
+        '/admin/skills/categories', '/admin/skills/items', '/admin/skills/reorder',
+        '/admin/services', '/admin/services/reorder',
+        '/admin/process', '/admin/process/reorder',
+        '/admin/settings'
+    )) {
         $r   = Get-Status "http://127.0.0.1:8123$p" 'POST'
         $why = if ($r.Error) { " - $($r.Error)" } else { '' }
         Report "POST $p guarded" $(if ($r.Code -eq 302) { 'PASS' } else { 'FAIL' }) "got $($r.Code), want 302 (redirect to login)$why"
@@ -548,6 +561,35 @@ Write-Host ''
 Write-Host '  The authenticated flow (upload, replace, remove) needs your admin' -ForegroundColor DarkGray
 Write-Host '  password, so this script does not attempt it. Sign in at' -ForegroundColor DarkGray
 Write-Host '  /admin/profile and check the three crops shown there.' -ForegroundColor DarkGray
+
+# =====================================================================
+Section 'STEP 12b - CONTENT MANAGEMENT (Phase 7)'
+# =====================================================================
+
+if ($php) {
+    Push-Location $script:Root
+
+    # Same arrangement as the media check above: the assertions live in PHP so
+    # they run identically here and on a Linux host, and this step reports the
+    # verdict rather than restating the checks in PowerShell.
+    #
+    # Unlike verify-media.php, this one writes to the database. It creates rows
+    # it then deletes, restores any setting it changed, and finishes by
+    # asserting the row counts are back where it found them - so a cleanup that
+    # silently failed shows up as a FAIL here rather than as debris in the real
+    # content months later.
+    $p7Out  = & $php 'bin\verify-phase7.php' 2>&1
+    $p7Exit = $LASTEXITCODE
+    $p7Out | ForEach-Object { Write-Host "    $_" -ForegroundColor DarkGray }
+
+    $p7Summary = ($p7Out | Where-Object { $_ -match '\d+ passed, \d+ failed' } | Select-Object -Last 1)
+    Report 'Content management self-check' $(if ($p7Exit -eq 0) { 'PASS' } else { 'FAIL' }) `
+        $(if ($p7Summary) { $p7Summary.Trim() } else { "exit code $p7Exit" })
+
+    Pop-Location
+} else {
+    Report 'Content management self-check' 'WARN' 'php not found - skipped'
+}
 
 # =====================================================================
 Section 'STEP 13 - GIT'

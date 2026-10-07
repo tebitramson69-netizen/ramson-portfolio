@@ -7,6 +7,8 @@ namespace App\Http\Controllers;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Seo;
+use App\Domain\Content\ContentList;
+use App\Domain\Content\ContentListRepository;
 
 final class HomeController extends Controller
 {
@@ -23,10 +25,17 @@ final class HomeController extends Controller
             jsonLd:      $profile === null ? [] : [$this->personSchema($profile)],
         );
 
+        $content = new ContentListRepository();
+
         return $this->page('pages/home', $meta, [
             'featured'    => $this->projects->findPublishedForHome(limit: 4),
             'skillGroups' => $this->skills->visibleGroupedByCategory(),
             'techStrip'   => $this->skills->stripNames(limit: 8),
+
+            // Both may be empty, and the template renders nothing at all when
+            // they are — see the rule stated in pages/home.php.
+            'services'    => $content->visible(ContentList::Services),
+            'processSteps' => $content->visible(ContentList::ProcessSteps),
         ], isHome: true);
     }
 
