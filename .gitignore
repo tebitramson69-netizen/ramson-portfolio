@@ -47,6 +47,12 @@ phpstan.neon.local
 /storage/uploads/*
 !/storage/uploads/.gitkeep
 
+# bin/backup.php writes database dumps and upload archives here. A dump
+# carries every row on the site INCLUDING the admin password hash, so this
+# must never reach a repository - least of all a public one. The directory
+# is created on first run and was not covered by the rules above.
+/storage/backups/
+
 # ------------------------------------------------------------
 # User-uploaded & generated public files
 # ------------------------------------------------------------

@@ -628,6 +628,35 @@ Report 'Self-hosted font files present' $(if ($fontCount -ge 8) { 'PASS' } else 
     "$fontCount .woff2 files in public\assets\fonts"
 
 # =====================================================================
+Section 'STEP 12d - BACKUP AND PRODUCTION READINESS'
+# =====================================================================
+
+if ($php) {
+    Push-Location $script:Root
+
+    # verify-production.php is EXPECTED to fail here. It checks that debug is
+    # off, the database user is not root and APP_URL is https - none of which
+    # is true on a development machine, and all of which must be true on the
+    # server. A pass on this machine would mean it checks nothing, so this
+    # step reports its failures as information rather than as a problem.
+    $prodOut = & $php 'bin\verify-production.php' 2>&1
+    $prodOut | ForEach-Object { Write-Host "    $_" -ForegroundColor DarkGray }
+
+    $prodLine = ($prodOut | Where-Object { $_ -match 'PASS \d+\s+WARN \d+\s+FAIL \d+' } | Select-Object -Last 1)
+    Report 'Production check runs' $(if ($prodLine) { 'PASS' } else { 'FAIL' }) `
+        $(if ($prodLine) { $prodLine.Trim() + ' (failures here are expected locally)' } else { 'produced no summary line' })
+
+    Pop-Location
+} else {
+    Report 'Production check runs' 'WARN' 'php not found - skipped'
+}
+
+# The deployment guide has to exist before there is anything to deploy to.
+$deployDoc = Join-Path $script:Root 'docs\portfolio\06-DEPLOYMENT.md'
+Report 'Deployment guide present' $(if (Test-Path $deployDoc) { 'PASS' } else { 'FAIL' }) `
+    'docs\portfolio\06-DEPLOYMENT.md'
+
+# =====================================================================
 Section 'STEP 13 - GIT'
 # =====================================================================
 
