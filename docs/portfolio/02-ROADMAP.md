@@ -16,7 +16,7 @@ phase leaves the project in a broken state.
 | 6 | Projects & Case Studies ⭐ | ✅ Complete |
 | 7 | Remaining Content Management | ✅ Complete |
 | 8 | Contact System | ⬜ Not started |
-| 9 | SEO / Performance / Accessibility | ⬜ Not started |
+| 9 | SEO / Performance / Accessibility | ✅ Complete |
 | 10 | Deployment & Launch | ⬜ Not started |
 
 **Phases 1–6 are the launchable product.** 7–10 are hardening.
@@ -290,15 +290,81 @@ email notification · admin inbox with read/unread, archive and reply shortcuts.
 
 ---
 
-## Phase 9 — SEO / Performance / Accessibility Hardening ⬜
+## Phase 9 — SEO / Performance / Accessibility Hardening ✅
 
-JSON-LD · Open Graph · per-project OG images · sitemap · `robots.txt` · canonical URLs.
-Image optimisation and AVIF · critical CSS · minification · page caching · index tuning · N+1
-elimination.
-Full accessibility audit — axe, keyboard, screen reader, 200% zoom, reduced-motion, JS-off.
-Lighthouse CI in GitHub Actions.
+**Reading the code first shrank this phase by more than half.** Most of the original line was
+already built in Phases 1–6 and simply not recorded here:
 
-**Deliverable:** every budget in PRD §N, §O and §P met and verified.
+| Line item | Already done |
+|---|---|
+| JSON-LD, Open Graph, canonicals | The `Seo` object and `head-meta.php`; `WorkController` sets a per-project `ogImage`, `article` type and a `CreativeWork` schema |
+| Per-project OG images | The media pipeline has produced a 1200×630 `og` variant since Phase 5 |
+| Image optimisation, AVIF | Every upload already produces AVIF, WebP and JPEG variants |
+| Page caching | `?v=<filemtime>` on every asset URL plus a one-year `Expires` per type; `font/woff2` was already listed in anticipation of this phase |
+
+**Delivered.**
+
+**Fonts are self-hosted.** Instrument Serif, Inter and JetBrains Mono now come from this
+origin as `latin` and `latin-ext` WOFF2. That removes a render-blocking third-party
+stylesheet and two TLS handshakes from the critical path, and it is what let the CSP collapse
+to `'self'` throughout — no external host in any directive. Nothing this site serves reaches a
+third party, and no third party can see who reads it.
+
+Two findings along the way. Google serves **23 of its 37 faces** for Cyrillic, Greek and
+Vietnamese, which this site does not use; the `unicode-range` on each face is what makes
+dropping them safe. And Inter and JetBrains Mono are **variable** fonts — Google returns one
+file per family/style/subset and repeats it under each requested weight, so naming faces by
+weight stored the same 48 KB three times. Keying on the source URL collapsed 14 files to 8,
+564 KB to 256 KB, and a `font-weight: 700` added later now renders from the real axis rather
+than being synthesised.
+
+**`sitemap.xml` and `robots.txt` are generated, not files.** A static sitemap is correct the
+day it is written and wrong the first time a project is published from the admin, with nothing
+to notice. The sitemap reads through `findAllPublished()` — the same published-only method the
+public site uses — so a draft cannot reach a search engine without someone deliberately
+calling a `findAll*` method. Proven both ways: unpublishing a project removes it from the
+sitemap, republishing brings it back.
+
+`robots.txt` had a real bug. Its `Sitemap:` line read `/sitemap.xml`, and the robots.txt
+specification requires an **absolute** URL — so crawlers ignored it, and it pointed at a 404
+besides. A static file cannot know its own domain, which is why it is generated too. The
+static file was **deleted**, not left in place: `public/.htaccess` serves a real file before
+consulting the front controller, so leaving it would have silently kept the broken version
+winning.
+
+**Compression.** `public/.htaccess` cached but never compressed. A `mod_deflate` block now
+covers the text types, by MIME type rather than extension — the front controller serves HTML
+and the sitemap with no extension at all, so an extension rule would miss every page on the
+site. Already-compressed formats are deliberately excluded.
+
+**The accessibility audit found a real failure**, which is the point of auditing rather than
+asserting. `--fg-tertiary` was documented as `~4.6:1 AA` and measured **3.78:1** against
+`--surface-overlay` — under the 4.5 floor for normal text, and it is used for exactly that:
+meta lines and eyebrows. The quoted figure had been taken against the *darkest* surface, which
+flatters it. Changed `#6E7480` → `#7E8490`, which clears 4.5 on every surface with margin
+while keeping the hue so the hierarchy is unchanged. The other three documented ratios were
+re-measured and corrected as well — `--accent-fg` was labelled `~13:1` and is 8.96:1 (still
+AAA; the colour was fine, the comment was not).
+
+Structure was already clean: one `<h1>` per page, no skipped heading levels, a skip link,
+`lang`, landmarks, labelled fields, `:focus-visible`, and `prefers-reduced-motion` honoured.
+
+**Deliberately NOT built**, each for a stated reason:
+
+| Not built | Why |
+|---|---|
+| Minification | This project has **no build step by design**. A minifier adds a toolchain to install, run and forget, to save a few KB that `mod_deflate` already saves without one |
+| Critical-CSS inlining | The CSP forbids `unsafe-inline`, deliberately — that is why there is no inline JavaScript anywhere. Inlining would need a nonce or hash on every page, a real cost against one stylesheet already served with a one-year cache |
+| Lighthouse CI | This repo has no CI at all, and a Lighthouse job needs a URL to hit. Adding it before the site exists is backwards. Worth doing after launch, against the real domain |
+
+**Verified:** 22 assertions in `bin/verify-phase9.php`, plus the crawler routes and a font-file
+count added to `bin/verify-local.ps1`. Every assertion covers something that fails *silently* —
+a font quietly falling back to Georgia, a CSP quietly re-admitting a third party, a contrast
+ratio quietly drifting under 4.5. The contrast checks read the hex values straight out of
+`main.css`, so a token edited without re-measuring fails the check rather than the reader.
+
+**Deliverable:** no third-party origin on any page, drafts unreachable by crawler, and every
+documented contrast ratio true.
 
 ---
 

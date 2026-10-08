@@ -212,6 +212,7 @@ final class ProjectRepository
         return 'p.id, p.slug, p.title, p.category_label, p.problem_statement, p.summary,
                 p.role, p.year_label, p.status_label, p.publication, p.is_featured,
                 p.github_url, p.live_url, p.reading_minutes,
+                p.updated_at,
                 t.id AS thumb_id, t.storage_key AS thumb_key, t.mime_type AS thumb_mime,
                 t.width AS thumb_w, t.height AS thumb_h, t.alt_text AS thumb_alt,
                 UNIX_TIMESTAMP(t.updated_at) AS thumb_ts,
@@ -279,6 +280,7 @@ final class ProjectRepository
                 sections:         $sections[$id] ?? [],
                 features:         $features[$id] ?? [],
                 technologies:     $technologies[$id] ?? [],
+                updatedAt:        $row['updated_at'] !== null ? (string) $row['updated_at'] : null,
             );
         }
 

@@ -34,7 +34,29 @@ final class Project
         public readonly array $sections = [],
         public readonly array $features = [],
         public readonly array $technologies = [],
+
+        /**
+         * When the row last changed, as MySQL returns it.
+         *
+         * Carried for <lastmod> in the sitemap. Kept as the raw string rather
+         * than a DateTimeImmutable because nothing else needs date arithmetic
+         * on it, and a value object that parses dates nobody compares is
+         * ceremony.
+         */
+        public readonly ?string $updatedAt = null,
     ) {
+    }
+
+    /** W3C datetime for <lastmod>, or null when the row has no timestamp. */
+    public function lastModified(): ?string
+    {
+        if ($this->updatedAt === null) {
+            return null;
+        }
+
+        $time = strtotime($this->updatedAt);
+
+        return $time === false ? null : date('Y-m-d', $time);
     }
 
     public function isPublished(): bool

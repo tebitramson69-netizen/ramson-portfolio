@@ -66,11 +66,6 @@ if ($ogImage === '' && ($profile?->hasPhoto() ?? false)) {
 <script type="application/ld+json"><?= e_js($schema) ?></script>
 <?php endforeach; ?>
 
-<!--
-  PHASE 1 NOTE — fonts load from Google Fonts. Phase 9 self-hosts them as
-  subsetted WOFF2, which removes this third-party connection and lets the
-  Content-Security-Policy in config/app.php collapse to 'self' throughout.
--->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<?php /* Fonts are self-hosted and declared at the top of main.css, so there
+         is nothing to load from a third party here and no preconnect worth
+         making. Phase 9. */ ?>

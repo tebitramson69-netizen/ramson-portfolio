@@ -27,12 +27,19 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\WorkController;
 
 return static function (Router $router): void {
 
     // ---- public ---------------------------------------------------------
     $router->get('/',            [HomeController::class, 'index']);
+
+    // A route, not a file: the sitemap has to reflect what is published
+    // right now, and a static file would be wrong the first time a
+    // project was published from the admin.
+    $router->get('/sitemap.xml', [SitemapController::class, 'index']);
+    $router->get('/robots.txt',  [SitemapController::class, 'robots']);
     $router->get('/work/{slug}', [WorkController::class, 'show']);
 
     // ---- admin: unauthenticated by necessity ----------------------------

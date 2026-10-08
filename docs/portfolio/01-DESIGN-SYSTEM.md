@@ -34,9 +34,9 @@ like default grey. Warm-grey text on cool-grey surface is what makes a dark UI f
 Four steps, all contrast-verified against `--surface-base`.
 
 ```css
---fg-primary:   #F4F5F7;   /* headings        ~17.8:1  AAA */
---fg-secondary: #A8ADB8;   /* body             ~8.1:1  AAA */
---fg-tertiary:  #6E7480;   /* meta, eyebrows   ~4.6:1  AA  */
+--fg-primary:   #F4F5F7;   /* headings         16.3:1  AAA */
+--fg-secondary: #A8ADB8;   /* body              7.9:1  AAA */
+--fg-tertiary:  #7E8490;   /* meta, eyebrows    4.7:1  AA  */
 --fg-disabled:  #43474F;   /* non-text only — NEVER readable text */
 ```
 

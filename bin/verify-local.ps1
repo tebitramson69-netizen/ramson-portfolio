@@ -371,6 +371,11 @@ if ($php) {
         @{ Path = '/assets/css/main.css';  Want = 200 },
         @{ Path = '/assets/js/app.js';      Want = 200 },
         @{ Path = '/assets/js/admin.js';     Want = 200 },
+        # Phase 9. Both are GENERATED, not files: a static sitemap would be
+        # wrong the first time a project was published from the admin, and a
+        # static robots.txt cannot know the domain its Sitemap line must name.
+        @{ Path = '/sitemap.xml';            Want = 200 },
+        @{ Path = '/robots.txt';             Want = 200 },
         # The route guard: every admin path must send an anonymous visitor to
         # the login form, which is a 302. A 200 here would mean the guard is
         # not running.
@@ -590,6 +595,37 @@ if ($php) {
 } else {
     Report 'Content management self-check' 'WARN' 'php not found - skipped'
 }
+
+# =====================================================================
+Section 'STEP 12c - FONTS, CSP, CONTRAST (Phase 9)'
+# =====================================================================
+
+if ($php) {
+    Push-Location $script:Root
+
+    # Read-only. Every assertion in it covers something that fails SILENTLY -
+    # a font quietly falling back to Georgia, a CSP quietly re-admitting a
+    # third party, a contrast ratio quietly drifting under 4.5. None of those
+    # raise an error, and none are visible to whoever made the change.
+    $p9Out  = & $php 'bin\verify-phase9.php' 2>&1
+    $p9Exit = $LASTEXITCODE
+    $p9Out | ForEach-Object { Write-Host "    $_" -ForegroundColor DarkGray }
+
+    $p9Summary = ($p9Out | Where-Object { $_ -match '\d+ passed, \d+ failed' } | Select-Object -Last 1)
+    Report 'Fonts / CSP / contrast self-check' $(if ($p9Exit -eq 0) { 'PASS' } else { 'FAIL' }) `
+        $(if ($p9Summary) { $p9Summary.Trim() } else { "exit code $p9Exit" })
+
+    Pop-Location
+} else {
+    Report 'Fonts / CSP / contrast self-check' 'WARN' 'php not found - skipped'
+}
+
+# The font files themselves. A missing woff2 does not error anywhere: the
+# browser silently falls back to Georgia and the page merely looks wrong.
+$fontDir = Join-Path $script:Root 'public\assets\fonts'
+$fontCount = @(Get-ChildItem -LiteralPath $fontDir -Filter '*.woff2' -ErrorAction SilentlyContinue).Count
+Report 'Self-hosted font files present' $(if ($fontCount -ge 8) { 'PASS' } else { 'FAIL' }) `
+    "$fontCount .woff2 files in public\assets\fonts"
 
 # =====================================================================
 Section 'STEP 13 - GIT'

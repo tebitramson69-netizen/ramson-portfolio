@@ -18,16 +18,20 @@ return [
      * 'unsafe-inline' is deliberately ABSENT from script-src. That is why
      * there is no inline JavaScript anywhere in the templates.
      *
-     * fonts.googleapis.com / fonts.gstatic.com are allowed only because
-     * Phase 1 loads Instrument Serif and Inter from Google Fonts. Phase 9
-     * self-hosts them as subsetted WOFF2, at which point both hosts are
-     * removed from this policy and it collapses to 'self' throughout.
+     * Phase 9 self-hosted the three families as latin WOFF2, so
+     * fonts.googleapis.com and fonts.gstatic.com are gone from this policy
+     * and every directive below is now 'self', 'none' or a scheme. Nothing
+     * this site serves can reach a third party, and no third party can see
+     * who reads it.
+     *
+     * Keep it that way. Adding an external host here is a decision about
+     * the reader's privacy, not only about a dependency.
      */
     'csp' => [
         'default-src'     => ["'self'"],
         'script-src'      => ["'self'"],
-        'style-src'       => ["'self'", 'https://fonts.googleapis.com'],
-        'font-src'        => ["'self'", 'https://fonts.gstatic.com'],
+        'style-src'       => ["'self'"],
+        'font-src'        => ["'self'"],
         // blob: is required by the admin photo picker, which previews the
         // chosen file with URL.createObjectURL() before it is uploaded. That
         // preview is the only way to see a bad crop BEFORE committing it, and
