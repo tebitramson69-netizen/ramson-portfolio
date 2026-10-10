@@ -84,6 +84,10 @@ Any other genuine projects to include?
 What can you honestly promise on the contact page? "Usually within 24 hours" / "within 2
 business days" / no stated time.
 *Only promise what you will actually meet — a missed promise here is worse than no promise.*
+**Phase 8 built the form and deliberately put NO time on it.** The success message says the
+reply goes to the address they gave and nothing about when. Adding a promise is a one-line
+change to `ContactController::thanks()` once you have chosen one you will keep; leaving it out
+is the honest default, not a gap.
 
 **9b. Experience — do you have real entries?**
 Phase 7 deliberately built no `experience` table, because inventing employment history is

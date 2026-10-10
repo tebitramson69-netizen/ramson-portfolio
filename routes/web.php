@@ -8,11 +8,11 @@
  * controller is constructed, so an admin screen cannot be reached by an
  * anonymous visitor even if a check inside it were ever forgotten.
  *
- * PHASE 7 SCOPE. Profile, the profile photograph, projects and case studies,
+ * PHASE 8 SCOPE. Profile, the profile photograph, projects and case studies,
  * the skills vocabulary, services, the process steps and site settings are all
- * editable. /about and /contact remain sections of the home page until they
- * have content of their own, so the site does not ship two URLs for the same
- * text.
+ * editable, and the contact form posts to /contact. /about remains a section
+ * of the home page until it has content of its own, so the site does not ship
+ * two URLs for the same text.
  */
 
 declare(strict_types=1);
@@ -20,12 +20,14 @@ declare(strict_types=1);
 use App\Core\Router;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\ProcessController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SkillController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\WorkController;
@@ -40,6 +42,12 @@ return static function (Router $router): void {
     // project was published from the admin.
     $router->get('/sitemap.xml', [SitemapController::class, 'index']);
     $router->get('/robots.txt',  [SitemapController::class, 'robots']);
+
+    // The ONLY route a stranger may POST to. No 'auth', and no CSRF
+    // token either — see the reasoning in ContactController's docblock.
+    // Its defences are a honeypot, a per-address rate limit and real
+    // validation.
+    $router->post('/contact',    [ContactController::class, 'submit']);
     $router->get('/work/{slug}', [WorkController::class, 'show']);
 
     // ---- admin: unauthenticated by necessity ----------------------------
@@ -115,6 +123,13 @@ return static function (Router $router): void {
     // save would be more chrome than content.
     $router->get('/admin/settings',  [SettingsController::class, 'edit'], 'auth');
     $router->post('/admin/settings', [SettingsController::class, 'update'], 'auth');
+
+    // The contact inbox. Email is best-effort; this is where a message is
+    // reliably seen, which is why /admin carries the unread count.
+    $router->get('/admin/messages', [MessageController::class, 'index'], 'auth');
+    $router->get('/admin/messages/{id:\d+}', [MessageController::class, 'show'], 'auth');
+    $router->post('/admin/messages/{id:\d+}/state',  [MessageController::class, 'state'], 'auth');
+    $router->post('/admin/messages/{id:\d+}/delete', [MessageController::class, 'destroy'], 'auth');
 
     // Draft preview. The public /work/{slug} still goes through
     // findPublishedBySlug, so an anonymous visitor guessing a draft's address

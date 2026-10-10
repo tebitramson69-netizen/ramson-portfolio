@@ -53,8 +53,48 @@ abstract class Controller
             // clicked, which reads as a broken site rather than as a section
             // the owner has not written yet.
             'hasServices' => (new ContentListRepository())->visible(ContentList::Services) !== [],
-        ]);
+        ] + $this->contactState());
 
         return Response::html($html);
+    }
+
+    /**
+     * Flash message and preserved form input for the contact section.
+     *
+     * Read ONLY from a session that already exists. Rendering a page must not
+     * start one: a session on the home page means a cookie and a session file
+     * for every anonymous visitor, and the contact form is deliberately built
+     * so that someone who never submits never gets either. ContactController
+     * starts the session on POST, which is the moment a visitor has chosen to
+     * interact and carrying their draft back is worth it.
+     *
+     * @return array<string, mixed>
+     */
+    private function contactState(): array
+    {
+        // Session::cookieName(), NOT session_name(). Before a session starts
+        // session_name() is still PHP's default, while the cookie this
+        // application sets is rp_session (or __Host-rp_session over HTTPS).
+        // Looking for the wrong name finds nothing and silently swallows
+        // every flash — which is precisely what that method's docblock warns
+        // about, and precisely the bug this line had on the first attempt.
+        if (session_status() !== PHP_SESSION_ACTIVE
+            && ($_COOKIE[\App\Core\Session::cookieName()] ?? null) === null) {
+            return ['flash' => null, 'contactErrors' => [], 'contactOld' => []];
+        }
+
+        \App\Core\Session::start();
+
+        $state = [
+            'flash'         => is_array($_SESSION['_flash'] ?? null) ? $_SESSION['_flash'] : null,
+            'contactErrors' => (array) ($_SESSION['_contact_errors'] ?? []),
+            'contactOld'    => (array) ($_SESSION['_contact_old'] ?? []),
+        ];
+
+        // Read once. A flash that survived the page it was written for would
+        // reappear on the next one, announcing a success that already happened.
+        unset($_SESSION['_flash'], $_SESSION['_contact_errors'], $_SESSION['_contact_old']);
+
+        return $state;
     }
 }

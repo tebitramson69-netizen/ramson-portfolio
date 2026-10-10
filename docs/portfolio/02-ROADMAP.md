@@ -15,7 +15,7 @@ phase leaves the project in a broken state.
 | 5 | Profile Management & Media ⭐ | ✅ Complete |
 | 6 | Projects & Case Studies ⭐ | ✅ Complete |
 | 7 | Remaining Content Management | ✅ Complete |
-| 8 | Contact System | ⬜ Not started |
+| 8 | Contact System | ✅ Complete |
 | 9 | SEO / Performance / Accessibility | ✅ Complete |
 | 10 | Deployment & Launch | ⬜ Not started |
 
@@ -281,12 +281,67 @@ on Phase 8 — not on code.
 
 ---
 
-## Phase 8 — Contact System ⬜
+## Phase 8 — Contact System ✅
 
-Public form with validation, honeypot, timing check and rate limiting · database storage ·
-email notification · admin inbox with read/unread, archive and reply shortcuts.
+**Delivered.** A public form on the home page, messages stored in the database, and an admin
+inbox at `/admin/messages` with unread / read / archived, a reply shortcut and an unread count
+on the dashboard.
 
-**Deliverable:** visitors can reach him reliably, with messages captured twice.
+**This phase added reliability, not reachability.** The `mailto:` and `wa.me` buttons have
+worked since Phase 5 and are still there, above the form — WhatsApp is the primary business
+channel in Cameroon and no form replaces it. What the form adds is a path for people who will
+not open a mail client, and a record that cannot be lost in a spam folder.
+
+### The database is the channel; email is a convenience
+
+The row is committed **before** the notification is attempted, and a failed or disabled
+`mail()` can never fail a submission. This is not defensive habit: on the free and cheap shared
+hosting this site is launching on, `mail()` is frequently disabled outright, and where it works
+the mail often lands in spam because it comes from a shared web server with no SPF record.
+A design that treated email as the channel would lose messages silently on exactly that
+hosting. The inbox is the channel, which is why the dashboard carries the unread count.
+
+`mail()` and no library, because this project has **zero runtime dependencies** by design.
+PHPMailer plus SMTP credentials plus another way for a deploy to be wrong, for one
+notification, is not a trade worth making.
+
+### Spam: three layers, no CAPTCHA
+
+A CAPTCHA means a third-party script, and Phase 9 spent real effort getting the CSP to
+`'self'`. Instead: a **honeypot** whose hits return the same success the sender would have seen
+while storing nothing — reporting the rejection tells whoever wrote the bot which field gave it
+away — a **per-address rate limit**, and real validation.
+
+`MessageThrottle` has **no table of its own**. It counts rows in `messages` for an address
+inside a window, which is what `ix_message_ip` exists for: the messages are their own evidence,
+and a log recording that a message arrived, sitting beside the message, is two places to
+disagree about one fact.
+
+### Two defences deliberately NOT built
+
+| Not built | Why |
+|---|---|
+| Timing check | Doing it honestly needs a signed timestamp, and there is no `APP_KEY` in this project — so a new secret, a new deployment step, and a new way for every submission to fail if it is wrong. Marginal value over the honeypot. Add it if spam actually arrives, with evidence |
+| CSRF token on the public form | CSRF protects a victim from an action taken as them; here the action is sending Ramson a message, which an attacker can simply do directly. It stops no bot — a bot fetches a token as easily as a form. And it costs: `Csrf::token()` starts a session, so a token on the home page means a session file per anonymous visitor on shared hosting and a `Set-Cookie` on the most-requested page. Every admin route keeps its check, where a victim and a privileged action both exist |
+
+A session is started on the POST path only, so a visitor who never submits is never given a
+cookie — and someone whose submission was rejected gets every field back, because a person who
+wrote three paragraphs and mistyped their address must not lose the three paragraphs.
+
+**Verified:** 24 assertions in `bin/verify-phase8.php`, which writes and cleans up and ends by
+asserting the row count is unchanged. Covered: storage and the IP round-trip through
+`inet_pton`; an empty subject displaying as `(no subject)`; the limit blocking one address while
+**not** blocking a different one, and never blocking a request with no address at all; read
+recording *when he first saw it* rather than the last time he opened it; archived leaving the
+inbox but not the table; and header injection — a `\r\n` in a name is what turns a contact form
+into an open relay for `Bcc`.
+
+Checked over HTTP too: the honeypot returning success while storing nothing, a rejected
+submission preserving the body, the throttle refusing the sixth message with a retry time, and
+the inbox 302ing an anonymous request while serving a signed-in one.
+
+**Deliverable:** visitors can reach him reliably, and a message survives a host that cannot
+send email.
 
 ---
 

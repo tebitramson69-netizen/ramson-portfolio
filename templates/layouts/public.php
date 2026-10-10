@@ -14,6 +14,7 @@ $locale = 'en';
 // Defaulted, not assumed: every public page renders through this layout, and
 // only the guarded preview route passes the flag at all.
 $isPreview = $isPreview ?? false;
+$flash     = $flash ?? null;
 ?>
 <!doctype html>
 <html lang="<?= e($locale) ?>">
@@ -43,6 +44,19 @@ $isPreview = $isPreview ?? false;
 <?php require __DIR__ . '/../partials/nav-panel.php'; ?>
 
 <main id="main">
+<?php if ($flash !== null): ?>
+  <?php /* The contact form's result. Rendered by the LAYOUT so the message
+           survives the redirect that follows a POST — a result printed by the
+           form itself would need the form to re-render on POST, which would
+           break the back button and re-submit on refresh. */ ?>
+  <div class="container">
+    <div class="site-flash site-flash--<?= e($flash['type']) ?>"
+         role="<?= $flash['type'] === 'error' ? 'alert' : 'status' ?>">
+      <?= e($flash['message']) ?>
+    </div>
+  </div>
+<?php endif; ?>
+
 <?= $content ?>
 </main>
 

@@ -20,7 +20,21 @@
  * @var \App\Core\View                          $view
  * @var list<\App\Domain\Content\ContentItem>   $services
  * @var list<\App\Domain\Content\ContentItem>   $processSteps
+ * @var array<string, string>                   $contactErrors
+ * @var array<string, string>                   $contactOld
  */
+$contactErrors = $contactErrors ?? [];
+$contactOld    = $contactOld ?? [];
+
+/** The value to put back in a field after a rejected submission. */
+$old = static fn (string $key): string => (string) ($contactOld[$key] ?? '');
+
+/** Renders the note under a field, and marks the field invalid. */
+$fieldError = static function (string $key) use ($contactErrors): string {
+    return isset($contactErrors[$key])
+        ? '<p class="field__error" id="' . e($key) . '-error">' . e($contactErrors[$key]) . '</p>'
+        : '';
+};
 $p = $profile;
 
 $pending = static function (array $data): void {
@@ -380,6 +394,58 @@ $pending = static function (array $data): void {
         <span class="btn btn--secondary btn--lg" aria-disabled="true">WhatsApp</span>
       <?php endif; ?>
     </div>
+
+    <?php /* The form sits BELOW the buttons on purpose. Email and WhatsApp
+             already work and WhatsApp is the primary business channel in
+             Cameroon; this is for people who will not open a mail client, not
+             a replacement for the two that will. */ ?>
+    <form class="contact__form u-mt-7" method="post" action="<?= e(route_url('/contact')) ?>">
+
+      <?php /* No CSRF token, deliberately — see ContactController. */ ?>
+
+      <div class="hp-field" aria-hidden="true">
+        <label for="website">Leave this field empty</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div class="contact__row">
+        <div class="field">
+          <label class="field__label" for="contact-name">Your name <span class="field__required">*</span></label>
+          <input class="field__input" type="text" id="contact-name" name="name"
+                 maxlength="120" required autocomplete="name"
+                 value="<?= e($old('name')) ?>"
+                 <?= isset($contactErrors['name']) ? ' aria-invalid="true" aria-describedby="name-error"' : '' ?>>
+          <?= $fieldError('name') ?>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="contact-email">Your email <span class="field__required">*</span></label>
+          <input class="field__input" type="email" id="contact-email" name="email"
+                 maxlength="191" required autocomplete="email"
+                 value="<?= e($old('email')) ?>"
+                 <?= isset($contactErrors['email']) ? ' aria-invalid="true" aria-describedby="email-error"' : '' ?>>
+          <?= $fieldError('email') ?>
+        </div>
+      </div>
+
+      <div class="field u-mt-5">
+        <label class="field__label" for="contact-subject">Subject</label>
+        <input class="field__input" type="text" id="contact-subject" name="subject"
+               maxlength="160" value="<?= e($old('subject')) ?>">
+      </div>
+
+      <div class="field u-mt-5">
+        <label class="field__label" for="contact-message">What are you trying to solve? <span class="field__required">*</span></label>
+        <textarea class="field__textarea" id="contact-message" name="message" rows="6"
+                  maxlength="5000" required
+                  <?= isset($contactErrors['message']) ? ' aria-invalid="true" aria-describedby="message-error"' : '' ?>><?= e($old('message')) ?></textarea>
+        <?= $fieldError('message') ?>
+      </div>
+
+      <button class="btn btn--primary u-mt-5" type="submit">
+        Send message <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+      </button>
+    </form>
 
     <ul class="meta-list contact__channels">
       <?php if (($p?->githubUrl ?? null) !== null): ?>

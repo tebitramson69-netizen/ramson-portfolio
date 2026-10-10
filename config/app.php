@@ -46,6 +46,26 @@ return [
     ],
 
     /**
+     * The public contact form.
+     *
+     * The limit is per IP address and counted against the messages table
+     * itself — see MessageThrottle, which has no table of its own because
+     * the messages are their own evidence.
+     *
+     * Five an hour is generous for a real person and tight enough that a
+     * bot past the honeypot cannot flood the inbox. A request with no usable
+     * address is never blocked: some hosts and proxies do not pass one, and
+     * refusing those visitors to punish a guess about spam would turn the
+     * form into a wall.
+     */
+    'contact' => [
+        'throttle' => [
+            'max_messages'  => 5,
+            'decay_seconds' => 3600,   // 1 hour
+        ],
+    ],
+
+    /**
      * Authentication.
      *
      * Argon2id is used whenever the PHP build provides it. OWASP's floor is

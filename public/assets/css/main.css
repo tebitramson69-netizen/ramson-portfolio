@@ -1041,6 +1041,65 @@ h1, h2, h3, h4 {
 }
 
 
+/* --- 6.x Site flash and field errors (Phase 8) ---------------------------
+   The contact form's result, and the per-field notes under it.
+
+   .admin-flash is the same idea, but it lives in admin.css, which public
+   pages do not load. Duplicating four rules is cheaper than making every
+   visitor download the whole admin stylesheet for one message. */
+
+.site-flash {
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-7);
+  border: 1px solid var(--border-default);
+  border-left-width: 2px;
+  border-radius: var(--radius-md);
+  font-size: var(--fs-body-sm);
+  color: var(--fg-secondary);
+  background: var(--surface-raised);
+}
+.site-flash--success { border-left-color: var(--success); }
+.site-flash--error   { border-left-color: var(--danger); color: var(--fg-primary); }
+
+/* The message says what is wrong; the colour only draws the eye to it.
+   Colour alone would say nothing to a reader who cannot distinguish it. */
+.field__error {
+  margin-top: var(--space-2);
+  font-size: var(--fs-caption);
+  color: var(--danger);
+}
+.field__input[aria-invalid="true"],
+.field__textarea[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+/* The contact form. Two fields side by side where there is room, stacked
+   where there is not — name and email are short and belong on one line. */
+.contact__form { text-align: left; }
+
+.contact__row {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 40rem) {
+  .contact__row { grid-template-columns: 1fr 1fr; }
+}
+
+/* The honeypot. Hidden from people without display:none, which some bots
+   check for and skip; this is off-screen and out of the tab order, so a
+   person never meets it and a naive bot still fills it in.
+   aria-hidden and tabindex="-1" on the input keep it away from assistive
+   technology, which is the one audience that could otherwise be trapped. */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+
 /* ==========================================================================
    7. SECTIONS
    ========================================================================== */

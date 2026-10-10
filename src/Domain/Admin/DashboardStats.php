@@ -35,7 +35,13 @@ final class DashboardStats
                                                  AND publication='published')                         AS projects_featured,
                 (SELECT COUNT(*) FROM skills)                                                         AS skills,
                 (SELECT COUNT(*) FROM media)                                                          AS media,
-                (SELECT COUNT(*) FROM project_sections)                                               AS sections"
+                (SELECT COUNT(*) FROM project_sections)                                               AS sections,
+
+                -- Phase 8. The dashboard is the screen he lands on, and the
+                -- email notification is best-effort, so this badge is how an
+                -- unread message gets noticed at all on a host where PHP's
+                -- mail() is disabled.
+                (SELECT COUNT(*) FROM messages WHERE status='unread')                                 AS messages_unread"
         )->fetch(PDO::FETCH_ASSOC);
 
         return array_map('intval', $row ?: []);

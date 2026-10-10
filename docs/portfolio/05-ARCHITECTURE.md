@@ -827,6 +827,81 @@ reader.
 
 A comment claiming a ratio is worth less than a test asserting one.
 
+### 2.17a The row is the message; the email is a convenience
+
+`ContactController` commits the row and *then* calls `MessageNotifier`. The
+notifier's return value is logged and never surfaced, and the visitor sees
+success either way — because the message was received.
+
+The ordering is the design, not caution. On free and cheap shared hosting
+`mail()` is frequently disabled outright, and where it works the mail often
+lands in spam: it is sent by a shared web server with no SPF record for the
+From address. Treating email as the channel would mean messages that silently
+never arrive, on exactly the hosting this site launches on. So the inbox at
+`/admin/messages` is the channel, and the dashboard carries the unread count
+because that is the screen he lands on.
+
+`From:` is the site's own address and never the sender's — forging the
+visitor's domain is what gets a shared host's mail rejected as spoofing.
+`Reply-To:` carries the real sender, so replying still reaches them.
+
+### 2.17b No CSRF token on the public contact form
+
+Stated here because it looks like an omission and is not.
+
+CSRF protects a victim from an action performed as them. The action here is
+sending the site owner a message, which an attacker can do directly without
+involving a victim at all. It also stops no bots: a bot can fetch a token as
+easily as it fetches a form.
+
+Against that it has a real cost. `Csrf::token()` calls `Session::start()`, so
+putting a token on the home page means a session file per anonymous visitor
+on shared hosting and a `Set-Cookie` on the most-requested page on the site.
+
+So the public form has a honeypot, a per-address rate limit and validation,
+and **every admin route keeps its CSRF check** — there a victim and a
+privileged action both exist.
+
+A session is started only on the POST path, which is how a rejected
+submission can hand back everything the sender typed without giving a cookie
+to visitors who merely read the page.
+
+### 2.17c The rate limiter has no table
+
+`MessageThrottle` counts rows in `messages` for an address inside a window.
+`ix_message_ip` exists for that query.
+
+A separate table recording that a message arrived, sitting beside the
+message, would be two places to disagree about one fact — and would need its
+own pruning, its own migration and its own bug.
+
+It is shaped after `LoginThrottle` but shares none of its code. That class
+counts *failed* attempts against two keys and clears them on success; here
+there is no account, nothing fails, and a sent message is not something to
+clear. Bending three concepts to fit would have read worse than forty lines
+that say what they mean.
+
+A request with no usable address is never blocked. Some hosts and proxies
+pass none, and refusing those visitors to punish a guess about spam turns a
+contact form into a wall. The IP is read from `REMOTE_ADDR` only —
+`X-Forwarded-For` is set by the client, so trusting it would let anyone reset
+their own limit by changing a header, which is worse than no limit because it
+looks like one.
+
+### 2.17d The honeypot answers a bot with success
+
+A hit returns the same redirect and the same thank-you a real sender gets,
+and stores nothing.
+
+Reporting the rejection would tell whoever wrote the bot exactly which field
+betrayed it, which is free assistance in writing the next one. Silence costs
+nothing and teaches nothing.
+
+The field is positioned off-screen rather than `display: none` — some bots
+check for that and skip — and carries `tabindex="-1"` with `aria-hidden` on
+its wrapper, so the one audience that could otherwise be trapped by an
+invisible required field never meets it.
+
 ---
 
 ## 6. Residual risks

@@ -31,6 +31,7 @@ $unhealthy   = array_values(array_filter($health, static fn (array $i): bool => 
         ['Case-study sections',$counts['sections'] ?? 0,           'Across all projects'],
         ['Skills',             $counts['skills'] ?? 0,             'Shared vocabulary'],
         ['Media files',        $counts['media'] ?? 0,              'Images in the library'],
+        ['Unread messages',    $counts['messages_unread'] ?? 0,    'From the contact form'],
     ];
     ?>
     <?php foreach ($tiles as [$label, $value, $note]): ?>

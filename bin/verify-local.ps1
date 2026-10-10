@@ -93,10 +93,25 @@ function Assert-PageContent {
         'Rendo'                = 'Rendo'
         'School Mgmt System'   = 'School Management System'
         'RT monogram fallback' = 'portrait__monogram[^>]*>RT<'
+
+        # Phase 8. The form is the one thing on this page a stranger can POST
+        # to, and a template error would remove it silently - the page would
+        # still render, just without any way to reach him.
+        'contact form'         = 'action="[^"]*/contact"'
+        'honeypot field'       = 'name="website"'
     }
     foreach ($k in $must.Keys) {
         Report "$Label : $k" $(if ($body -match $must[$k]) { 'PASS' } else { 'FAIL' }) ''
     }
+
+    # The contact form carries NO CSRF token, deliberately - a token there
+    # would start a session for every anonymous visitor to the home page.
+    # Asserted so the decision cannot be quietly undone later. See
+    # ContactController's docblock for why it costs nothing in safety.
+    $contactForm = [regex]::Match($body, '<form[^>]*action="[^"]*/contact".*?</form>', 'Singleline')
+    Report "$Label : contact form starts no session" `
+        $(if (-not $contactForm.Success) { 'FAIL' } elseif ($contactForm.Value -notmatch '_token') { 'PASS' } else { 'FAIL' }) `
+        $(if (-not $contactForm.Success) { 'form not found' } else { 'no CSRF token, as designed' })
 
     $mustNot = [ordered]@{
         'CareerForge absent'       = '(?i)careerforge'
@@ -388,6 +403,7 @@ if ($php) {
         @{ Path = '/admin/services';         Want = 302 },
         @{ Path = '/admin/process';          Want = 302 },
         @{ Path = '/admin/settings';         Want = 302 },
+        @{ Path = '/admin/messages';         Want = 302 },
         @{ Path = '/admin/login';            Want = 200 }
     )
     $transportFailures = 0
@@ -431,7 +447,7 @@ if ($php) {
         '/admin/skills/categories', '/admin/skills/items', '/admin/skills/reorder',
         '/admin/services', '/admin/services/reorder',
         '/admin/process', '/admin/process/reorder',
-        '/admin/settings'
+        '/admin/settings', '/admin/messages/1/state', '/admin/messages/1/delete'
     )) {
         $r   = Get-Status "http://127.0.0.1:8123$p" 'POST'
         $why = if ($r.Error) { " - $($r.Error)" } else { '' }
@@ -626,6 +642,29 @@ $fontDir = Join-Path $script:Root 'public\assets\fonts'
 $fontCount = @(Get-ChildItem -LiteralPath $fontDir -Filter '*.woff2' -ErrorAction SilentlyContinue).Count
 Report 'Self-hosted font files present' $(if ($fontCount -ge 8) { 'PASS' } else { 'FAIL' }) `
     "$fontCount .woff2 files in public\assets\fonts"
+
+# =====================================================================
+Section 'STEP 12e - CONTACT FORM AND INBOX (Phase 8)'
+# =====================================================================
+
+if ($php) {
+    Push-Location $script:Root
+
+    # Writes to the messages table and deletes what it wrote, ending by
+    # asserting the row count is unchanged - so a failed cleanup shows up
+    # here rather than as test rows in a real inbox.
+    $p8Out  = & $php 'bin\verify-phase8.php' 2>&1
+    $p8Exit = $LASTEXITCODE
+    $p8Out | ForEach-Object { Write-Host "    $_" -ForegroundColor DarkGray }
+
+    $p8Summary = ($p8Out | Where-Object { $_ -match '\d+ passed, \d+ failed' } | Select-Object -Last 1)
+    Report 'Contact form self-check' $(if ($p8Exit -eq 0) { 'PASS' } else { 'FAIL' }) `
+        $(if ($p8Summary) { $p8Summary.Trim() } else { "exit code $p8Exit" })
+
+    Pop-Location
+} else {
+    Report 'Contact form self-check' 'WARN' 'php not found - skipped'
+}
 
 # =====================================================================
 Section 'STEP 12d - BACKUP AND PRODUCTION READINESS'
