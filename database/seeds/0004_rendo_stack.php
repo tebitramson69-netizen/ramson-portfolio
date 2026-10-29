@@ -66,18 +66,34 @@ foreach ($skills as [$slug, $name, $categorySlug, $order]) {
 }
 
 // --- Rendo ----------------------------------------------------------------
+/*
+ * Each field is written only where nothing is stored yet, for the reason
+ * spelled out in 0003's ON DUPLICATE KEY UPDATE clause: these columns are
+ * editable at /admin/projects, and a seed that re-asserts its own value over
+ * an edited one discards work without saying so. Three guarded statements
+ * rather than one, because the guard differs per column and a single WHERE
+ * would make all three depend on the state of any one of them.
+ */
 $pdo->prepare(
     "UPDATE projects
-     SET live_url     = :live,
-         status_label = :status,
-         year_label   = :year
-     WHERE slug = 'rendo'"
+     SET live_url = :live
+     WHERE slug = 'rendo' AND live_url IS NULL"
+)->execute(['live' => 'https://rendo-cm.netlify.app']);
+
+$pdo->prepare(
+    "UPDATE projects
+     SET status_label = :status
+     WHERE slug = 'rendo' AND status_label = ''"
 )->execute([
-    'live'   => 'https://rendo-cm.netlify.app',
     // Honest: the landing page and waitlist are live, the booking flow is not.
     'status' => 'Landing page and waitlist live · booking flow in development',
-    'year'   => '2026',
 ]);
+
+$pdo->prepare(
+    "UPDATE projects
+     SET year_label = :year
+     WHERE slug = 'rendo' AND year_label = ''"
+)->execute(['year' => '2026']);
 
 $projectId = (int) $pdo->query("SELECT id FROM projects WHERE slug = 'rendo' AND deleted_at IS NULL")
     ->fetchColumn();

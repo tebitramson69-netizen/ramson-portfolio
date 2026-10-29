@@ -100,13 +100,29 @@ $upsertProject = $pdo->prepare(
         category_label    = VALUES(category_label),
         problem_statement = VALUES(problem_statement),
         summary           = VALUES(summary),
-        role              = VALUES(role),
-        status_label      = VALUES(status_label),
+        -- The four fields this seed has NOTHING to say about keep whatever
+        -- is already stored. Everything above is canonical copy that a
+        -- re-run should restore; these are not.
+        --
+        -- Written as VALUES(role) unconditionally, a re-run of
+        -- "php bin/migrate.php --seed" reset role and status_label to the
+        -- empty strings defined above — silently discarding anything typed
+        -- at /admin/projects, which has existed since Phase 6. 0004, 0006
+        -- and 0007 happen to re-fill the values they own later in the same
+        -- run, which is exactly why the loss was invisible: only fields no
+        -- later seed asserts were actually lost.
+        --
+        -- A seed may assert a value. It may not erase one.
+        -- LENGTH(...) = 0 rather than = \'\', only to keep escaped quotes out
+        -- of a single-quoted PHP string. Both columns are NOT NULL with an
+        -- empty-string default, so there is no NULL case to consider.
+        role              = IF(LENGTH(VALUES(role)) = 0, role, VALUES(role)),
+        status_label      = IF(LENGTH(VALUES(status_label)) = 0, status_label, VALUES(status_label)),
         publication       = VALUES(publication),
         is_featured       = VALUES(is_featured),
         sort_order        = VALUES(sort_order),
-        github_url        = VALUES(github_url),
-        live_url          = VALUES(live_url)'
+        github_url        = COALESCE(VALUES(github_url), github_url),
+        live_url          = COALESCE(VALUES(live_url), live_url)'
 );
 
 $findProject   = $pdo->prepare('SELECT id FROM projects WHERE slug = ? AND deleted_at IS NULL');
