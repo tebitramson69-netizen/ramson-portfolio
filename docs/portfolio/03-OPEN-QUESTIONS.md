@@ -3,6 +3,11 @@
 Information needed from Ramson, grouped by what it blocks. Answered items move to the
 **Resolved** section at the bottom with their answer, so the decision history stays visible.
 
+> **Looking for what to do next? That is `07-WHAT-I-NEED-FROM-YOU.md`.**
+> This file is the ledger — the record of what was asked and what was decided,
+> including long-settled items. The worklist is ordered by what unblocks the
+> most, says where each answer goes, and says what happens if you skip it.
+
 ---
 
 ## Blocking Phase 1 — Design Foundation
