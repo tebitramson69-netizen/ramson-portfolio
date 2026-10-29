@@ -126,7 +126,7 @@ version control.
 | Role | ✅ **Verified** — "owner and builder", his words. `database/seeds/0007_school_role_and_decisions.php` |
 | Used by a real school? | ✅ **Verified — no.** "It was built as a project", his words. Status reads *Built as a project* |
 | Technical implementation · ranking logic | ✅ **Verified** — read out of the repository, every claim checkable against a named file. `0006` |
-| Key decisions | ✅ **Verified** — the four forks are his own, recorded in comments in `src/Models/Result.php` of that repository. `0007` |
+| Key decisions | ✅ **Verified** — the four forks are his own, recorded in comments in `src/Models/Result.php` of that repository, and **he read the section and confirmed all four** (2026-10-29). `0007` |
 | Live URL | 🚫 **Never state** — nothing is deployed, and a link that 404s is worse than no link |
 | Outcome | 🚫 **Never state** — built as a project, so there are no users, no adoption and no results. **The section is deliberately absent, which is an answer rather than a gap** |
 | Lessons learned | ⬜ Outstanding — needs his answer to "what was the hardest problem" (task 1.3) |

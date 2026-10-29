@@ -39,8 +39,13 @@
  *
  * The prose states the alternative each comment implies was rejected. Where it
  * goes beyond the comment it says what the code does, never what he felt or
- * intended — and it is worth him reading once to confirm it matches what he
- * meant.
+ * intended.
+ *
+ * CONFIRMED BY HIM, 2026-10-29: he read the section and said all four are
+ * right. That matters because the reasoning was READ out of his code rather
+ * than explained to me, so until he said so these four were sourced but
+ * unverified — the one category of copy on this site that looks finished while
+ * still resting on my inference. It no longer does.
  *
  * OVERLAP WITH 0006's TECHNICAL SECTION IS DELIBERATE, not an oversight.
  * Technical says what the code does; decisions says what else it could have

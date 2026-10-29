@@ -87,10 +87,7 @@ Two left:
    no-result students right in the ranking — correct me if it was something
    else. This becomes *Lessons learned*.
 
-One other thing worth five minutes: **read the Key decisions section** at
-`/work/school-management-system`. I wrote those four from comments you left in
-`src/Models/Result.php`, so the reasoning is yours — but it was read, not
-explained, and anything that misrepresents what you meant should be corrected.
+*Key decisions is settled — you read it and confirmed all four.*
 
 ### 1.4 A photograph of you
 
