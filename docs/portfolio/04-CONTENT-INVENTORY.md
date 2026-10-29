@@ -122,12 +122,15 @@ version control.
 | Scope: students, teachers, classes, subjects, attendance, scores, results, ranking, report cards | ✅ Verified |
 | Role-based dashboards: administrator, teacher, student, parent | ✅ Verified |
 | Stack: PHP, MySQL, JavaScript, HTML, CSS | ✅ Verified |
-| GitHub repository | ⬜ Outstanding (Q6) — a `School-Management-System` repo was *observed* on the account but not confirmed as this project |
-| Live URL | ⬜ Outstanding (Q6) |
-| Screenshots | ⬜ Outstanding (Q6) |
-| Used by a real school? | ⬜ Outstanding (Q6) — **do not assume either way** |
-| Ranking logic explanation | ⬜ Outstanding (Q6) |
-| Challenges · key decisions · lessons | ⬜ Outstanding (Q6) |
+| GitHub repository | ✅ **Verified** — confirmed as this project and published via `database/seeds/0006_school_case_study.php` |
+| Role | ✅ **Verified** — "owner and builder", his words. `database/seeds/0007_school_role_and_decisions.php` |
+| Used by a real school? | ✅ **Verified — no.** "It was built as a project", his words. Status reads *Built as a project* |
+| Technical implementation · ranking logic | ✅ **Verified** — read out of the repository, every claim checkable against a named file. `0006` |
+| Key decisions | ✅ **Verified** — the four forks are his own, recorded in comments in `src/Models/Result.php` of that repository. `0007` |
+| Live URL | 🚫 **Never state** — nothing is deployed, and a link that 404s is worse than no link |
+| Outcome | 🚫 **Never state** — built as a project, so there are no users, no adoption and no results. **The section is deliberately absent, which is an answer rather than a gap** |
+| Lessons learned | ⬜ Outstanding — needs his answer to "what was the hardest problem" (task 1.3) |
+| Screenshots | ⬜ Outstanding (task 2.3) — the report card output is the one worth having |
 | Number of schools, students or report cards generated | 🚫 **Never state** — nothing supplied |
 
 ---
@@ -166,6 +169,21 @@ version control.
 | Testimonials | 🚫 **Never state** — none exist |
 
 ---
+
+## One formatting rule for all seeded copy
+
+**Case-study bodies are plain text, not Markdown.** `work-show.php` escapes each
+paragraph and splits on blank lines — nothing more. So `**bold**` and backticks
+around a method name reach the page as literal asterisks and backticks.
+
+Eight of them shipped in `0006` and were removed once this was noticed. Method
+and file names read perfectly well unadorned: *Result::assignPositions() takes
+an array*. A blank line starts a new paragraph, and that is the only markup
+there is.
+
+If inline code is ever wanted on the page, it is a change to the template and
+to `ProjectSection`, with escaping before conversion and never after — not a
+change to the copy.
 
 ## Legend
 

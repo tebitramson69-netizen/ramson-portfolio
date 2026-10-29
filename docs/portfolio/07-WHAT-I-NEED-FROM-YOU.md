@@ -65,26 +65,32 @@ immediately, and that is the whole reason this section is worth having.
 
 Step numbers come from the order, so moving a step renumbers the list for free.
 
-### 1.3 Four answers about the School Management System
+### 1.3 Two answers about the School Management System — two down, two to go
 
 **Where:** paste in chat — I write the sections and send a seed
 **Time:** five minutes, one or two sentences each
-**If you skip it:** the case study keeps a *Technical implementation* section
-and nothing else deep. The dashboard will keep saying *"Thin: School Management
-System"*, and it is right to.
+**If you skip it:** the case study is no longer thin — the dashboard check now
+passes — but it ends without Lessons learned, which is the section that shows
+judgement most directly.
 
-I read the repository and wrote the technical half from the code. These four
-cannot be read from code:
+You answered two of the four: **built as a project**, and **owner and builder**.
+Both are published, and the case-study header no longer says "Awaiting
+confirmation" anywhere. That answer also settled a third thing by ruling it
+out: **there is no Outcome section**, because nothing was deployed, so there are
+no users and no results. Its absence is correct and deliberate.
 
-1. **Is it used by a real school, or was it built as a project?** Either answer
-   is respectable. It decides the status label and whether an Outcome section
-   can honestly exist at all.
-2. **Your role** — `Owner and builder`, as with Rendo? The field is empty, so
-   the case-study header currently reads *"Role — Awaiting confirmation"*.
-3. **Why did you build it?** What made you start.
-4. **What was the hardest problem?** My guess from the code is getting ties and
+Two left:
+
+1. **Why did you build it?** What made you start — a school you knew, a course
+   requirement, curiosity about the ranking problem.
+2. **What was the hardest problem?** My guess from the code is getting ties and
    no-result students right in the ranking — correct me if it was something
-   else.
+   else. This becomes *Lessons learned*.
+
+One other thing worth five minutes: **read the Key decisions section** at
+`/work/school-management-system`. I wrote those four from comments you left in
+`src/Models/Result.php`, so the reasoning is yours — but it was read, not
+explained, and anything that misrepresents what you meant should be corrected.
 
 ### 1.4 A photograph of you
 

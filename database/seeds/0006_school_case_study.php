@@ -130,13 +130,13 @@ $sections = [
         'body'  => <<<'TEXT'
         PHP 8 on MySQL, in a custom MVC structure with no framework and no package manager — twenty-two tables, a front controller, and eight forward-only migrations alongside the schema. Bootstrap 5.3.3 is loaded from a CDN for the interface.
 
-        The ranking engine is the part worth reading. `Result::assignPositions()` is a pure static function that takes an array and returns it ordered and numbered, with no database access at all, specifically so it can be unit-tested — and `tests/core_maths_test.php` tests it. Equal averages share a position, so two students on 15.0 are both second. A student with no result is sorted last and given a position of `null` rather than zero or last place, because "not ranked" and "ranked last" are different facts about a child.
+        The ranking engine is the part worth reading. Result::assignPositions() is a pure static function that takes an array and returns it ordered and numbered, with no database access at all, specifically so it can be unit-tested — and tests/core_maths_test.php tests it. Equal averages share a position, so two students on 15.0 are both second. A student with no result is sorted last and given a position of null rather than zero or last place, because "not ranked" and "ranked last" are different facts about a child.
 
-        Overall averages are coefficient-weighted: each subject carries a per-class coefficient, defaulting to 1 so a class with none configured falls back to a plain mean instead of failing. The ranking and the average printed on the report card are produced by the same engine, `Score::computeWeightedAverage()`, so a student's position can never disagree with the figure beside it. The pass mark is configurable rather than hard-coded, defaulting to 10 out of 20.
+        Overall averages are coefficient-weighted: each subject carries a per-class coefficient, defaulting to 1 so a class with none configured falls back to a plain mean instead of failing. The ranking and the average printed on the report card are produced by the same engine, Score::computeWeightedAverage(), so a student's position can never disagree with the figure beside it. The pass mark is configurable rather than hard-coded, defaulting to 10 out of 20.
 
-        Terms are modelled the way the school year actually runs: `Term::globalSequence()` maps a term name and a sequence number onto a single ordering, so "Term 2, sequence 1" sorts as the third assessment of the year rather than the first.
+        Terms are modelled the way the school year actually runs: Term::globalSequence() maps a term name and a sequence number onto a single ordering, so "Term 2, sequence 1" sorts as the third assessment of the year rather than the first.
 
-        Security was a deliberate pass rather than an afterthought, and the project log records it as its own phase: CSRF tokens on every form with validation on all POSTs, session hardening with `httponly` and `SameSite=Strict`, database credentials moved out of the code into `.env`, password-strength rules, login rate limiting, and a forced password change on first sign-in.
+        Security was a deliberate pass rather than an afterthought, and the project log records it as its own phase: CSRF tokens on every form with validation on all POSTs, session hardening with httponly and SameSite=Strict, database credentials moved out of the code into .env, password-strength rules, login rate limiting, and a forced password change on first sign-in.
         TEXT,
     ],
 ];

@@ -46,6 +46,28 @@ if ($projectId === false) {
     return;
 }
 
+/*
+ * ---------------------------------------------------------------------------
+ * The role column.
+ *
+ * NOT a new claim. The role section below already publishes it in prose —
+ * "I own Rendo and built it" — approved in Phase 1. This writes the same fact
+ * into the field the case-study header reads, which until now rendered
+ * "Role — Awaiting confirmation" directly above that sentence.
+ *
+ * Guarded on the column being empty, for the reason given in 0003's
+ * ON DUPLICATE KEY UPDATE clause.
+ * ---------------------------------------------------------------------------
+ */
+$pdo->prepare(
+    "UPDATE projects
+     SET role = :role
+     WHERE id = :id AND role = ''"
+)->execute([
+    'role' => 'Owner and builder',
+    'id'   => (int) $projectId,
+]);
+
 $sections = [
     [
         'key'   => 'role',

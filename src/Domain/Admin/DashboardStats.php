@@ -129,7 +129,11 @@ final class DashboardStats
             'label'  => 'Case studies show engineering judgement',
             'done'   => $thin === [],
             'detail' => $thin === []
-                ? 'Role, technical implementation, decisions, outcome and lessons are written'
+                // "at least three of", not all five: an absent section can be
+                // the honest answer. The School Management System has no
+                // Outcome because nothing was deployed, so claiming all five
+                // are written would be the dashboard stating something false.
+                ? 'Every published project has at least three of role, technical implementation, decisions, outcome and lessons'
                 : 'Thin: ' . implode(', ', array_column($thin, 'title'))
                   . ' — "Key decisions" and "Lessons learned" are what demonstrate judgement',
         ];

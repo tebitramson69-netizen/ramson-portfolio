@@ -61,11 +61,13 @@ Confirm the public nav: `Work · About · Services · Contact`, or a different s
 - ~~Is `github.com/tebitramson69-netizen/School-Management-System` the right repository?~~ — ✅ confirmed by its contents: 22 tables, PHP 8 MVC, the ranking engine described below. Entered as the project's GitHub URL.
 - ~~The report-card ranking logic~~ — ✅ **read from the code** and written up in the Technical implementation section: `Result::assignPositions()`, a pure DB-free static function with a unit test; ties share a position; a student with no result gets `position = null` rather than last place; coefficient-weighted averages through the same engine the report card uses. *Correct anything that misrepresents what you meant — it was read, not explained.*
 - ~~Technologies~~ — ✅ checked against the code. It also uses **Bootstrap 5.3.3** via CDN, which was missing from the five tagged in 0003. The seed adds the tag only if a `bootstrap` skill exists; **add one at `/admin/skills` and re-run the seed**, or the stack list stays incomplete.
-- **Still yours — nothing in a repository can answer these:**
-  - **Is it used by a real school, or was it built as a project?** Either answer is fine and respectable. This decides `status_label` and whether an Outcome section can exist at all.
-  - **Your role**, for the empty `role` field — "Owner and builder" is the obvious candidate, but it is yours to say.
-  - **The hardest problem you solved**, and why you built it in the first place.
-- Live URL — none found in the repository. Left null; a link that 404s is worse than no link.
+- ~~**Is it used by a real school, or was it built as a project?**~~ — ✅ answered 2026-10-29: **built as a project.** `status_label` is now *Built as a project*, and **no Outcome section exists**, because nothing was deployed and there are therefore no users, no adoption and no results. Its absence is the answer, not an omission to fill later.
+- ~~**Your role**~~ — ✅ answered: **owner and builder.** Published as the `role` field and the *My role* section.
+- ~~**Key decisions**~~ — ✅ **sourced from your own comments** in `src/Models/Result.php` of that repository (lines 197, 222, 304, 305) and written up as four forks, each stating the alternative rejected. *Read it once and correct anything that misrepresents what you meant — the reasoning was read out of the code, not explained to me.*
+- **Still yours — two questions, and nothing in a repository can answer either:**
+  - **Why did you build it?** What made you start. This becomes the Context or Overview addition.
+  - **What was the hardest problem?** My guess from the code is getting ties and no-result students right in the ranking. One or two sentences becomes the Lessons learned section — the last absent section on this case study.
+- Live URL — none found in the repository, and nothing is deployed. Left null; a link that 404s is worse than no link.
 - Screenshots — the report card output especially. Still the most valuable missing asset.
 - ⚠️ **The README is empty (0 bytes).** The case study now links to the repository, so anyone who follows that link lands on a page with no explanation at all.
 
@@ -75,6 +77,12 @@ without a case study, or left out entirely?
 Any other genuine projects to include?
 
 *(Note: `CareerForge AI` is excluded by decision and will not appear anywhere.)*
+
+**8. Rendo's `role` field.** Filled as **Owner and builder** on 2026-10-29 — not
+a new claim, but the same fact the approved *My role* section already published
+in prose ("I own Rendo and built it"). Until then the case-study header read
+*"Role — Awaiting confirmation"* directly above that sentence. Say the word and
+it comes back out.
 
 ---
 
