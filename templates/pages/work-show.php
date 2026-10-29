@@ -11,6 +11,7 @@
  *     because a dead link is worse than no link.
  *
  * @var \App\Domain\Project\Project $project
+ * @var bool $isPreview  true only on the guarded admin preview route
  * @var array{slug:string,title:string,category_label:string}|null $previous
  * @var array{slug:string,title:string,category_label:string}|null $next
  * @var \App\Domain\Profile\Profile|null $profile
@@ -156,7 +157,22 @@ $questionRef = $project->slug === 'rendo'
         $wanted  = ['context', 'role', 'technical', 'decisions', 'outcome', 'lessons'];
         $missing = array_values(array_diff($wanted, $present));
         ?>
-        <?php if ($missing !== []): ?>
+        <?php /* PREVIEW ONLY. This block names the sections still unwritten and
+                 cites the question in 03-OPEN-QUESTIONS that tracks them —
+                 useful to the author, and an internal planning artefact to
+                 everyone else. Until Phase 10 it rendered on the PUBLIC page
+                 too, so a visitor to an unfinished case study was shown
+                 "Sections not yet written … 03-OPEN-QUESTIONS · Q6". On a
+                 portfolio read by people deciding whether to hire him, that
+                 is the worst possible sentence to volunteer.
+
+                 $isPreview is already passed by WorkController::render() for
+                 the guarded /admin/preview/{slug} route, so gating on it
+                 needs no new plumbing: he still sees the prompt exactly where
+                 he goes to check unfinished work, and the public page simply
+                 renders nothing — the same rule every other absent section
+                 follows. */ ?>
+        <?php if ($isPreview && $missing !== []): ?>
           <div class="u-mt-7" data-reveal>
             <?php $pending([
               'label' => 'Awaiting content',

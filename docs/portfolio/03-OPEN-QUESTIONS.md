@@ -52,13 +52,17 @@ Confirm the public nav: `Work · About · Services · Contact`, or a different s
 
 **Q5 is closed except for screenshots.**
 
-**6. School Management System.**
-- Is `github.com/tebitramson69-netizen/School-Management-System` the right repository? *(Observed on your GitHub account — not assumed to be this project.)*
-- Live URL, if any
-- Screenshots — the report card output especially
-- Is it used by a real school, or built as a project? **Either answer is fine and respectable; I just will not guess.**
-- The report-card ranking logic in your own words
-- The hardest problem you solved
+**6. School Management System.** *(Mostly answered by reading the code, 2026-10-29.)*
+- ~~Is `github.com/tebitramson69-netizen/School-Management-System` the right repository?~~ — ✅ confirmed by its contents: 22 tables, PHP 8 MVC, the ranking engine described below. Entered as the project's GitHub URL.
+- ~~The report-card ranking logic~~ — ✅ **read from the code** and written up in the Technical implementation section: `Result::assignPositions()`, a pure DB-free static function with a unit test; ties share a position; a student with no result gets `position = null` rather than last place; coefficient-weighted averages through the same engine the report card uses. *Correct anything that misrepresents what you meant — it was read, not explained.*
+- ~~Technologies~~ — ✅ checked against the code. It also uses **Bootstrap 5.3.3** via CDN, which was missing from the five tagged in 0003. The seed adds the tag only if a `bootstrap` skill exists; **add one at `/admin/skills` and re-run the seed**, or the stack list stays incomplete.
+- **Still yours — nothing in a repository can answer these:**
+  - **Is it used by a real school, or was it built as a project?** Either answer is fine and respectable. This decides `status_label` and whether an Outcome section can exist at all.
+  - **Your role**, for the empty `role` field — "Owner and builder" is the obvious candidate, but it is yours to say.
+  - **The hardest problem you solved**, and why you built it in the first place.
+- Live URL — none found in the repository. Left null; a link that 404s is worse than no link.
+- Screenshots — the report card output especially. Still the most valuable missing asset.
+- ⚠️ **The README is empty (0 bytes).** The case study now links to the repository, so anyone who follows that link lands on a page with no explanation at all.
 
 **7. Further projects.**
 Your GitHub account also shows `ai-script-to-video-studio`. Do you want it featured, listed
